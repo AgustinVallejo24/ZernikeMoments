@@ -173,19 +173,21 @@ public class ZernikeManager : MonoBehaviour
         {
             float distanceSquared = 0f;
             int count = Mathf.Min(playerMagnitudes.Count, reference.momentMagnitudes.Count);
-
+            
             for (int i = 0; i < count; i++)
             {
                 float diff = playerMagnitudes[i] - reference.momentMagnitudes[i];
                 distanceSquared += diff * diff;
             }
-
-            if (distanceSquared < minDistance)
+            Debug.Log("La distancia con "+ reference.symbolName+ " es " + Mathf.Sqrt(distanceSquared));
+            if (distanceSquared < minDistance && distanceSquared <= Mathf.Pow(reference.Threshold,2))
             {
                 minDistance = distanceSquared;
                 recognizedSymbol = reference.symbolName;
                 mySymbol = reference;
             }
+
+
         }
 
         float finalDistance = Mathf.Sqrt(minDistance);
