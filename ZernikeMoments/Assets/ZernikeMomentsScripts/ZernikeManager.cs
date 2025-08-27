@@ -1,9 +1,14 @@
 using System.Collections.Generic;
+using System.Collections;
+using System;
 using UnityEngine;
 using System.Linq;
+using TMPro;
+using UnityEngine.UI;
 public class ZernikeManager : MonoBehaviour
 {
     // Tamaño de la imagen para el procesamiento
+    [SerializeField] TMP_Text text;
     public int imageSize = 64;
     // Orden máximo para los momentos de Zernike
     public int maxMomentOrder = 10;
@@ -11,12 +16,14 @@ public class ZernikeManager : MonoBehaviour
     public float recognitionThreshold = 0.5f;
 
     public RenderTexture renderTexture;
+
+    
     // Almacena los descriptores (magnitudes de momentos) de los símbolos de referencia.
     [System.Serializable]
     public class ReferenceSymbol
     {
         public string symbolName;
-        public List<float> momentMagnitudes;
+        public List<double> momentMagnitudes;
         public Texture2D templateTexture;
         public float Threshold;
         public int strokes = 1;
@@ -31,29 +38,7 @@ public class ZernikeManager : MonoBehaviour
         _processor = new ZernikeProcessor(imageSize);
         _currentStrokePoints = new List<Vector2>();
 
-        foreach (var reference in referenceSymbols)
-        {
-            if (reference.templateTexture != null)
-            {
-                // Procesar la textura para obtener la matriz binaria
-                _processor.DrawTexture(reference.templateTexture);
-
-                // Calcular la suma de todos los píxeles activos para la normalización
-                float totalPixels = _processor.GetActivePixelCount();
-
-                // Calcular los momentos
-                ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
-
-                reference.momentMagnitudes = new List<float>();
-                // Normalizar y guardar las magnitudes
-                foreach (var moment in moments)
-                {
-                    // Evitar división por cero
-                    float normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
-                    reference.momentMagnitudes.Add(normalizedMagnitude);
-                }
-            }
-        }
+        StartCoroutine(Compute());
     }
     Texture2D CaptureRenderTexture(RenderTexture rt)
     {
@@ -146,6 +131,35 @@ public class ZernikeManager : MonoBehaviour
 
         return result;
     }
+
+    IEnumerator Compute()
+    {
+        foreach (var reference in referenceSymbols)
+        {
+            if (reference.templateTexture != null)
+            {
+                // Procesar la textura para obtener la matriz binaria
+                _processor.DrawTexture(reference.templateTexture);
+
+                // Calcular la suma de todos los píxeles activos para la normalización
+                float totalPixels = _processor.GetActivePixelCount();
+                Debug.Log("Divido por " + totalPixels);
+                // Calcular los momentos
+                ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
+
+                reference.momentMagnitudes = new List<double>();
+                // Normalizar y guardar las magnitudes
+                foreach (var moment in moments)
+                {
+                    // Evitar división por cero
+                    double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
+                    reference.momentMagnitudes.Add(normalizedMagnitude);
+                }
+            }
+            yield return null;
+        }
+
+    }
     public void OnDrawingFinished(List<Vector2> finishedPoints, int strokeQuantity)
     {
         _currentStrokePoints = finishedPoints;
@@ -155,20 +169,22 @@ public class ZernikeManager : MonoBehaviour
         float totalPixels = _processor.GetActivePixelCount();
         ZernikeMoment[] playerMoments = _processor.ComputeZernikeMoments(maxMomentOrder);
 
-        List<float> playerMagnitudes = new List<float>();
+        List<double> playerMagnitudes = new List<double>();
         foreach (var moment in playerMoments)
         {
-            float normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
+            double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
             playerMagnitudes.Add(normalizedMagnitude);
         }
 
         RecognizeSymbol(playerMagnitudes, strokeQuantity);
     }
-    private void RecognizeSymbol(List<float> playerMagnitudes, int strokeQuantity)
+    private void RecognizeSymbol(List<double> playerMagnitudes, int strokeQuantity)
     {
-        float minDistance = float.MaxValue;
+        double minDistance = double.MaxValue;
         string recognizedSymbol = "None";
         ReferenceSymbol mySymbol = new ReferenceSymbol();
+
+
         foreach (var reference in referenceSymbols.Where(x =>x.strokes == strokeQuantity))
         {
             float distanceSquared = 0f;
@@ -176,8 +192,8 @@ public class ZernikeManager : MonoBehaviour
             
             for (int i = 0; i < count; i++)
             {
-                float diff = playerMagnitudes[i] - reference.momentMagnitudes[i];
-                distanceSquared += diff * diff;
+                double diff = playerMagnitudes[i] - reference.momentMagnitudes[i];
+                distanceSquared += Convert.ToSingle(diff * diff);
             }
             Debug.Log("La distancia con "+ reference.symbolName+ " es " + Mathf.Sqrt(distanceSquared));
             if (distanceSquared < minDistance && distanceSquared <= Mathf.Pow(reference.Threshold,2))
@@ -190,15 +206,18 @@ public class ZernikeManager : MonoBehaviour
 
         }
 
-        float finalDistance = Mathf.Sqrt(minDistance);
+        float finalDistance = Mathf.Sqrt(Convert.ToSingle(minDistance));
 
         if (finalDistance < mySymbol.Threshold)
         {
-            Debug.Log("Símbolo reconocido: " + recognizedSymbol + " con una distancia de " + finalDistance);
+          //  Debug.Log("Símbolo reconocido: " + recognizedSymbol + " con una distancia de " + finalDistance);
+            text.text = "Símbolo reconocido: " + recognizedSymbol + " con una distancia de " + finalDistance;
         }
         else
         {
-            Debug.Log("Símbolo no reconocido. Distancia mínima: " + finalDistance);
+            text.text = "Símbolo no reconocido. Distancia mínima: " + finalDistance;
+          //  Debug.Log("Símbolo no reconocido. Distancia mínima: " + finalDistance);
         }
     }
+
 }

@@ -13,6 +13,7 @@ public class ZernikeProcessor
         _binaryImage = new float[imageSize, imageSize];
     }
 
+
     // Dibuja el trazo del jugador en la imagen binaria.
     private void DrawLine(int x0, int y0, int x1, int y1)
     {
@@ -58,16 +59,22 @@ public class ZernikeProcessor
         maxX += .6f;
         maxY += .6f;
 
-        float scaleX = (_imageSize - 1) / (maxX - minX);
-        float scaleY = ((_imageSize - 1) / (maxY - minY));
+        float scale = Mathf.Min(
+            (_imageSize - 1) / (maxX - minX),
+            (_imageSize - 1) / (maxY - minY)
+        );
 
-        // Dibujar líneas entre puntos consecutivos
+        // 2. Calcular offsets para centrar el dibujo
+        float offsetX = (_imageSize - (maxX - minX) * scale) / 2f;
+        float offsetY = (_imageSize - (maxY - minY) * scale) / 2f;
+
+        // 3. Dibujar líneas con esa escala y offset
         for (int i = 0; i < points.Count - 1; i++)
         {
-            int x0 = Mathf.RoundToInt((points[i].x - minX) * scaleX);
-            int y0 = Mathf.RoundToInt((points[i].y - minY) * scaleY);
-            int x1 = Mathf.RoundToInt((points[i + 1].x - minX) * scaleX);
-            int y1 = Mathf.RoundToInt((points[i + 1].y - minY) * scaleY);
+            int x0 = Mathf.RoundToInt((points[i].x - minX) * scale + offsetX);
+            int y0 = Mathf.RoundToInt((points[i].y - minY) * scale + offsetY);
+            int x1 = Mathf.RoundToInt((points[i + 1].x - minX) * scale + offsetX);
+            int y1 = Mathf.RoundToInt((points[i + 1].y - minY) * scale + offsetY);
 
             DrawLine(
                 Mathf.Clamp(x0, 0, _imageSize - 1),
@@ -76,7 +83,8 @@ public class ZernikeProcessor
                 Mathf.Clamp(y1, 0, _imageSize - 1)
             );
         }
-        ImprimirMimatriz(GetContourAndThicken(_binaryImage,_imageSize));
+        _binaryImage = NormalizeThickness(_binaryImage, _imageSize, 4);
+        ImprimirMimatriz(_binaryImage);
     }
     public float GetActivePixelCount()
     {
@@ -205,6 +213,7 @@ public class ZernikeProcessor
                 }
             }
         }
+        _binaryImage = NormalizeThickness(_binaryImage, _imageSize, 4);
         ImprimirMimatriz(_binaryImage);
     }
 
@@ -271,13 +280,48 @@ public class ZernikeProcessor
                     float magnitude = Mathf.Sqrt(realMoment * realMoment + imagMoment * imagMoment);
                     float phase = Mathf.Atan2(imagMoment, realMoment);
                     moments.Add(new ZernikeMoment(magnitude, phase));
+                   
                 }
             }
         }
-        Debug.Log(cantidad);
-        return moments.ToArray();
+          return moments.ToArray();
     }
+    public float CalculateOrientation()
+    {
+        float m20 = 0f, m02 = 0f, m11 = 0f;
+        float totalPixels = GetActivePixelCount();
+        if (totalPixels == 0) return 0f;
 
+        // Calcular el centroide
+        float x_centroid = 0, y_centroid = 0;
+        for (int y = 0; y < _imageSize; y++)
+        {
+            for (int x = 0; x < _imageSize; x++)
+            {
+                x_centroid += x * _binaryImage[x, y];
+                y_centroid += y * _binaryImage[x, y];
+            }
+        }
+        x_centroid /= totalPixels;
+        y_centroid /= totalPixels;
+
+        // Calcular momentos centrales de segundo orden
+        for (int y = 0; y < _imageSize; y++)
+        {
+            for (int x = 0; x < _imageSize; x++)
+            {
+                float normalizedX = x - x_centroid;
+                float normalizedY = y - y_centroid;
+
+                m20 += normalizedX * normalizedX * _binaryImage[x, y];
+                m02 += normalizedY * normalizedY * _binaryImage[x, y];
+                m11 += normalizedX * normalizedY * _binaryImage[x, y];
+            }
+        }
+
+        // Calcular la orientación en radianes
+        return 0.5f * Mathf.Atan2(2 * m11, m20 - m02);
+    }
     // Implementación de los polinomios radiales R_n^m(rho)
     private float RadialPolynomial(int n, int m, float rho)
     {
@@ -306,5 +350,184 @@ public class ZernikeProcessor
             result *= i;
         }
         return result;
+    }
+
+    private bool[,] ToBoolMatrix(float[,] src, int size)
+    {
+        bool[,] b = new bool[size, size];
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                b[x, y] = src[x, y] > 0f;
+        return b;
+    }
+
+    // Convierte bool[,] a float[,]
+    private float[,] BoolToFloat(bool[,] b, int size)
+    {
+        float[,] f = new float[size, size];
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                f[x, y] = b[x, y] ? 1f : 0f;
+        return f;
+    }
+
+    // Función principal: devuelve una matriz con grosor uniforme (targetThickness en píxeles)
+    public float[,] NormalizeThickness(float[,] binaryMatrix, int imageSize, int targetThickness)
+    {
+        if (imageSize <= 0) return binaryMatrix;
+        if (targetThickness <= 1)
+            return BoolToFloat(ZhangSuenThinning(ToBoolMatrix(binaryMatrix, imageSize), imageSize), imageSize);
+
+        bool[,] bin = ToBoolMatrix(binaryMatrix, imageSize);
+        bool[,] skeleton = ZhangSuenThinning(bin, imageSize);
+
+        // Calcular radio del disco (aprox.) — el grosor final será ~ 2*radius + 1
+        int radius = Mathf.Max(0, Mathf.RoundToInt((targetThickness - 1) / 2f));
+
+        // Precomputar offsets de disco (para acelerar)
+        List<Vector2Int> offsets = new List<Vector2Int>();
+        int r2 = radius * radius;
+        for (int dy = -radius; dy <= radius; dy++)
+            for (int dx = -radius; dx <= radius; dx++)
+                if (dx * dx + dy * dy <= r2)
+                    offsets.Add(new Vector2Int(dx, dy));
+
+        float[,] outM = new float[imageSize, imageSize];
+
+        for (int y = 0; y < imageSize; y++)
+        {
+            for (int x = 0; x < imageSize; x++)
+            {
+                if (!skeleton[x, y]) continue;
+                // "Pintar" el disco alrededor del pixel de la skeleton
+                foreach (var off in offsets)
+                {
+                    int px = x + off.x;
+                    int py = y + off.y;
+                    if (px >= 0 && px < imageSize && py >= 0 && py < imageSize)
+                        outM[px, py] = 1f;
+                }
+            }
+        }
+
+        return outM;
+    }
+
+    // --- Zhang-Suen thinning (devuelve skeleton como bool[,]) ---
+    private bool[,] ZhangSuenThinning(bool[,] input, int size)
+    {
+        int w = size, h = size;
+        bool[,] img = new bool[w, h];
+        // copia
+        for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++)
+                img[x, y] = input[x, y];
+
+        bool changed = true;
+        List<Vector2Int> toRemove = new List<Vector2Int>();
+
+        while (changed)
+        {
+            changed = false;
+            toRemove.Clear();
+
+            // Primera sub-iteración
+            for (int y = 1; y < h - 1; y++)
+            {
+                for (int x = 1; x < w - 1; x++)
+                {
+                    if (!img[x, y]) continue;
+
+                    int neighbors = CountNeighbors(img, x, y);
+                    int transitions = CountTransitions(img, x, y);
+                    bool p2 = img[x, y - 1];
+                    bool p4 = img[x + 1, y];
+                    bool p6 = img[x, y + 1];
+                    bool p8 = img[x - 1, y];
+
+                    if (neighbors >= 2 && neighbors <= 6 &&
+                        transitions == 1 &&
+                        (!p2 || !p4 || !p6) &&
+                        (!p4 || !p6 || !p8))
+                    {
+                        toRemove.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+
+            if (toRemove.Count > 0)
+            {
+                changed = true;
+                foreach (var v in toRemove) img[v.x, v.y] = false;
+                toRemove.Clear();
+            }
+
+            // Segunda sub-iteración
+            for (int y = 1; y < h - 1; y++)
+            {
+                for (int x = 1; x < w - 1; x++)
+                {
+                    if (!img[x, y]) continue;
+
+                    int neighbors = CountNeighbors(img, x, y);
+                    int transitions = CountTransitions(img, x, y);
+                    bool p2 = img[x, y - 1];
+                    bool p4 = img[x + 1, y];
+                    bool p6 = img[x, y + 1];
+                    bool p8 = img[x - 1, y];
+
+                    if (neighbors >= 2 && neighbors <= 6 &&
+                        transitions == 1 &&
+                        (!p2 || !p4 || !p8) &&
+                        (!p2 || !p6 || !p8))
+                    {
+                        toRemove.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+
+            if (toRemove.Count > 0)
+            {
+                changed = true;
+                foreach (var v in toRemove) img[v.x, v.y] = false;
+                toRemove.Clear();
+            }
+        }
+
+        return img;
+    }
+
+    // Cuenta vecinos 8-conn (sin contar el centro)
+    private int CountNeighbors(bool[,] img, int x, int y)
+    {
+        int c = 0;
+        for (int j = -1; j <= 1; j++)
+            for (int i = -1; i <= 1; i++)
+                if (!(i == 0 && j == 0) && img[x + i, y + j]) c++;
+        return c;
+    }
+
+    // Cuenta transiciones 0->1 en la secuencia p2..p9..p2
+    private int CountTransitions(bool[,] img, int x, int y)
+    {
+        bool[] p = new bool[8];
+        // p2..p9: N, NE, E, SE, S, SW, W, NW
+        p[0] = img[x, y - 1];     // N
+        p[1] = img[x + 1, y - 1]; // NE
+        p[2] = img[x + 1, y];     // E
+        p[3] = img[x + 1, y + 1]; // SE
+        p[4] = img[x, y + 1];     // S
+        p[5] = img[x - 1, y + 1]; // SW
+        p[6] = img[x - 1, y];     // W
+        p[7] = img[x - 1, y - 1]; // NW
+
+        int transitions = 0;
+        for (int k = 0; k < 8; k++)
+        {
+            bool cur = p[k];
+            bool next = p[(k + 1) % 8];
+            if (!cur && next) transitions++;
+        }
+        return transitions;
     }
 }

@@ -1,0 +1,1 @@
+C:\Users\User\Documents\GitHub\ZernikeMoments\ZernikeMoments\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\2q1w1d2j\obj\arm64-v8a

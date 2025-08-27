@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using System.Collections;
+using UnityEngine.EventSystems;
 public class DrawingTest : MonoBehaviour
 {
     public LineRenderer[] lineRenderer;
@@ -12,7 +13,7 @@ public class DrawingTest : MonoBehaviour
     public TMP_Text resultText;
     public Camera cam;
     //public GestureRecognizer recognizer;
- 
+    public BaseButton_Recognize recognizebutton;
     private List<Vector2> currentPoints = new();
     private List<Vector2> currentStrokePoints = new();
     private bool isDrawing = false;
@@ -20,29 +21,20 @@ public class DrawingTest : MonoBehaviour
     List<Vector2> redPoints = new List<Vector2>();
 
     public ZernikeManager zRecognizer;
+
+
     void Start()
     {
 
-       // recognizer = new GestureRecognizer();
-       // recognizer.AddTemplate("Line", LineTemplate(), 0.02f);
-       // //recognizer.AddTemplate("Line", LineTemplateR(),0.05f);
-       // recognizer.AddTemplate("Circle", CircleTemplate(), .035f);
-       // //recognizer.AddTemplate("Circle", CircleTemplateR(), 1.5f);
-       // recognizer.AddTemplate("V", VTemplate(), .05f);
-       // //recognizer.AddTemplate("V", VTemplateR(), .05f);
-       // recognizer.AddTemplate("Cup", CupTemplate(), .03f);
-       // recognizer.AddTemplate("L", LTemplate(), .05f);
-       //// recognizer.AddTemplate("L", LTemplateR(), .05f);
-       // recognizer.AddTemplate("Z", ZTemplate(), .07f);
-       // recognizer.AddTemplate("C", CTemplate(), .05f);
-       // recognizer.AddTemplate("Square", SquareTemplate(), .1f);
-       // recognizer.AddTemplate("Square", SquareTemplate2(), .1f);
-       // recognizer.AddTemplate("Square", SquareTemplate3(), .1f);
 
     }
 
     void Update()
     {
+        //if (recognizebutton.isPressed)
+        //{
+        //    OnConfirmDrawing();
+        //}
         if (Input.GetMouseButtonDown(0) && linerendererIndex < lineRenderer.Length)
         {
             isDrawing = true;
@@ -53,7 +45,7 @@ public class DrawingTest : MonoBehaviour
         {
             isDrawing = false;
 
-            if(linerendererIndex < lineRenderer.Length)
+            if (linerendererIndex < lineRenderer.Length)
             {
                 linerendererIndex++;
             }
@@ -61,14 +53,14 @@ public class DrawingTest : MonoBehaviour
             currentStrokePoints.Clear();
 
 
-         //   var result = recognizer.RecognizeCurrentDrawing();
-         //Debug.Log("Resultado reconocimiento: " + result);
+            //   var result = recognizer.RecognizeCurrentDrawing();
+            //Debug.Log("Resultado reconocimiento: " + result);
         }
 
         if (isDrawing)
         {
             Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
-            if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.01f)
+            if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.1f)
             {
                 currentPoints.Add(pos);
                 currentStrokePoints.Add(pos);
@@ -87,11 +79,140 @@ public class DrawingTest : MonoBehaviour
             {
                 item.positionCount = 0;
             }
-            
+
         }
 
     }
 
+    bool IsTouchOverUI(Touch touch)
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = touch.position;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        return results.Count > 0;
+    }
+//    void Update()
+//{
+
+//        if (recognizebutton.isPressed)
+//        {
+//            OnConfirmDrawing();
+//        }
+
+
+//    if (Input.touchCount > 0)
+//    {
+//        Touch touch = Input.GetTouch(0);
+
+//        //  ignorar si el toque está sobre UI
+//        if (IsTouchOverUI(touch))
+//            {
+//                //Debug.Log("TOCOBOTON");
+//                return;
+//            }
+            
+
+//        Vector2 pos = cam.ScreenToWorldPoint(touch.position);
+
+//        switch (touch.phase)
+//        {
+//            case TouchPhase.Began:
+//                if (linerendererIndex < lineRenderer.Length)
+//                {
+//                    isDrawing = true;
+//                    currentStrokePoints.Clear();
+//                }
+//                break;
+
+//            case TouchPhase.Moved:
+//            case TouchPhase.Stationary:
+//                if (isDrawing)
+//                {
+//                    if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
+//                    {
+//                            AddSmoothedPoint(pos);
+                   
+//                    }
+//                }
+//                break;
+
+//            case TouchPhase.Ended:
+//            case TouchPhase.Canceled:
+//                isDrawing = false;
+
+//                if (linerendererIndex < lineRenderer.Length)
+//                {
+//                    linerendererIndex++;
+//                }
+
+//                currentStrokePoints.Clear();
+//                break;
+//        }
+//    }
+//}
+    void AddSmoothedPoint(Vector3 newPoint)
+    {
+        currentStrokePoints.Add(newPoint);
+        currentPoints.Add(newPoint);
+        int count = currentStrokePoints.Count;
+
+        if (count == 1)
+        {
+            // primer punto del trazo inicializamos el LineRenderer
+            lineRenderer[linerendererIndex].positionCount = 1;
+            lineRenderer[linerendererIndex].SetPosition(0, newPoint);
+            return;
+        }
+
+        if (count < 4)
+        {
+            // si todavía no hay suficientes puntos para interpolar, solo agrego directo
+            lineRenderer[linerendererIndex].positionCount++;
+            lineRenderer[linerendererIndex].SetPosition(lineRenderer[linerendererIndex].positionCount - 1, newPoint);
+            return;
+        }
+
+        // últimos 4 puntos para Catmull-Rom
+        Vector3 p0 = currentStrokePoints[count - 4];
+        Vector3 p1 = currentStrokePoints[count - 3];
+        Vector3 p2 = currentStrokePoints[count - 2];
+        Vector3 p3 = currentStrokePoints[count - 1];
+
+        int subdivisions = 4; // más subdivisiones = más suave
+        for (int j = 1; j <= subdivisions; j++) // arranco en 1 para no repetir p1
+        {
+            float t = j / (float)subdivisions;
+            Vector3 point = 0.5f * (
+                (2f * p1) +
+                (-p0 + p2) * t +
+                (2f * p0 - 5f * p1 + 4f * p2 - p3) * t * t +
+                (-p0 + 3f * p1 - 3f * p2 + p3) * t * t * t
+            );
+
+            lineRenderer[linerendererIndex].positionCount++;
+            lineRenderer[linerendererIndex].SetPosition(lineRenderer[linerendererIndex].positionCount - 1, point);
+            
+        }
+
+        
+    }
+    public void OnConfirmDrawing()
+    {
+        if (currentPoints.Any())
+        {
+            var normalizedPositions = GestureProcessor.Normalize(currentPoints);
+            zRecognizer.OnDrawingFinished(normalizedPositions, linerendererIndex);
+            currentPoints.Clear();
+            linerendererIndex = 0;
+            foreach (var item in lineRenderer)
+            {
+                item.positionCount = 0;
+            }
+        }
+    }
     List<Vector2> CircleTemplate()
     {
         List<Vector2> points = new();
