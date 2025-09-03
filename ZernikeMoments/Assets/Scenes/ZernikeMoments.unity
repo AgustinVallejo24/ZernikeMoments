@@ -536,6 +536,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2102226428}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &370495669
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 370495670}
+  m_Layer: 5
+  m_Name: UICarga
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &370495670
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 370495669}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1398940162}
+  - {fileID: 1866314567}
+  m_Father: {fileID: 2023210001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &471745052
 GameObject:
   m_ObjectHideFlags: 0
@@ -710,77 +747,99 @@ MonoBehaviour:
   recognitionThreshold: 0.5
   renderTexture: {fileID: 0}
   rotationSensitivity: 1
+  UICarga: {fileID: 370495669}
+  barrita: {fileID: 1866314569}
+  UIDibujo: {fileID: 1564906359}
+  DrawingTest: {fileID: 2102226425}
   referenceSymbols:
   - symbolName: C
-    momentMagnitudes: []
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: b6bee689972544a4ebd7f109c6a4443c, type: 3}
     Threshold: 0.5
     strokes: 1
     orientationThreshold: 0.11
     distribution: []
-  - symbolName: V
     momentMagnitudes: []
+  - symbolName: V
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: 2748993ccbbc8d9469867ab62cbd661e, type: 3}
     Threshold: 0.4
     strokes: 1
     orientationThreshold: 0.11
     distribution: []
-  - symbolName: Circulo
     momentMagnitudes: []
+  - symbolName: Circulo
+    useRotation: 0
     templateTexture: {fileID: 2800000, guid: 7e89d3459617602479251a10e2ccdb1b, type: 3}
     Threshold: 0.5
     strokes: 1
     orientationThreshold: 360
     distribution: []
-  - symbolName: Cuadrado
     momentMagnitudes: []
+  - symbolName: Cuadrado
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: 671bd6ee381e12e45820f8e9a312f6d2, type: 3}
     Threshold: 0.35
     strokes: 1
     orientationThreshold: 90
     distribution: []
-  - symbolName: Cuadrado
     momentMagnitudes: []
+  - symbolName: Cuadrado
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: d5fc5933d7ff7c9459a0fc7d76cfa913, type: 3}
     Threshold: 0.35
     strokes: 1
     orientationThreshold: 90
     distribution: []
-  - symbolName: Cuadrado
     momentMagnitudes: []
+  - symbolName: Cuadrado
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: acd80a22e8c88c44eae4da33ef26509f, type: 3}
     Threshold: 0.35
     strokes: 1
     orientationThreshold: 0.05
     distribution: []
-  - symbolName: Copa
     momentMagnitudes: []
+  - symbolName: Copa
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: abc109f8ea4bb414ba1de72515d0b19e, type: 3}
     Threshold: 0.45
     strokes: 3
     orientationThreshold: 0.21
     distribution: []
-  - symbolName: inf
     momentMagnitudes: []
+  - symbolName: inf
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: e67d3c7248954c844950d818949726de, type: 3}
     Threshold: 0.5
     strokes: 1
     orientationThreshold: 0.15
     distribution: []
-  - symbolName: Triangulo
     momentMagnitudes: []
+  - symbolName: Triangulo
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: 159623a8ee604da498bb4f89f1c955c3, type: 3}
     Threshold: 0.5
     strokes: 1
     orientationThreshold: 0.11
     distribution: []
-  - symbolName: espiral
     momentMagnitudes: []
+  - symbolName: espiral
+    useRotation: 1
     templateTexture: {fileID: 2800000, guid: ab2a3f738daa74c4ea5e8e2f0ce408eb, type: 3}
     Threshold: 0.5
     strokes: 1
     orientationThreshold: 0.1
     distribution: []
+    momentMagnitudes: []
+  - symbolName: Casita
+    useRotation: 1
+    templateTexture: {fileID: 2800000, guid: d1073cade5a8b0e4ea613a1ab95d1b99, type: 3}
+    Threshold: 0.5
+    strokes: 4
+    orientationThreshold: 0.145
+    distribution: []
+    momentMagnitudes: []
 --- !u!4 &585205193
 Transform:
   m_ObjectHideFlags: 0
@@ -1098,13 +1157,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 861158241}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 675175144}
-  m_Father: {fileID: 2023210001}
+  m_Father: {fileID: 1564906360}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1208,6 +1267,81 @@ MonoBehaviour:
   isPressed: 0
   dampenPress: 0
   sensitivity: 2
+--- !u!1 &1398940161
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1398940162}
+  - component: {fileID: 1398940164}
+  - component: {fileID: 1398940163}
+  m_Layer: 5
+  m_Name: Barrita Fondo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1398940162
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398940161}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 3.6086612, y: 0.34750107, z: 1.0265}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 370495670}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1398940163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398940161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1398940164
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398940161}
+  m_CullTransparentMesh: 1
 --- !u!1 &1450628281
 GameObject:
   m_ObjectHideFlags: 0
@@ -1345,6 +1479,43 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1564906359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1564906360}
+  m_Layer: 5
+  m_Name: UIDibujos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1564906360
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1564906359}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1665389700}
+  - {fileID: 861158242}
+  m_Father: {fileID: 2023210001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1665389697
 GameObject:
   m_ObjectHideFlags: 0
@@ -1469,12 +1640,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1665389697}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2023210001}
+  m_Father: {fileID: 1564906360}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1709,12 +1880,12 @@ GameObject:
   - component: {fileID: 1866314570}
   - component: {fileID: 1866314569}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Barrita
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1866314567
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1722,16 +1893,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1866314566}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3.5155003, y: 0.33853003, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2023210001}
+  m_Father: {fileID: 370495670}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -262, y: -118}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1866314569
@@ -1747,19 +1918,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.10895181, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 49ad6e152b479e94ebd66ed808aa010c, type: 3}
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
+  m_FillMethod: 0
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -1910,9 +2081,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1665389700}
-  - {fileID: 1866314567}
-  - {fileID: 861158242}
+  - {fileID: 370495670}
+  - {fileID: 1564906360}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1936,7 +2106,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2102226427
 MonoBehaviour:
   m_ObjectHideFlags: 0

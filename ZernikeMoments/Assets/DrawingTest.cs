@@ -29,59 +29,59 @@ public class DrawingTest : MonoBehaviour
 
     }
 
-    void Update()
-    {
-        //if (recognizebutton.isPressed)
-        //{
-        //    OnConfirmDrawing();
-        //}
-        if (Input.GetMouseButtonDown(0) && linerendererIndex < lineRenderer.Length)
-        {
-            isDrawing = true;
-            //lineRenderer[linerendererIndex].SetPosition(0, cam.ScreenToWorldPoint(Input.mousePosition));
+    //void Update()
+    //{
+    //    //if (recognizebutton.isPressed)
+    //    //{
+    //    //    OnConfirmDrawing();
+    //    //}
+    //    if (Input.GetMouseButtonDown(0) && linerendererIndex < lineRenderer.Length)
+    //    {
+    //        isDrawing = true;
+    //        //lineRenderer[linerendererIndex].SetPosition(0, cam.ScreenToWorldPoint(Input.mousePosition));
 
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            isDrawing = false;
+    //    }
+    //    else if (Input.GetMouseButtonUp(0))
+    //    {
+    //        isDrawing = false;
 
-            if (linerendererIndex < lineRenderer.Length)
-            {
-                linerendererIndex++;
-            }
+    //        if (linerendererIndex < lineRenderer.Length)
+    //        {
+    //            linerendererIndex++;
+    //        }
 
-            currentStrokePoints.Clear();
+    //        currentStrokePoints.Clear();
 
 
-            //   var result = recognizer.RecognizeCurrentDrawing();
-            //Debug.Log("Resultado reconocimiento: " + result);
-        }
+    //        //   var result = recognizer.RecognizeCurrentDrawing();
+    //        //Debug.Log("Resultado reconocimiento: " + result);
+    //    }
 
-        if (isDrawing)
-        {
-            Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
-            if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.1f)
-            {
-                //currentPoints.Add(pos);
-                //currentStrokePoints.Add(pos);
-                AddSmoothedPoint(pos);
-            }
-        }
+    //    if (isDrawing)
+    //    {
+    //        Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
+    //        if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.1f)
+    //        {
+    //            //currentPoints.Add(pos);
+    //            //currentStrokePoints.Add(pos);
+    //            AddSmoothedPoint(pos);
+    //        }
+    //    }
 
-        if (Input.GetKeyDown(KeyCode.Space) && currentPoints.Any())
-        {
-            var normalizedPositions = GestureProcessor.Normalize(currentPoints);
-            zRecognizer.OnDrawingFinished(normalizedPositions, linerendererIndex);
-            currentPoints.Clear();
-            linerendererIndex = 0;
-            foreach (var item in lineRenderer)
-            {
-                item.positionCount = 0;
-            }
+    //    if (Input.GetKeyDown(KeyCode.Space) && currentPoints.Any())
+    //    {
+    //        var normalizedPositions = GestureProcessor.Normalize(currentPoints);
+    //        zRecognizer.OnDrawingFinished(normalizedPositions, linerendererIndex);
+    //        currentPoints.Clear();
+    //        linerendererIndex = 0;
+    //        foreach (var item in lineRenderer)
+    //        {
+    //            item.positionCount = 0;
+    //        }
 
-        }
+    //    }
 
-    }
+    //}
 
     bool IsTouchOverUI(Touch touch)
     {
@@ -93,65 +93,65 @@ public class DrawingTest : MonoBehaviour
 
         return results.Count > 0;
     }
-//    void Update()
-//{
+    void Update()
+    {
 
-//        if (recognizebutton.isPressed)
-//        {
-//            OnConfirmDrawing();
-//        }
+        if (recognizebutton.isPressed)
+        {
+            OnConfirmDrawing();
+        }
 
 
-//    if (Input.touchCount > 0)
-//    {
-//        Touch touch = Input.GetTouch(0);
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
 
-//        //  ignorar si el toque está sobre UI
-//        if (IsTouchOverUI(touch))
-//            {
-//                //Debug.Log("TOCOBOTON");
-//                return;
-//            }
-            
+            //  ignorar si el toque está sobre UI
+            if (IsTouchOverUI(touch))
+            {
+                //Debug.Log("TOCOBOTON");
+                return;
+            }
 
-//        Vector2 pos = cam.ScreenToWorldPoint(touch.position);
 
-//        switch (touch.phase)
-//        {
-//            case TouchPhase.Began:
-//                if (linerendererIndex < lineRenderer.Length)
-//                {
-//                    isDrawing = true;
-//                    currentStrokePoints.Clear();
-//                }
-//                break;
+            Vector2 pos = cam.ScreenToWorldPoint(touch.position);
 
-//            case TouchPhase.Moved:
-//            case TouchPhase.Stationary:
-//                if (isDrawing)
-//                {
-//                    if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
-//                    {
-//                            AddSmoothedPoint(pos);
-                   
-//                    }
-//                }
-//                break;
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    if (linerendererIndex < lineRenderer.Length)
+                    {
+                        isDrawing = true;
+                        currentStrokePoints.Clear();
+                    }
+                    break;
 
-//            case TouchPhase.Ended:
-//            case TouchPhase.Canceled:
-//                isDrawing = false;
+                case TouchPhase.Moved:
+                case TouchPhase.Stationary:
+                    if (isDrawing)
+                    {
+                        if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
+                        {
+                            AddSmoothedPoint(pos);
 
-//                if (linerendererIndex < lineRenderer.Length)
-//                {
-//                    linerendererIndex++;
-//                }
+                        }
+                    }
+                    break;
 
-//                currentStrokePoints.Clear();
-//                break;
-//        }
-//    }
-//}
+                case TouchPhase.Ended:
+                case TouchPhase.Canceled:
+                    isDrawing = false;
+
+                    if (linerendererIndex < lineRenderer.Length)
+                    {
+                        linerendererIndex++;
+                    }
+
+                    currentStrokePoints.Clear();
+                    break;
+            }
+        }
+    }
     void AddSmoothedPoint(Vector3 newPoint)
     {
         currentStrokePoints.Add(newPoint);

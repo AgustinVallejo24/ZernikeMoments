@@ -18,19 +18,57 @@ public class ZernikeManager : MonoBehaviour
     public RenderTexture renderTexture;
 
     public bool rotationSensitivity;
+
+    public GameObject UICarga;
+    public Image barrita;
+    public GameObject UIDibujo;
+    public GameObject DrawingTest;
     // Almacena los descriptores (magnitudes de momentos) de los símbolos de referencia.
     [System.Serializable]
     public class ReferenceSymbol
     {
         public string symbolName;
-        public List<double> momentMagnitudes;
+        public bool useRotation = true;
         public Texture2D templateTexture;
         public float Threshold;
         public int strokes = 1;
         public float orientationThreshold;
+
         [HideInInspector]
         public float[] distribution;
-        
+
+        [HideInInspector]
+        public List<double> momentMagnitudes;
+
+
+
+
+        public Texture2D ResizeSelectedTextures(Texture2D originalTexture, int targetSize)
+        {
+            var selectedTextures = originalTexture;
+
+
+
+            // Crea un nuevo RenderTexture y renderiza la textura original en él
+            RenderTexture rt = new RenderTexture(targetSize, targetSize, 24);
+            Graphics.Blit(selectedTextures, rt);
+
+            // Crea una nueva Texture2D y lee los píxeles del RenderTexture
+            Texture2D resizedTexture = new Texture2D(targetSize, targetSize);
+            RenderTexture.active = rt;
+            resizedTexture.ReadPixels(new Rect(0, 0, targetSize, targetSize), 0, 0);
+            resizedTexture.Apply();
+
+
+            // Guarda la nueva textura redimensionada como PNG
+            byte[] bytes = resizedTexture.EncodeToPNG();
+
+
+            return resizedTexture;
+            //AssetDatabase.Refresh();
+            //EditorUtility.DisplayDialog("Success", "Templates resized successfully!", "OK");
+        }
+
     }
     public List<ReferenceSymbol> referenceSymbols;
 
@@ -44,22 +82,7 @@ public class ZernikeManager : MonoBehaviour
 
         StartCoroutine(Compute());
     }
-    Texture2D CaptureRenderTexture(RenderTexture rt)
-    {
-        RenderTexture.active = rt;
-        Texture2D tex = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
-        tex.ReadPixels(new UnityEngine.Rect(0, 0, rt.width, rt.height), 0, 0);
-        tex.Apply();
-        RenderTexture.active = null;
-        return tex;
-    }
 
-    // Este método se llamaría cuando el jugador termina un trazo.
-    //public void OnDrawingFinished(List<Vector2> finishedPoints)
-    //{
-    //    _currentStrokePoints = finishedPoints;
-    //    RecognizeSymbol();
-    //}
 
     public static Texture2D PreprocessTexture(Texture2D source, int size = 128, float threshold = 0.5f)
     {
@@ -138,13 +161,18 @@ public class ZernikeManager : MonoBehaviour
 
     IEnumerator Compute()
     {
+        float carga = 0;
+    
         foreach (var reference in referenceSymbols)
         {
+       
             if (reference.templateTexture != null)
             {
                 // Procesar la textura para obtener la matriz binaria
+                reference.templateTexture = reference.ResizeSelectedTextures(reference.templateTexture, 64);
+                Debug.Log(reference.templateTexture.height);
                 _processor.DrawTexture(reference.templateTexture);
-
+                
                 // Calcular la suma de todos los píxeles activos para la normalización
                 float totalPixels = _processor.GetActivePixelCount();
                 Debug.Log("Divido por " + totalPixels);
@@ -162,9 +190,17 @@ public class ZernikeManager : MonoBehaviour
 
                 reference.distribution = _processor.GetSymbolDistribution();
             }
+            carga += 1f/referenceSymbols.Count;
+
+       
+            barrita.fillAmount = carga;
+           
             yield return null;
         }
-
+        UICarga.SetActive(false);
+        UIDibujo.SetActive(true);
+        yield return new WaitForSeconds(.2f);
+        DrawingTest.SetActive(true);
     }
     public void OnDrawingFinished(List<Vector2> finishedPoints, int strokeQuantity)
     {
@@ -221,7 +257,7 @@ public class ZernikeManager : MonoBehaviour
         if (bestMatch != null && minDistance < bestMatch.Threshold)
         {
             // La forma coincide, ahora verificamos la orientación.
-            if(rotationSensitivity && bestMatch.orientationThreshold<360)
+            if(rotationSensitivity && bestMatch.useRotation)
             {
                 float distributionDiference = _processor.CompareAngularHistograms(bestMatch.distribution, playerDrawDistribution);
 
