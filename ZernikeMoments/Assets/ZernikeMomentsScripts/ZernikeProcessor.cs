@@ -5,7 +5,7 @@ public class ZernikeProcessor
 {
     private int _imageSize;
     private float[,] _binaryImage;
-
+    float[] angularHistogram;
     // Inicializa el procesador con el tamaño de la imagen.
     public ZernikeProcessor(int imageSize)
     {
@@ -83,7 +83,7 @@ public class ZernikeProcessor
                 Mathf.Clamp(y1, 0, _imageSize - 1)
             );
         }
-        _binaryImage = NormalizeThickness(_binaryImage, _imageSize, 4);
+        _binaryImage = NormalizeThicknessAndComputeAngularHistogram(_binaryImage, _imageSize, 3);
         ImprimirMimatriz(_binaryImage);
     }
     public float GetActivePixelCount()
@@ -213,7 +213,7 @@ public class ZernikeProcessor
                 }
             }
         }
-        _binaryImage = NormalizeThickness(_binaryImage, _imageSize, 4);
+        _binaryImage = NormalizeThicknessAndComputeAngularHistogram(_binaryImage, _imageSize, 3);
         ImprimirMimatriz(_binaryImage);
     }
 
@@ -280,48 +280,174 @@ public class ZernikeProcessor
                     float magnitude = Mathf.Sqrt(realMoment * realMoment + imagMoment * imagMoment);
                     float phase = Mathf.Atan2(imagMoment, realMoment);
                     moments.Add(new ZernikeMoment(magnitude, phase));
-                   
+
                 }
             }
         }
-          return moments.ToArray();
+        return moments.ToArray();
     }
-    public float CalculateOrientation()
+
+
+    public float CalculateStableOrientation()
     {
-        float m20 = 0f, m02 = 0f, m11 = 0f;
+        // --- PASO 1: CALCULAR EL CENTROIDE ---
         float totalPixels = GetActivePixelCount();
-        if (totalPixels == 0) return 0f;
+        if (totalPixels < 2) return 0f; // No hay orientación si hay 0 o 1 píxeles
 
-        // Calcular el centroide
-        float x_centroid = 0, y_centroid = 0;
+        Vector2 centroid = Vector2.zero;
         for (int y = 0; y < _imageSize; y++)
         {
             for (int x = 0; x < _imageSize; x++)
             {
-                x_centroid += x * _binaryImage[x, y];
-                y_centroid += y * _binaryImage[x, y];
+                if (_binaryImage[x, y] > 0)
+                {
+                    centroid.x += x;
+                    centroid.y += y;
+                }
             }
         }
-        x_centroid /= totalPixels;
-        y_centroid /= totalPixels;
+        centroid /= totalPixels;
 
-        // Calcular momentos centrales de segundo orden
+        // --- PASO 2: ENCONTRAR EL PUNTO MÁS LEJANO DEL CENTROIDE ---
+        Vector2 farthestPoint = Vector2.zero;
+        float maxDistanceSquared = -1f;
+
         for (int y = 0; y < _imageSize; y++)
         {
             for (int x = 0; x < _imageSize; x++)
             {
-                float normalizedX = x - x_centroid;
-                float normalizedY = y - y_centroid;
-
-                m20 += normalizedX * normalizedX * _binaryImage[x, y];
-                m02 += normalizedY * normalizedY * _binaryImage[x, y];
-                m11 += normalizedX * normalizedY * _binaryImage[x, y];
+                if (_binaryImage[x, y] > 0)
+                {
+                    // Usamos la distancia al cuadrado para evitar el coste de la raíz cuadrada
+                    float distanceSquared = (x - centroid.x) * (x - centroid.x) + (y - centroid.y) * (y - centroid.y);
+                    if (distanceSquared > maxDistanceSquared)
+                    {
+                        maxDistanceSquared = distanceSquared;
+                        farthestPoint.x = x;
+                        farthestPoint.y = y;
+                    }
+                }
             }
         }
 
-        // Calcular la orientación en radianes
-        return 0.5f * Mathf.Atan2(2 * m11, m20 - m02);
+        // --- PASO 3: CALCULAR EL ÁNGULO DEL VECTOR RESULTANTE ---
+        Vector2 orientationVector = farthestPoint - centroid;
+
+        // Devolvemos el ángulo en grados. 0° es a la derecha, 90° es arriba.
+        return Mathf.Atan2(orientationVector.y, orientationVector.x) * Mathf.Rad2Deg;
     }
+
+
+    public float CalculateWeightedAsymmetryOrientation()
+    {
+        // --- PASO 1: CALCULAR EL CENTROIDE ---
+        float totalPixels = GetActivePixelCount();
+        if (totalPixels < 2) return 0f;
+
+        Vector2 centroid = Vector2.zero;
+        // Usamos una lista para no tener que recorrer la imagen dos veces
+        List<Vector2Int> activePixels = new List<Vector2Int>();
+
+        for (int y = 0; y < _imageSize; y++)
+        {
+            for (int x = 0; x < _imageSize; x++)
+            {
+                if (_binaryImage[x, y] > 0)
+                {
+                    centroid.x += x;
+                    centroid.y += y;
+                    activePixels.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+        centroid /= totalPixels;
+
+        // --- PASO 2: CALCULAR EL VECTOR DE ORIENTACIÓN SUMANDO TODOS LOS VECTORES PONDERADOS ---
+        Vector2 totalOrientationVector = Vector2.zero;
+
+        foreach (Vector2Int pixelPos in activePixels)
+        {
+            // Vector desde el centroide al píxel actual
+            Vector2 vectorToPixel = new Vector2(pixelPos.x - centroid.x, pixelPos.y - centroid.y);
+
+            // El peso es la magnitud (distancia) del propio vector.
+            // Esto le da más importancia a los puntos lejanos.
+            float weight = vectorToPixel.magnitude;
+
+            if (weight > 0.001f) // Evitar multiplicar por cero
+            {
+                // Sumamos el vector, ponderado por su propia magnitud.
+                totalOrientationVector += vectorToPixel * weight;
+            }
+        }
+
+        // --- PASO 3: OBTENER EL ÁNGULO DEL VECTOR FINAL ---
+        // Si la forma es perfectamente simétrica (ej. un círculo), el vector total será (0,0).
+        if (totalOrientationVector.magnitude < 0.001f)
+        {
+            return 0f; // No hay una orientación definida
+        }
+
+        // Devolvemos el ángulo en grados.
+        return Mathf.Atan2(totalOrientationVector.y, totalOrientationVector.x) * Mathf.Rad2Deg;
+    }
+    public float CalculateHybridOrientation()
+    {
+        // --- PASO 0: OBTENER DATOS BÁSICOS ---
+        float totalPixels = GetActivePixelCount();
+        if (totalPixels < 3) return 0f; // Necesitamos al menos 3 píxeles para una orientación significativa
+        Vector2 centroid = Vector2.zero;
+        List<Vector2Int> activePixels = new List<Vector2Int>();
+        for (int y = 0; y < _imageSize; y++)
+        {
+            for (int x = 0; x < _imageSize; x++)
+            {
+                if (_binaryImage[x, y] > 0)
+                {
+                    centroid.x += x;
+                    centroid.y += y;
+                    activePixels.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+        centroid /= totalPixels;
+
+        // --- PASO 1: INTENTAR CON EL MÉTODO DE ASIMETRÍA PONDERADA ---
+        Vector2 totalOrientationVector = Vector2.zero;
+        float totalWeight = 0f;
+        foreach (Vector2Int pixelPos in activePixels)
+        {
+            Vector2 vectorToPixel = new Vector2(pixelPos.x - centroid.x, pixelPos.y - centroid.y);
+            float weight = vectorToPixel.magnitude;
+            if (weight > 0.001f)
+            {
+                totalOrientationVector += vectorToPixel * weight;
+                totalWeight += weight;
+            }
+        }
+
+        // --- PASO 2: DECIDIR SI EL RESULTADO DE ASIMETRÍA ES CONFIABLE ---
+        float asymmetryScore = (totalWeight > 0) ? totalOrientationVector.magnitude / totalWeight : 0;
+        // Este umbral es clave. Puede que necesites ajustarlo.
+        // Un valor bajo significa que muchas formas se considerarán simétricas.
+        // Un valor alto significa que se confiará más en el método de asimetría.
+
+        float symmetryThreshold = 2.5f;
+        if (asymmetryScore > symmetryThreshold)
+        {
+            Debug.Log("FORMA ASIMETRICA - Usando Vector Ponderado.");
+            return Mathf.Atan2(totalOrientationVector.y, totalOrientationVector.x) * Mathf.Rad2Deg;
+        }
+        else
+        {
+            Debug.Log("FORMA SIMETRICA - Usando Eje de Elongación.");
+            // --- CAMBIO AQUÍ ---
+            // Llamamos a nuestro nuevo y mejorado método para formas simétricas.
+            return CalculateElongationAxis(activePixels);
+        }
+    }
+
+
     // Implementación de los polinomios radiales R_n^m(rho)
     private float RadialPolynomial(int n, int m, float rho)
     {
@@ -372,19 +498,41 @@ public class ZernikeProcessor
     }
 
     // Función principal: devuelve una matriz con grosor uniforme (targetThickness en píxeles)
-    public float[,] NormalizeThickness(float[,] binaryMatrix, int imageSize, int targetThickness)
+    public float[,] NormalizeThicknessAndComputeAngularHistogram(
+     float[,] binaryMatrix,
+     int imageSize,
+     int targetThickness,
+       int sectors = 16,
+    int rings = 3)
     {
+        angularHistogram = new float[sectors * rings];
+
         if (imageSize <= 0) return binaryMatrix;
         if (targetThickness <= 1)
-            return BoolToFloat(ZhangSuenThinning(ToBoolMatrix(binaryMatrix, imageSize), imageSize), imageSize);
+        {
+            bool[,] thin = ZhangSuenThinning(ToBoolMatrix(binaryMatrix, imageSize), imageSize);
+            return BoolToFloat(thin, imageSize);
+        }
 
         bool[,] bin = ToBoolMatrix(binaryMatrix, imageSize);
         bool[,] skeleton = ZhangSuenThinning(bin, imageSize);
 
-        // Calcular radio del disco (aprox.) — el grosor final será ~ 2*radius + 1
-        int radius = Mathf.Max(0, Mathf.RoundToInt((targetThickness - 1) / 2f));
+        // --- 1) centroide ---
+        float cx = 0f, cy = 0f;
+        int skeletonCount = 0;
+        for (int y = 0; y < imageSize; y++)
+            for (int x = 0; x < imageSize; x++)
+                if (skeleton[x, y]) { cx += x; cy += y; skeletonCount++; }
 
-        // Precomputar offsets de disco (para acelerar)
+        if (skeletonCount > 0)
+        {
+            cx /= skeletonCount;
+            cy /= skeletonCount;
+        }
+        else { cx = imageSize / 2f; cy = imageSize / 2f; }
+
+        // --- 2) offsets de disco ---
+        int radius = Mathf.Max(0, Mathf.RoundToInt((targetThickness - 1) / 2f));
         List<Vector2Int> offsets = new List<Vector2Int>();
         int r2 = radius * radius;
         for (int dy = -radius; dy <= radius; dy++)
@@ -392,25 +540,101 @@ public class ZernikeProcessor
                 if (dx * dx + dy * dy <= r2)
                     offsets.Add(new Vector2Int(dx, dy));
 
-        float[,] outM = new float[imageSize, imageSize];
+        float[,] thickened = new float[imageSize, imageSize];
+        bool[,] visited = new bool[imageSize, imageSize];
+        int totalAdded = 0;
+
+        // --- 3) expandir skeleton y llenar histograma polar ---
+        float maxDist = Mathf.Sqrt(imageSize * imageSize + imageSize * imageSize) / 2f;
 
         for (int y = 0; y < imageSize; y++)
         {
             for (int x = 0; x < imageSize; x++)
             {
                 if (!skeleton[x, y]) continue;
-                // "Pintar" el disco alrededor del pixel de la skeleton
-                foreach (var off in offsets)
+
+                foreach (var o in offsets)
                 {
-                    int px = x + off.x;
-                    int py = y + off.y;
-                    if (px >= 0 && px < imageSize && py >= 0 && py < imageSize)
-                        outM[px, py] = 1f;
+                    int px = x + o.x;
+                    int py = y + o.y;
+                    if (px < 0 || px >= imageSize || py < 0 || py >= imageSize) continue;
+
+                    if (!visited[px, py])
+                    {
+                        visited[px, py] = true;
+                        thickened[px, py] = 1f;
+                        totalAdded++;
+
+                        // ---- Histograma polar ----
+                        float dx = px - cx;
+                        float dy = py - cy;
+                        float angle = Mathf.Atan2(dy, dx); // -pi..pi
+                        float dist = Mathf.Sqrt(dx * dx + dy * dy);
+
+                        int sector = (int)((angle + Mathf.PI) / (2f * Mathf.PI) * sectors);
+                        sector = (sector % sectors + sectors) % sectors;
+
+                        int ring = Mathf.Min(rings - 1, (int)(dist / maxDist * rings));
+
+                        int index = ring * sectors + sector;
+                        angularHistogram[index] += 1f;
+                    }
                 }
             }
         }
 
-        return outM;
+        // --- 4) normalizar histograma ---
+        if (totalAdded > 0)
+        {
+            for (int i = 0; i < angularHistogram.Length; i++)
+                angularHistogram[i] /= totalAdded;
+        }
+
+        return thickened;
+    }
+
+    public  float CompareAngularHistograms(float[] histA, float[] histB, bool rotationInvariant = false)
+    {
+        int sectors = 16;
+        if (histA.Length != histB.Length) throw new ArgumentException("Length mismatch");
+        int rings = histA.Length / sectors;
+
+        float best = float.MaxValue;
+
+        if (!rotationInvariant)
+        {
+            float sum = 0f;
+            for (int i = 0; i < histA.Length; i++)
+            {
+                float d = histA[i] - histB[i];
+                sum += d * d;
+            }
+            return Mathf.Sqrt(sum);
+        }
+        else
+        {
+            // probamos todos los shifts angulares, pero mantenemos los anillos fijos
+            for (int shift = 0; shift < sectors; shift++)
+            {
+                float sum = 0f;
+                for (int r = 0; r < rings; r++)
+                {
+                    for (int s = 0; s < sectors; s++)
+                    {
+                        int idxA = r * sectors + s;
+                        int idxB = r * sectors + ((s + shift) % sectors);
+                        float d = histA[idxA] - histB[idxB];
+                        sum += d * d;
+                    }
+                }
+                best = Mathf.Min(best, sum);
+            }
+            return Mathf.Sqrt(best);
+        }
+    }
+    public float[] GetSymbolDistribution()
+    {
+        return angularHistogram;
     }
 
     // --- Zhang-Suen thinning (devuelve skeleton como bool[,]) ---
@@ -530,4 +754,76 @@ public class ZernikeProcessor
         }
         return transitions;
     }
+
+    // ZernikeProcessor.cs
+
+    // REEMPLAZA CalculateMinBoundingBoxOrientation CON ESTA FUNCIÓN
+    // EN: ZernikeProcessor.cs
+
+    public float CalculateElongationAxis(List<Vector2Int> activePixels)
+    {
+        if (activePixels.Count < 3) return 0f;
+
+        float minArea = float.MaxValue;
+        float bestAngleDeg = 0f;
+
+        // --- NUEVO: Necesitamos guardar las dimensiones de la mejor caja ---
+        float finalWidth = 0f;
+        float finalHeight = 0f;
+
+        // Buscamos en un rango de 180° para encontrar el eje
+        for (float angleDeg = 0f; angleDeg < 180f; angleDeg += 2.5f)
+        {
+            float angleRad = angleDeg * Mathf.Deg2Rad;
+            float cosA = Mathf.Cos(angleRad);
+            float sinA = Mathf.Sin(angleRad);
+
+            float minX = float.MaxValue, maxX = float.MinValue;
+            float minY = float.MaxValue, maxY = float.MinValue;
+
+            foreach (var pixel in activePixels)
+            {
+                float rx = pixel.x * cosA - pixel.y * sinA;
+                float ry = pixel.x * sinA + pixel.y * cosA;
+
+                if (rx < minX) minX = rx;
+                if (rx > maxX) maxX = rx;
+                if (ry < minY) minY = ry;
+                if (ry > maxY) maxY = ry;
+            }
+
+            float width = maxX - minX;
+            float height = maxY - minY;
+            float area = width * height;
+
+            if (area < minArea)
+            {
+                minArea = area;
+                bestAngleDeg = angleDeg;
+                // --- NUEVO: Guardamos las dimensiones al encontrar una caja mejor ---
+                finalWidth = width;
+                finalHeight = height;
+            }
+        }
+
+        // --- LA CORRECCIÓN CLAVE ---
+        // Después de encontrar la rotación de la caja mínima, comprobamos si el objeto
+        // es "alto" o "ancho" dentro de esa caja para determinar su orientación final.
+        float orientation;
+        if (finalHeight > finalWidth)
+        {
+            // La forma es más alta que ancha, su eje principal está 90 grados más allá del ángulo de la caja.
+            orientation = bestAngleDeg + 90f;
+        }
+        else
+        {
+            // La forma es más ancha que alta, su eje coincide con el ángulo de la caja.
+            orientation = bestAngleDeg;
+        }
+
+        // Normalizamos el resultado final para que esté siempre en el rango [0, 180)
+        // Esto maneja casos donde el ángulo podría ser > 180.
+        return (orientation % 180f + 180f) % 180f;
+    }
+
 }

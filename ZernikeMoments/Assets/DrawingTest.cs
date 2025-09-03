@@ -62,10 +62,9 @@ public class DrawingTest : MonoBehaviour
             Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
             if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.1f)
             {
-                currentPoints.Add(pos);
-                currentStrokePoints.Add(pos);
-                lineRenderer[linerendererIndex].positionCount = currentStrokePoints.Count;
-                lineRenderer[linerendererIndex].SetPosition(currentStrokePoints.Count - 1, pos);
+                //currentPoints.Add(pos);
+                //currentStrokePoints.Add(pos);
+                AddSmoothedPoint(pos);
             }
         }
 

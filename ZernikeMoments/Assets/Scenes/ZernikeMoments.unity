@@ -709,47 +709,78 @@ MonoBehaviour:
   maxMomentOrder: 10
   recognitionThreshold: 0.5
   renderTexture: {fileID: 0}
+  rotationSensitivity: 1
   referenceSymbols:
   - symbolName: C
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: b6bee689972544a4ebd7f109c6a4443c, type: 3}
     Threshold: 0.5
     strokes: 1
+    orientationThreshold: 0.11
+    distribution: []
   - symbolName: V
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: 2748993ccbbc8d9469867ab62cbd661e, type: 3}
     Threshold: 0.4
     strokes: 1
+    orientationThreshold: 0.11
+    distribution: []
   - symbolName: Circulo
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: 7e89d3459617602479251a10e2ccdb1b, type: 3}
     Threshold: 0.5
     strokes: 1
+    orientationThreshold: 360
+    distribution: []
   - symbolName: Cuadrado
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: 671bd6ee381e12e45820f8e9a312f6d2, type: 3}
     Threshold: 0.35
     strokes: 1
+    orientationThreshold: 90
+    distribution: []
   - symbolName: Cuadrado
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: d5fc5933d7ff7c9459a0fc7d76cfa913, type: 3}
     Threshold: 0.35
     strokes: 1
+    orientationThreshold: 90
+    distribution: []
   - symbolName: Cuadrado
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: acd80a22e8c88c44eae4da33ef26509f, type: 3}
     Threshold: 0.35
     strokes: 1
+    orientationThreshold: 0.05
+    distribution: []
   - symbolName: Copa
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: abc109f8ea4bb414ba1de72515d0b19e, type: 3}
-    Threshold: 1
+    Threshold: 0.45
     strokes: 3
+    orientationThreshold: 0.21
+    distribution: []
   - symbolName: inf
     momentMagnitudes: []
     templateTexture: {fileID: 2800000, guid: e67d3c7248954c844950d818949726de, type: 3}
     Threshold: 0.5
     strokes: 1
+    orientationThreshold: 0.15
+    distribution: []
+  - symbolName: Triangulo
+    momentMagnitudes: []
+    templateTexture: {fileID: 2800000, guid: 159623a8ee604da498bb4f89f1c955c3, type: 3}
+    Threshold: 0.5
+    strokes: 1
+    orientationThreshold: 0.11
+    distribution: []
+  - symbolName: espiral
+    momentMagnitudes: []
+    templateTexture: {fileID: 2800000, guid: ab2a3f738daa74c4ea5e8e2f0ce408eb, type: 3}
+    Threshold: 0.5
+    strokes: 1
+    orientationThreshold: 0.1
+    distribution: []
 --- !u!4 &585205193
 Transform:
   m_ObjectHideFlags: 0
