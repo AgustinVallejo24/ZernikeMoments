@@ -12,7 +12,102 @@ public class ZernikeProcessor
         _imageSize = imageSize;
         _binaryImage = new float[imageSize, imageSize];
     }
+    private void DrawAALine(int x0, int y0, int x1, int y1)
+    {
+        // Asegurar que los puntos estén dentro de los límites de la imagen
+        x0 = Mathf.Clamp(x0, 0, _imageSize - 1);
+        y0 = Mathf.Clamp(y0, 0, _imageSize - 1);
+        x1 = Mathf.Clamp(x1, 0, _imageSize - 1);
+        y1 = Mathf.Clamp(y1, 0, _imageSize - 1);
 
+        bool steep = Mathf.Abs(y1 - y0) > Mathf.Abs(x1 - x0);
+        if (steep)
+        {
+            // Intercambiar x e y para manejar líneas con pendiente > 1
+            int temp = x0; x0 = y0; y0 = temp;
+            temp = x1; x1 = y1; y1 = temp;
+        }
+
+        if (x0 > x1)
+        {
+            // Asegurar que x0 <= x1
+            int temp = x0; x0 = x1; x1 = temp;
+            temp = y0; y0 = y1; y1 = temp;
+        }
+
+        int dx = x1 - x0;
+        int dy = y1 - y0;
+        float gradient = dx == 0 ? 1f : (float)dy / dx;
+
+        // Primer píxel
+        float xEnd = x0;
+        float yEnd = y0;
+        float xGap = 1f - (x0 + 0.5f - Mathf.Floor(x0 + 0.5f));
+        int xPx1 = x0;
+        int yPx1 = Mathf.FloorToInt(yEnd);
+        float intensity1 = (1f - Mathf.Abs(yEnd - yPx1)) * xGap;
+        float intensity2 = Mathf.Abs(yEnd - yPx1) * xGap;
+
+        if (steep)
+        {
+            SetPixelSafe(yPx1, xPx1, intensity1);
+            SetPixelSafe(yPx1 + (yEnd > yPx1 ? 1 : -1), xPx1, intensity2);
+        }
+        else
+        {
+            SetPixelSafe(xPx1, yPx1, intensity1);
+            SetPixelSafe(xPx1, yPx1 + (yEnd > yPx1 ? 1 : -1), intensity2);
+        }
+
+        // Bucle principal
+        float intery = yEnd + gradient;
+        for (int x = x0 + 1; x < x1; x++)
+        {
+            int y = Mathf.FloorToInt(intery);
+            float intensity = 1f - Mathf.Abs(intery - y);
+            if (steep)
+            {
+                SetPixelSafe(y, x, intensity);
+                SetPixelSafe(y + (intery > y ? 1 : -1), x, 1f - intensity);
+            }
+            else
+            {
+                SetPixelSafe(x, y, intensity);
+                SetPixelSafe(x, y + (intery > y ? 1 : -1), 1f - intensity);
+            }
+            intery += gradient;
+        }
+
+        // Último píxel
+        xEnd = x1;
+        yEnd = y1;
+        xGap = x1 + 0.5f - Mathf.Floor(x1 + 0.5f);
+        int xPx2 = x1;
+        int yPx2 = Mathf.FloorToInt(yEnd);
+        intensity1 = (1f - Mathf.Abs(yEnd - yPx2)) * xGap;
+        intensity2 = Mathf.Abs(yEnd - yPx2) * xGap;
+
+        if (steep)
+        {
+            SetPixelSafe(yPx2, xPx2, intensity1);
+            SetPixelSafe(yPx2 + (yEnd > yPx2 ? 1 : -1), xPx2, intensity2);
+        }
+        else
+        {
+            SetPixelSafe(xPx2, yPx2, intensity1);
+            SetPixelSafe(xPx2, yPx2 + (yEnd > yPx2 ? 1 : -1), intensity2);
+        }
+    }
+
+    // Función auxiliar para asignar intensidad a un píxel con seguridad
+    private void SetPixelSafe(int x, int y, float intensity)
+    {
+        if (x >= 0 && x < _imageSize && y >= 0 && y < _imageSize)
+        {
+            // Acumular intensidad (suma en lugar de sobrescribir, útil para líneas que se cruzan)
+            _binaryImage[x, y] = Mathf.Min(_binaryImage[x, y] + intensity, 1f);
+        }
+    }
 
     // Dibuja el trazo del jugador en la imagen binaria.
     private void DrawLine(int x0, int y0, int x1, int y1)
@@ -34,58 +129,68 @@ public class ZernikeProcessor
             if (e2 < dx) { err += dx; y0 += sy; }
         }
     }
-
-    public void DrawStroke(List<Vector2> points)
+    public void ClearImage()
     {
-        // Limpiar
         for (int y = 0; y < _imageSize; y++)
+        {
             for (int x = 0; x < _imageSize; x++)
+            {
                 _binaryImage[x, y] = 0;
+            }
+        }
+    }
+    public void DrawStrokes(List<List<Vector2>> allStrokes)
+    {
+        // 1. Limpia la imagen al principio
+        ClearImage();
 
-        if (points.Count == 0) return;
+        if (allStrokes.Count == 0) return;
 
-        // Normalizar a 0–imageSize
+        // 2. Encuentra los límites de TODOS los puntos para una normalización correcta
         float minX = float.MaxValue, minY = float.MaxValue;
         float maxX = float.MinValue, maxY = float.MinValue;
-        foreach (var p in points)
+        foreach (var stroke in allStrokes)
         {
-            if (p.x < minX) minX = p.x;
-            if (p.y < minY) minY = p.y;
-            if (p.x > maxX) maxX = p.x;
-            if (p.y > maxY) maxY = p.y;
+            foreach (var p in stroke)
+            {
+                if (p.x < minX) minX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y > maxY) maxY = p.y;
+            }
         }
-        minX -= .6f;
-        minY -= .6f;
-        maxX += .6f;
-        maxY += .6f;
 
-        float scale = Mathf.Min(
-            (_imageSize - 1) / (maxX - minX),
-            (_imageSize - 1) / (maxY - minY)
-        );
+        if (minX > maxX) return;
 
-        // 2. Calcular offsets para centrar el dibujo
+        // Margen
+        minX -= .6f; minY -= .6f;
+        maxX += .6f; maxY += .6f;
+
+        // 3. Calcula escala y offsets UNA SOLA VEZ para el conjunto completo
+        float scale = Mathf.Min((_imageSize - 1) / (maxX - minX), (_imageSize - 1) / (maxY - minY));
         float offsetX = (_imageSize - (maxX - minX) * scale) / 2f;
         float offsetY = (_imageSize - (maxY - minY) * scale) / 2f;
 
-        // 3. Dibujar líneas con esa escala y offset
-        for (int i = 0; i < points.Count - 1; i++)
+        // 4. Dibuja cada trazo por separado
+        foreach (var stroke in allStrokes) // <--- BUCLE EXTERNO (POR CADA TRAZO)
         {
-            int x0 = Mathf.RoundToInt((points[i].x - minX) * scale + offsetX);
-            int y0 = Mathf.RoundToInt((points[i].y - minY) * scale + offsetY);
-            int x1 = Mathf.RoundToInt((points[i + 1].x - minX) * scale + offsetX);
-            int y1 = Mathf.RoundToInt((points[i + 1].y - minY) * scale + offsetY);
+            // BUCLE INTERNO (DENTRO DE UN TRAZO)
+            for (int i = 0; i < stroke.Count - 1; i++)
+            {
+                int x0 = Mathf.RoundToInt((stroke[i].x - minX) * scale + offsetX);
+                int y0 = Mathf.RoundToInt((stroke[i].y - minY) * scale + offsetY);
+                int x1 = Mathf.RoundToInt((stroke[i + 1].x - minX) * scale + offsetX);
+                int y1 = Mathf.RoundToInt((stroke[i + 1].y - minY) * scale + offsetY);
 
-            DrawLine(
-                Mathf.Clamp(x0, 0, _imageSize - 1),
-                Mathf.Clamp(y0, 0, _imageSize - 1),
-                Mathf.Clamp(x1, 0, _imageSize - 1),
-                Mathf.Clamp(y1, 0, _imageSize - 1)
-            );
+                DrawAALine(x0, y0, x1, y1); // No une el final de este trazo con el inicio del siguiente
+            }
         }
+
+        // 5. Procesa la imagen final con todos los trazos ya dibujados
         _binaryImage = NormalizeThicknessAndComputeAngularHistogram(_binaryImage, _imageSize, 3);
         ImprimirMimatriz(_binaryImage);
     }
+
     public float GetActivePixelCount()
     {
         float count = 0;
@@ -193,87 +298,118 @@ public class ZernikeProcessor
     public ZernikeMoment[] ComputeZernikeMoments(int maxN)
     {
         List<ZernikeMoment> moments = new List<ZernikeMoment>();
-        float radius = _imageSize / 2.0f;
-        int cantidad = 0;
+        int size = _imageSize;
+
+        // 0) centroid (peso por intensidad)
+        double cx = 0.0, cy = 0.0, mass = 0.0;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                double v = _binaryImage[x, y];
+                mass += v;
+                cx += x * v;
+                cy += y * v;
+            }
+        }
+        if (mass > 0.0) { cx /= mass; cy /= mass; }
+        else { cx = size / 2.0; cy = size / 2.0; } // fallback
+
+        // 1) radio max relativo al centroide (para normalizar a disco unidad)
+        double maxR = 0.0;
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                if (_binaryImage[x, y] > 0.0)
+                {
+                    double dx = x - cx;
+                    double dy = y - cy;
+                    double d = Math.Sqrt(dx * dx + dy * dy);
+                    if (d > maxR) maxR = d;
+                }
+        if (maxR < 1e-6) maxR = Math.Max(size / 2.0, 1.0);
+
+        // 2) contar (suma de intensidades) dentro del disco unidad para normaliza
+        double massInDisk = 0.0;
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                double xN = (x - cx) / maxR;
+                double yN = (y - cy) / maxR;
+                double rho = Math.Sqrt(xN * xN + yN * yN);
+                if (rho <= 1.0) massInDisk += _binaryImage[x, y];
+            }
+        }
+        double deltaA = massInDisk > 0.0 ? (1.0 / massInDisk) : (1.0 / (size * size));
+
+        // 3) cálculo de momentos (usando double para más precisión)
         for (int n = 0; n <= maxN; n++)
         {
             for (int m = -n; m <= n; m++)
             {
-                if ((n - Mathf.Abs(m)) % 2 == 0) // Condición de paridad para los polinomios
+                if ((n - Math.Abs(m)) % 2 != 0) continue;
+
+                double realAcc = 0.0;
+                double imagAcc = 0.0;
+
+                for (int y = 0; y < size; y++)
                 {
-                    float realMoment = 0f;
-                    float imagMoment = 0f;
-
-                    for (int y = 0; y < _imageSize; y++)
+                    for (int x = 0; x < size; x++)
                     {
-                        for (int x = 0; x < _imageSize; x++)
-                        {
-                            cantidad++;
-                            if (_binaryImage[x, y] > 0)
-                            {
-                                // Conversión de coordenadas cartesianas a polares normalizadas
-                                float xNorm = (x - radius) / radius;
-                                float yNorm = (y - radius) / radius;
-                                float rho = Mathf.Sqrt(xNorm * xNorm + yNorm * yNorm);
+                        double val = _binaryImage[x, y];
+                        if (val <= 0.0) continue;
 
-                                if (rho <= 1.0f)
-                                {
-                                    float theta = Mathf.Atan2(yNorm, xNorm);
+                        double xN = (x - cx) / maxR;
+                        double yN = (y - cy) / maxR;
+                        double rho = Math.Sqrt(xN * xN + yN * yN);
+                        if (rho > 1.0) continue;
 
-                                    // Cálculo del polinomio radial
-                                    float radialPoly = RadialPolynomial(n, Mathf.Abs(m), rho);
+                        double theta = Math.Atan2(yN, xN);
+                        double radial = RadialPolynomialDouble(n, Math.Abs(m), rho);
 
-                                    // Sumatoria
-                                    realMoment += radialPoly * Mathf.Cos(m * theta);
-                                    imagMoment -= radialPoly * Mathf.Sin(m * theta);
-                                }
-                            }
-                        }
+                        
+                        realAcc += val * radial * Math.Cos(m * theta);
+                        imagAcc -= val * radial * Math.Sin(m * theta); // nota el signo para conj
                     }
-
-                    // Cálculo de la magnitud y la fase
-                    float magnitude = Mathf.Sqrt(realMoment * realMoment + imagMoment * imagMoment);
-                    float phase = Mathf.Atan2(imagMoment, realMoment);
-                    moments.Add(new ZernikeMoment(magnitude, phase));
-
                 }
+
+                double prefactor = (n + 1.0) / Math.PI;
+                realAcc *= prefactor * deltaA;
+                imagAcc *= prefactor * deltaA;
+
+                double magnitude = Math.Sqrt(realAcc * realAcc + imagAcc * imagAcc);
+                double phase = Math.Atan2(imagAcc, realAcc);
+
+                moments.Add(new ZernikeMoment((float)magnitude, (float)phase));
             }
         }
+
         return moments.ToArray();
     }
 
-
-    
-    // Implementación de los polinomios radiales R_n^m(rho)
-    private float RadialPolynomial(int n, int m, float rho)
+    // Radial polynomial en double
+    private double RadialPolynomialDouble(int n, int m, double rho)
     {
-        float sum = 0f;
-        int s_limit = (n - m) / 2;
-
-        for (int s = 0; s <= s_limit; s++)
+        double sum = 0.0;
+        int sLimit = (n - m) / 2;
+        for (int s = 0; s <= sLimit; s++)
         {
-            float term = Mathf.Pow(-1, s) *
-                         Factorial(n - s) /
-                         (Factorial(s) * Factorial((n + m) / 2 - s) * Factorial((n - m) / 2 - s)) *
-                         Mathf.Pow(rho, n - 2 * s);
+            double sign = (s % 2 == 0) ? 1.0 : -1.0;
+            double num = FactorialDouble(n - s);
+            double denom = FactorialDouble(s) * FactorialDouble((n + m) / 2 - s) * FactorialDouble((n - m) / 2 - s);
+            double term = sign * (num / denom) * Math.Pow(rho, n - 2 * s);
             sum += term;
         }
         return sum;
     }
 
-    // Función de factorial para el cálculo de los polinomios radiales
-    private long Factorial(int n)
+    private double FactorialDouble(int n)
     {
-        if (n < 0) return 0;
-        if (n == 0) return 1;
-        long result = 1;
-        for (int i = 1; i <= n; i++)
-        {
-            result *= i;
-        }
-        return result;
+        if (n < 0) return 1.0;
+        double r = 1.0;
+        for (int i = 2; i <= n; i++) r *= i;
+        return r;
     }
-
     private bool[,] ToBoolMatrix(float[,] src, int size)
     {
         bool[,] b = new bool[size, size];

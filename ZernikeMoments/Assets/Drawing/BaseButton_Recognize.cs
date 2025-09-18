@@ -11,6 +11,9 @@ public class BaseButton_Recognize : MonoBehaviour
     public float dampenPress = 0;   //this returns 1 if the button is pressed after a short delay.
     public float sensitivity = 2f;  //How fast the above float turns to 1
     // Start is called before the first frame update
+
+    public delegate void ButtonAction();
+    public ButtonAction buttonAction;
     void Start()
     {
         SetUpButton();              //we set up our button eventTriggers
@@ -55,6 +58,7 @@ public class BaseButton_Recognize : MonoBehaviour
     public void onClickDown()
     {
         isPressed = true;
+        buttonAction.Invoke();
     }
 
     public void onClickUp()

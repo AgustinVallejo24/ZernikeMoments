@@ -7,15 +7,167 @@ public static class GestureProcessor
 
     public static List<Vector2> Normalize(List<Vector2> points)
     {
-        var resampled = Resample(points, 64);
+      //  var resampled = Resample(points, 64);
         //var reorganized = Reorganize(resampled);
         //var rotated = RotateToZero(reorganized);
-        var scaled = ScaleToSquare(resampled, 6f);
+        var scaled = ScaleToSquare(points, 9f);
         var translated = TranslateToOrigin(scaled);
+        var smoothed = Simplify(translated,0.1f);
         // var reorganized = Reorganize(translated);
         return translated;
     }
 
+    public static List<Vector2> Simplify(List<Vector2> points, float epsilon, float angleThreshold = 170f)
+    {
+        if (points == null || points.Count < 3)
+        {
+            return new List<Vector2>(points);
+        }
+
+        // Find indices of sharp points
+        List<int> sharpIndices = new List<int> { 0 }; // Start point
+        float sharpTurnThreshold = 180f - angleThreshold;
+
+        for (int i = 1; i < points.Count - 1; i++)
+        {
+            Vector2 incoming = points[i] - points[i - 1];
+            Vector2 outgoing = points[i + 1] - points[i];
+
+            if (incoming.sqrMagnitude == 0f || outgoing.sqrMagnitude == 0f)
+            {
+                continue; // Skip if duplicate points
+            }
+
+            float turnAngle = Vector2.Angle(incoming, outgoing);
+
+            if (turnAngle > sharpTurnThreshold)
+            {
+                sharpIndices.Add(i);
+            }
+        }
+        sharpIndices.Add(points.Count - 1); // End point
+
+        // Simplify each segment between sharp points
+        List<Vector2> simplified = new List<Vector2>();
+
+        for (int s = 0; s < sharpIndices.Count - 1; s++)
+        {
+            int startIdx = sharpIndices[s];
+            int endIdx = sharpIndices[s + 1];
+            List<Vector2> segment = points.GetRange(startIdx, endIdx - startIdx + 1);
+            List<Vector2> simplifiedSegment = RamerDouglasPeucker(segment, epsilon);
+
+            // Add the simplified segment, avoiding duplicating shared points
+            if (s == 0)
+            {
+                simplified.AddRange(simplifiedSegment);
+            }
+            else
+            {
+                simplified.AddRange(simplifiedSegment.GetRange(1, simplifiedSegment.Count - 1));
+            }
+        }
+
+        return simplified;
+    }
+
+    private static List<Vector2> RamerDouglasPeucker(List<Vector2> points, float epsilon)
+    {
+        if (points.Count < 3)
+        {
+            return new List<Vector2>(points);
+        }
+
+        // Find the point with the maximum distance from the line between start and end
+        float maxDistance = 0f;
+        int maxIndex = 0;
+        Vector2 start = points[0];
+        Vector2 end = points[points.Count - 1];
+
+        for (int i = 1; i < points.Count - 1; i++)
+        {
+            float distance = PerpendicularDistance(points[i], start, end);
+            if (distance > maxDistance)
+            {
+                maxDistance = distance;
+                maxIndex = i;
+            }
+        }
+
+        // If max distance is greater than epsilon, recursively simplify
+        if (maxDistance > epsilon)
+        {
+            List<Vector2> left = RamerDouglasPeucker(points.GetRange(0, maxIndex + 1), epsilon);
+            List<Vector2> right = RamerDouglasPeucker(points.GetRange(maxIndex, points.Count - maxIndex), epsilon);
+
+            left.RemoveAt(left.Count - 1); // Remove duplicate
+            left.AddRange(right);
+            return left;
+        }
+        else
+        {
+            return new List<Vector2> { start, end };
+        }
+    }
+
+    private static float PerpendicularDistance(Vector2 point, Vector2 lineStart, Vector2 lineEnd)
+    {
+        Vector2 direction = lineEnd - lineStart;
+        float lengthSquared = direction.sqrMagnitude;
+        if (lengthSquared == 0f)
+        {
+            return Vector2.Distance(point, lineStart);
+        }
+
+        float t = Vector2.Dot(point - lineStart, direction) / lengthSquared;
+        Vector2 projection = lineStart + t * direction;
+        return Vector2.Distance(point, projection);
+    }
+    public static List<Vector2> GenerateSmoothedPath(List<Vector2> points, int subdivisions)
+    {
+        if (points.Count < 2)
+        {
+            return points;
+        }
+
+        List<Vector2> smoothedPoints = new List<Vector2>();
+
+        // Crear una copia de los puntos para añadir los puntos de control en los extremos
+        List<Vector2> tempPoints = new List<Vector2>(points);
+        tempPoints.Insert(0, points[0]);
+        tempPoints.Add(points[points.Count - 1]);
+
+        // Generar la curva entre cada par de puntos originales
+        for (int i = 1; i < tempPoints.Count - 2; i++)
+        {
+            Vector2 p0 = tempPoints[i - 1];
+            Vector2 p1 = tempPoints[i];
+            Vector2 p2 = tempPoints[i + 1];
+            Vector2 p3 = tempPoints[i + 2];
+
+            for (int t = 0; t <= subdivisions; t++)
+            {
+                float normalizedT = (float)t / subdivisions;
+                Vector2 interpolatedPoint = GetSplinePoint(normalizedT, p0, p1, p2, p3);
+                smoothedPoints.Add(interpolatedPoint);
+            }
+        }
+
+        return smoothedPoints;
+    }
+
+    // Calcula un punto en el spline cúbico usando la fórmula de Catmull-Rom.
+    private static Vector2 GetSplinePoint(float t, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+    {
+        // Esta es la fórmula de Catmull-Rom (un tipo de spline cúbico)
+        float t2 = t * t;
+        float t3 = t2 * t;
+
+        float a = 0.5f * (2.0f * p1.x + (-p0.x + p2.x) * t + (2.0f * p0.x - 5.0f * p1.x + 4.0f * p2.x - p3.x) * t2 + (-p0.x + 3.0f * p1.x - 3.0f * p2.x + p3.x) * t3);
+        float b = 0.5f * (2.0f * p1.y + (-p0.y + p2.y) * t + (2.0f * p0.y - 5.0f * p1.y + 4.0f * p2.y - p3.y) * t2 + (-p0.y + 3.0f * p1.y - 3.0f * p2.y + p3.y) * t3);
+
+        return new Vector2(a, b);
+    }
     public static List<Vector2> Reorganize(List<Vector2> points)
     {
         var pointss = points.OrderBy(x => x.x).ThenByDescending(x => x.y).ToList();

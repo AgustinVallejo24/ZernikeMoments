@@ -1,10 +1,19 @@
 # ninja log v5
 20	676	7778640052366603	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	3a809d2c2279fccb
+1000	1069	7778640056351823	C:/Users/User/Documents/GitHub/ZernikeMoments/ZernikeMoments/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2q1w1d2j/obj/arm64-v8a/libgame.so	d94dd9a5a46ac4bb
 15	693	7778640052492741	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	402e2fd8cd8cac04
-1	702	7778640052609598	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	b86b5cc7446474eb
-24	736	7778640052969763	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	14a6772ae6f061f1
-8	751	7778640053137836	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	ffabd597ce33e790
 29	815	7778640053773980	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4950a405b895e9de
+1	702	7778640052609598	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	b86b5cc7446474eb
+8	751	7778640053137836	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	ffabd597ce33e790
+24	736	7778640052969763	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	14a6772ae6f061f1
 11	895	7778640054562439	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	8f6fe267937a11a2
 5	1000	7778640055587788	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	22143ba5d98e5392
-1000	1069	7778640056351823	C:/Users/User/Documents/GitHub/ZernikeMoments/ZernikeMoments/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2q1w1d2j/obj/arm64-v8a/libgame.so	d94dd9a5a46ac4bb
+20	2218	7798490384418008	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	402e2fd8cd8cac04
+12	2224	7798490384448013	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	3a809d2c2279fccb
+4	2243	7798490384655940	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	b86b5cc7446474eb
+26	2250	7798490384730744	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	14a6772ae6f061f1
+16	2309	7798490385316722	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	ffabd597ce33e790
+30	2462	7798490386810799	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	8f6fe267937a11a2
+8	2522	7798490387462341	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	22143ba5d98e5392
+34	2568	7798490387937009	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	4950a405b895e9de
+2568	2657	7798490388848158	C:/Users/User/Documents/GitHub/ZernikeMoments/ZernikeMoments/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/2q1w1d2j/obj/arm64-v8a/libgame.so	d94dd9a5a46ac4bb
