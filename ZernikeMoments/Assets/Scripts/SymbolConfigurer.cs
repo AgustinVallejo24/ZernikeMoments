@@ -20,6 +20,17 @@ public class SymbolConfigurer : MonoBehaviour
         _rotationThresholdSlider.onValueChanged.AddListener(SetRotationThresholdFieldValue);
     }
 
+    public void SetSymbolValues(Sprite texture, string name, float threshold, float rotationThreshold, bool symmetric, bool rotation)
+    {
+        SetImage(texture);
+        SetSimbolName(name);
+        SetThresholdFieldValue(threshold);
+        SetThresholdSliderValue(threshold.ToString());
+        SetRotationThresholdFieldValue(rotationThreshold);
+        SetRotationThresholdSliderValue(rotationThreshold.ToString());
+        SetsSymmetric(symmetric);
+        SetUseRotation(rotation);
+    }
     public void SetImage(Sprite texture)
     {
         _symbolImage.sprite = texture;
@@ -57,20 +68,20 @@ public class SymbolConfigurer : MonoBehaviour
     }
 
 
-    public float GetRotationThresholdSliderValue(string value)
+    public float GetRotationThresholdSliderValue()
     {
         return _rotationThresholdSlider.value;
     }
-    public float GetRotationThresholdFieldValue(float value)
+    public float GetRotationThresholdFieldValue()
     {
         return float.Parse(_rotationThresholdInputField.text); 
     }
 
-    public float GetThresholdSliderValue(string value)
+    public float GetThresholdSliderValue()
     {
         return _thresholdSlider.value;
     }
-    public float GetThresholdFieldValue(float value)
+    public float GetThresholdFieldValue()
     {
         return float.Parse(_thresholdInputField.text);
     }
@@ -82,5 +93,14 @@ public class SymbolConfigurer : MonoBehaviour
     public bool GetUseRotation()
     {
         return _UseRotation;
+    }
+
+    public void SetsSymmetric(bool value)
+    {
+       _isSymmetric.isOn = value;
+    }
+    public void SetUseRotation(bool value)
+    {
+        _UseRotation.isOn = value;
     }
 }
