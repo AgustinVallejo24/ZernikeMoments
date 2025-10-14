@@ -4,7 +4,7 @@ using TMPro;
 public class SymbolConfigurer : MonoBehaviour
 {
     [SerializeField] TMP_Text _symbolname;
-    [SerializeField] Image _symbolImage;
+    [SerializeField] RawImage _symbolImage;
     [SerializeField] TMP_InputField _thresholdInputField;
     [SerializeField] Slider _thresholdSlider;
     [SerializeField] TMP_InputField _rotationThresholdInputField;
@@ -20,7 +20,7 @@ public class SymbolConfigurer : MonoBehaviour
         _rotationThresholdSlider.onValueChanged.AddListener(SetRotationThresholdFieldValue);
     }
 
-    public void SetSymbolValues(Sprite texture, string name, float threshold, float rotationThreshold, bool symmetric, bool rotation)
+    public void SetSymbolValues(Texture2D texture, string name, float threshold, float rotationThreshold, bool symmetric, bool rotation)
     {
         SetImage(texture);
         SetSimbolName(name);
@@ -31,9 +31,9 @@ public class SymbolConfigurer : MonoBehaviour
         SetsSymmetric(symmetric);
         SetUseRotation(rotation);
     }
-    public void SetImage(Sprite texture)
+    public void SetImage(Texture2D texture)
     {
-        _symbolImage.sprite = texture;
+        _symbolImage.texture = texture;
     }
 
     public void SetSimbolName(string name)

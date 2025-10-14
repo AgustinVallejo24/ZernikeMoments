@@ -11,6 +11,7 @@ public class ReferenceSymbol
     public float Threshold;
     public int strokes = 1;
     public float orientationThreshold;
+    public string symbolID;
 
     // [HideInInspector]
     public float[] distribution;
@@ -19,12 +20,13 @@ public class ReferenceSymbol
     public List<double> momentMagnitudes;
 
 
-    public ReferenceSymbol(string name, float[] rotDistribution, List<double> magnitudes, int strokesQ)
+    public ReferenceSymbol(string name, float[] rotDistribution, List<double> magnitudes, int strokesQ, string sID)
     {
         symbolName = name;
         distribution = rotDistribution;
         momentMagnitudes = magnitudes;
         strokes = strokesQ;
+        symbolID = sID;
     }
 
    

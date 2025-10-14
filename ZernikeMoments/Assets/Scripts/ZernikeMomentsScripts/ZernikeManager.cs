@@ -92,6 +92,10 @@ public class ZernikeManager : MonoBehaviour
                 }
 
                 reference.distribution = _processor.GetSymbolDistribution();
+
+                reference.symbolID = Guid.NewGuid().ToString();
+
+                ImageUtils.SaveTexture(reference.templateTexture, reference.symbolID);
             }
             carga += 1f/referenceSymbols.Count;
 
@@ -137,7 +141,7 @@ public class ZernikeManager : MonoBehaviour
             double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
             playerMagnitudes.Add(normalizedMagnitude);
         }
-        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity);
+        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity, Guid.NewGuid().ToString());
         string savePath = Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json");
         ReferenceSymbolStorage.AppendSymbol(newSymbol, savePath);
         referenceSymbols.Add(newSymbol);

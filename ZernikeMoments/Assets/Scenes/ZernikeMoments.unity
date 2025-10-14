@@ -560,7 +560,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &370495670
 RectTransform:
   m_ObjectHideFlags: 0
@@ -938,6 +938,7 @@ MonoBehaviour:
     Threshold: 0.36
     strokes: 1
     orientationThreshold: 0.2
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: V
@@ -947,6 +948,7 @@ MonoBehaviour:
     Threshold: 0.3
     strokes: 1
     orientationThreshold: 0.2
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Circulo
@@ -956,6 +958,7 @@ MonoBehaviour:
     Threshold: 0.3
     strokes: 1
     orientationThreshold: 360
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Cuadrado
@@ -965,6 +968,7 @@ MonoBehaviour:
     Threshold: 0.15
     strokes: 1
     orientationThreshold: 0.2
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Cuadrado
@@ -974,6 +978,7 @@ MonoBehaviour:
     Threshold: 0.15
     strokes: 1
     orientationThreshold: 0.2
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Cuadrado
@@ -983,6 +988,7 @@ MonoBehaviour:
     Threshold: 0.15
     strokes: 1
     orientationThreshold: 0.2
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Copa
@@ -992,6 +998,7 @@ MonoBehaviour:
     Threshold: 0.45
     strokes: 3
     orientationThreshold: 0.21
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: inf
@@ -1001,6 +1008,7 @@ MonoBehaviour:
     Threshold: 0.22
     strokes: 1
     orientationThreshold: 0.15
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Triangulo
@@ -1010,6 +1018,7 @@ MonoBehaviour:
     Threshold: 0.2
     strokes: 1
     orientationThreshold: 0.2
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: espiral
@@ -1019,6 +1028,7 @@ MonoBehaviour:
     Threshold: 0.12
     strokes: 1
     orientationThreshold: 0.15
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Casita
@@ -1028,6 +1038,7 @@ MonoBehaviour:
     Threshold: 0.25
     strokes: 4
     orientationThreshold: 0.145
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Linea
@@ -1037,6 +1048,7 @@ MonoBehaviour:
     Threshold: 0.35
     strokes: 1
     orientationThreshold: 0.6
+    symbolID: 
     distribution: []
     momentMagnitudes: []
   - symbolName: Estrella
@@ -1046,9 +1058,10 @@ MonoBehaviour:
     Threshold: 0.35
     strokes: 1
     orientationThreshold: 0.145
+    symbolID: 
     distribution: []
     momentMagnitudes: []
-  shouldLoad: 1
+  shouldLoad: 0
 --- !u!4 &585205193
 Transform:
   m_ObjectHideFlags: 0
@@ -2323,7 +2336,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1564906360
 RectTransform:
   m_ObjectHideFlags: 0

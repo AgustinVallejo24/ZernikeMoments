@@ -19,7 +19,8 @@ public class ConfigurationSceneManager : MonoBehaviour
         foreach (var item in referenceSymbols)
         {
             SymbolConfigurer newSymbol = Instantiate(_symbolConfigurerPrefab, _content);
-            newSymbol.SetSymbolValues(null, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation);
+            Texture2D texture = ImageUtils.LoadTexture(item.symbolID);
+            newSymbol.SetSymbolValues(texture, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation);
             _symbolConfigList.Add(newSymbol);
         }
     }
