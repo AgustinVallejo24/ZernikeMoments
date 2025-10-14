@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 public class ConfigurationSceneManager : MonoBehaviour
 {
     [SerializeField] RectTransform _content;
@@ -33,7 +34,7 @@ public class ConfigurationSceneManager : MonoBehaviour
             _symbolList[i].Threshold = _symbolConfigList[i].GetThresholdSliderValue();
             _symbolList[i].orientationThreshold = _symbolConfigList[i].GetRotationThresholdSliderValue();
         }
-        ReferenceSymbolStorage.SaveSymbols(_symbolList, "symbols");
+        ReferenceSymbolStorage.SaveSymbols(_symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
 
     }
 

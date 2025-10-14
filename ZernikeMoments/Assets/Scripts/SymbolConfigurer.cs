@@ -88,11 +88,11 @@ public class SymbolConfigurer : MonoBehaviour
 
     public bool GetIsSymmetric()
     {
-        return _isSymmetric;
+        return _isSymmetric.isOn;
     }
     public bool GetUseRotation()
     {
-        return _UseRotation;
+        return _UseRotation.isOn;
     }
 
     public void SetsSymmetric(bool value)
