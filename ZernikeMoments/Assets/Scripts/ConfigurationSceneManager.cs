@@ -14,7 +14,7 @@ public class ConfigurationSceneManager : MonoBehaviour
     [SerializeField] List<SymbolConfigurer> _symbolConfigList;
     void Start()
     {
-       var referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols");
+       var referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
         _symbolList = referenceSymbols;
         foreach (var item in referenceSymbols)
         {

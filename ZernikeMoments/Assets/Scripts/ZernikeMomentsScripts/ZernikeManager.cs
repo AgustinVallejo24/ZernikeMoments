@@ -49,7 +49,7 @@ public class ZernikeManager : MonoBehaviour
         else
         {
             referenceSymbols.Clear();
-            referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols");
+            referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();            
             UICarga.SetActive(false);
             UIDibujo.SetActive(true);
             DrawingTest.SetActive(true);
@@ -111,6 +111,7 @@ public class ZernikeManager : MonoBehaviour
         yield return new WaitForSeconds(.2f);
         DrawingTest.SetActive(true);
         ReferenceSymbolStorage.SaveSymbols(referenceSymbols, jsonPath);
+        referenceSymbols = referenceSymbols.Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
     }
     public void OnDrawingFinished(List<List<Vector2>> finishedPoints, int strokeQuantity)
     {

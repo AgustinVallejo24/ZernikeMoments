@@ -5,12 +5,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12182
+                "instanceID": -26802
             },
             "Threshold": 0.36000001430511477,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "e5705d4b-9917-459a-9e7a-ba7d32f4c75a",
+            "symbolID": "34849b77-9327-4f5b-8f30-2462fc28943e",
             "distribution": [
                 0.021978022530674936,
                 0.04395604506134987,
@@ -135,12 +135,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12762
+                "instanceID": -27346
             },
             "Threshold": 0.30000001192092898,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "b5075556-cf08-49fe-82f3-ede67053272e",
+            "symbolID": "35fc900e-8646-4ec4-848d-9de813bbf338",
             "distribution": [
                 0.04095563292503357,
                 0.0477815717458725,
@@ -265,12 +265,12 @@
             "useRotation": false,
             "isSymmetric": true,
             "templateTexture": {
-                "instanceID": -12768
+                "instanceID": -27350
             },
             "Threshold": 0.30000001192092898,
             "strokes": 1,
             "orientationThreshold": 360.0,
-            "symbolID": "171d774b-af20-4a2c-bc65-4e54c33d4311",
+            "symbolID": "02843982-3c4e-4e62-b2e0-8c3caf953069",
             "distribution": [
                 0.0,
                 0.0,
@@ -395,12 +395,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12772
+                "instanceID": -27354
             },
             "Threshold": 0.15000000596046449,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "a4b33551-051e-47d5-845d-3779e43e4085",
+            "symbolID": "2ceb0970-3f26-4a55-a57b-674938bcccc8",
             "distribution": [
                 0.0,
                 0.0,
@@ -525,12 +525,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12776
+                "instanceID": -27358
             },
             "Threshold": 0.15000000596046449,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "5b4eedc5-c436-4203-a912-fad76eb95dd2",
+            "symbolID": "92c3880d-0067-4ed1-9b19-17d7abc3a85e",
             "distribution": [
                 0.0,
                 0.0,
@@ -655,12 +655,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12780
+                "instanceID": -27362
             },
             "Threshold": 0.15000000596046449,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "0fe55b0d-46d4-4919-b87b-84f52fcdc4f2",
+            "symbolID": "e0d88900-f854-45e5-91df-a3bc39e03400",
             "distribution": [
                 0.0,
                 0.038596492260694507,
@@ -785,12 +785,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12784
+                "instanceID": -27366
             },
             "Threshold": 0.44999998807907107,
             "strokes": 3,
             "orientationThreshold": 0.20999999344348908,
-            "symbolID": "2f30441b-3667-4a2c-b588-3cd241a6b30f",
+            "symbolID": "f5c936d3-12f9-4f8a-b47b-1ccc6ed52e49",
             "distribution": [
                 0.0,
                 0.0034722222480922939,
@@ -915,12 +915,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12788
+                "instanceID": -27370
             },
             "Threshold": 0.2199999988079071,
             "strokes": 1,
             "orientationThreshold": 0.15000000596046449,
-            "symbolID": "0bf4fb29-ca3b-4220-ac2b-16c6da4d006a",
+            "symbolID": "c8b56ba6-fd88-4da6-82d3-e6eec64b9861",
             "distribution": [
                 0.009036144241690636,
                 0.08132530003786087,
@@ -1045,12 +1045,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12792
+                "instanceID": -27374
             },
             "Threshold": 0.20000000298023225,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "b22ccfa0-c480-4d17-ad67-3bd01f66be39",
+            "symbolID": "b588e954-3bc6-4c5b-aa5c-b2ee3ae32aec",
             "distribution": [
                 0.0,
                 0.0,
@@ -1175,12 +1175,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12796
+                "instanceID": -27378
             },
             "Threshold": 0.11999999731779099,
             "strokes": 1,
             "orientationThreshold": 0.15000000596046449,
-            "symbolID": "380f891d-8e33-4395-b002-da7c0604fa27",
+            "symbolID": "45cc30ed-bedf-42e1-ab19-61bca703efe4",
             "distribution": [
                 0.02120141312479973,
                 0.010600706562399865,
@@ -1305,12 +1305,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12800
+                "instanceID": -27382
             },
             "Threshold": 0.25,
             "strokes": 4,
             "orientationThreshold": 0.14499999582767487,
-            "symbolID": "06695ff2-eaf7-41ad-9faa-7c9e41ef74dd",
+            "symbolID": "6366656f-0116-4673-94ee-35d26ef6345a",
             "distribution": [
                 0.0,
                 0.0,
@@ -1435,12 +1435,12 @@
             "useRotation": false,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12804
+                "instanceID": -27386
             },
             "Threshold": 0.3499999940395355,
             "strokes": 1,
             "orientationThreshold": 0.6000000238418579,
-            "symbolID": "d801e406-acdf-4f37-b6a1-17fa6147f0af",
+            "symbolID": "45913729-e045-49e7-8303-fbb003d13e4d",
             "distribution": [
                 0.16470588743686677,
                 0.0058823530562222,
@@ -1565,12 +1565,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -12808
+                "instanceID": -27390
             },
             "Threshold": 0.3499999940395355,
             "strokes": 1,
             "orientationThreshold": 0.14499999582767487,
-            "symbolID": "dbd53ffb-ca36-4b84-87c2-c614f40f789e",
+            "symbolID": "6f07abc0-c8d4-4e62-8f56-b960bd83baab",
             "distribution": [
                 0.03412969410419464,
                 0.03242320939898491,
