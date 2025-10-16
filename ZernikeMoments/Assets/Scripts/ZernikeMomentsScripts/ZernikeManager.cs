@@ -95,7 +95,7 @@ public class ZernikeManager : MonoBehaviour
 
                 reference.symbolID = Guid.NewGuid().ToString();
 
-                ImageUtils.SaveTexture(reference.templateTexture, reference.symbolID);
+                ImageUtils.SaveTexture(reference.templateTexture, reference.symbolID, true);
             }
             carga += 1f/referenceSymbols.Count;
 

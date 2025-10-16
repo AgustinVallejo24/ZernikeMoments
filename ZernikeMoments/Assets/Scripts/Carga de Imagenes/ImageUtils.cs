@@ -14,7 +14,7 @@ public static class ImageUtils
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images");
+        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
 
         // Asegurarse de que el directorio exista
         if (!Directory.Exists(folderPath2))
@@ -37,7 +37,7 @@ public static class ImageUtils
             Debug.LogError("Error al guardar la imagen: " + ex.Message);
         }
     }
-    public static void SaveTexture(Texture2D texture, string templateId)
+    public static void SaveTexture(Texture2D texture, string templateId, bool inProject = false)
     {
         // 1. Obtener los bytes de la textura (formato PNG, por ejemplo)        
         byte[] bytes = texture.EncodeToPNG();
@@ -45,7 +45,16 @@ public static class ImageUtils
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images");
+        string folderPath2 = "";
+
+        if (inProject)
+        {
+            folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
+        }
+        else
+        {
+            folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        }
 
         // Asegurarse de que el directorio exista
         if (!Directory.Exists(folderPath2))
@@ -71,12 +80,15 @@ public static class ImageUtils
     public static Texture2D LoadTexture(string templateId)
     {
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images");
+        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
+        string folderPath3 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        string folderPath4 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
         string fileName = templateId + ".png"; // Usar la misma extensión
-        string filePath = Path.Combine(folderPath2, fileName);
+        string filePath = "";
 
-        if (File.Exists(filePath))
+        if (File.Exists(Path.Combine(folderPath2, fileName)))
         {
+            filePath = Path.Combine(folderPath2, fileName);
             // 1. Leer los bytes del archivo
             byte[] bytes = File.ReadAllBytes(filePath);
 
@@ -91,6 +103,56 @@ public static class ImageUtils
             {
                 Debug.Log("Imagen cargada desde: " + filePath);
                 
+                return texture;
+            }
+            else
+            {
+                Debug.LogError("Error al cargar la imagen en la Texture2D.");
+                return null;
+            }
+        }
+        else if (File.Exists(Path.Combine(folderPath3, fileName)))
+        {
+            filePath = Path.Combine(folderPath3, fileName);
+            // 1. Leer los bytes del archivo
+            byte[] bytes = File.ReadAllBytes(filePath);
+
+            // 2. Crear una nueva Texture2D (debe ser legible)
+            // El tamaño (1, 1) es temporal; se ajustará con LoadImage.
+
+            Texture2D texture = new Texture2D(1, 1);
+
+            // 3. Cargar los bytes en la Texture2D
+            // LoadImage ajusta el tamaño de la textura automáticamente.
+            if (texture.LoadImage(bytes))
+            {
+                Debug.Log("Imagen cargada desde: " + filePath);
+
+                return texture;
+            }
+            else
+            {
+                Debug.LogError("Error al cargar la imagen en la Texture2D.");
+                return null;
+            }
+        }
+        else if (File.Exists(Path.Combine(folderPath4, fileName)))
+        {
+            filePath = Path.Combine(folderPath4, fileName);
+            // 1. Leer los bytes del archivo
+            byte[] bytes = File.ReadAllBytes(filePath);
+
+            // 2. Crear una nueva Texture2D (debe ser legible)
+            // El tamaño (1, 1) es temporal; se ajustará con LoadImage.
+
+            Texture2D texture = new Texture2D(1, 1);
+
+            // 3. Cargar los bytes en la Texture2D
+            // LoadImage ajusta el tamaño de la textura automáticamente.
+            if (texture.LoadImage(bytes))
+            {
+                Debug.Log("Imagen cargada desde: " + filePath);
+
                 return texture;
             }
             else
