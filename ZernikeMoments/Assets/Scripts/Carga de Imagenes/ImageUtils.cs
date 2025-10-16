@@ -37,7 +37,7 @@ public static class ImageUtils
             Debug.LogError("Error al guardar la imagen: " + ex.Message);
         }
     }
-    public static void SaveTexture(Texture2D texture, string templateId, bool inProject = false)
+    public static void SaveTexture(Texture2D texture, string templateId)
     {
         // 1. Obtener los bytes de la textura (formato PNG, por ejemplo)        
         byte[] bytes = texture.EncodeToPNG();
@@ -45,16 +45,7 @@ public static class ImageUtils
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = "";
-
-        if (inProject)
-        {
-            folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
-        }
-        else
-        {
-            folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
-        }
+        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");       
 
         // Asegurarse de que el directorio exista
         if (!Directory.Exists(folderPath2))
@@ -187,10 +178,25 @@ public static class ImageUtils
         // 5. Guardar la textura como PNG (opcional)
         byte[] bytes = texture.EncodeToPNG();
         //string path = Path.Combine(Application.persistentDataPath, "Images/TemplateImages", fileName + ".png");
-        string path2 = Path.Combine(Application.dataPath, "Resources/Template Images", fileName + ".png");
-        File.WriteAllBytes(path2, bytes);
+        string path2 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
 
-        Debug.Log($"Imagen guardada en: {path2}");
+        if (!Directory.Exists(path2))
+        {
+            Directory.CreateDirectory(path2);
+        }
+
+        string fileNameID = fileName + ".png";
+        string filePath = Path.Combine(path2, fileNameID);
+
+        try
+        {
+            File.WriteAllBytes(filePath, bytes);
+            Debug.Log("Imagen guardada en: " + filePath);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Error al guardar la imagen: " + ex.Message);
+        }        
     }
 
     public static Texture2D GetTexture2DCopy(RenderTexture renderTexture)
