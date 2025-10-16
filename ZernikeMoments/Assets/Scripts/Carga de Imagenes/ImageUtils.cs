@@ -13,17 +13,18 @@ public static class ImageUtils
 
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
-        string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
+        //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
+        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images");
 
         // Asegurarse de que el directorio exista
-        if (!Directory.Exists(folderPath))
+        if (!Directory.Exists(folderPath2))
         {
-            Directory.CreateDirectory(folderPath);
+            Directory.CreateDirectory(folderPath2);
         }
 
         // Definir el nombre del archivo usando el ID y la extensión
         string fileName = templateId + ".png";
-        string filePath = Path.Combine(folderPath, fileName);
+        string filePath = Path.Combine(folderPath2, fileName);
 
         // 3. Escribir los bytes en el archivo
         try
@@ -43,17 +44,18 @@ public static class ImageUtils
 
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
-        string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
+        //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
+        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images");
 
         // Asegurarse de que el directorio exista
-        if (!Directory.Exists(folderPath))
+        if (!Directory.Exists(folderPath2))
         {
-            Directory.CreateDirectory(folderPath);
+            Directory.CreateDirectory(folderPath2);
         }
 
         // Definir el nombre del archivo usando el ID y la extensión
         string fileName = templateId + ".png";
-        string filePath = Path.Combine(folderPath, fileName);
+        string filePath = Path.Combine(folderPath2, fileName);
 
         // 3. Escribir los bytes en el archivo
         try
@@ -68,9 +70,10 @@ public static class ImageUtils
     }
     public static Texture2D LoadTexture(string templateId)
     {
-        string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
+        //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
+        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images");
         string fileName = templateId + ".png"; // Usar la misma extensión
-        string filePath = Path.Combine(folderPath, fileName);
+        string filePath = Path.Combine(folderPath2, fileName);
 
         if (File.Exists(filePath))
         {
@@ -102,4 +105,43 @@ public static class ImageUtils
             return null;
         }
     }
+
+    public static void SaveRenderTextureToPNG(RenderTexture renderTexture, string fileName = "PlayerDrawing")
+    {
+        // 1. Crear una Texture2D del mismo tamaño que la RenderTexture
+        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);
+
+        // 2. Activar temporalmente la RenderTexture para leer sus píxeles
+        RenderTexture currentRT = RenderTexture.active;
+        RenderTexture.active = renderTexture;
+
+        // 3. Leer los píxeles desde la RenderTexture
+        texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        texture.Apply();
+
+        // 4. Restaurar la RenderTexture activa anterior
+        RenderTexture.active = currentRT;
+
+        // 5. Guardar la textura como PNG (opcional)
+        byte[] bytes = texture.EncodeToPNG();
+        //string path = Path.Combine(Application.persistentDataPath, "Images/TemplateImages", fileName + ".png");
+        string path2 = Path.Combine(Application.dataPath, "Resources/Template Images", fileName + ".png");
+        File.WriteAllBytes(path2, bytes);
+
+        Debug.Log($"Imagen guardada en: {path2}");
+    }
+
+    public static Texture2D GetTexture2DCopy(RenderTexture renderTexture)
+    {
+        Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);
+
+        RenderTexture currentRT = RenderTexture.active;
+        RenderTexture.active = renderTexture;
+        texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        texture.Apply();
+        RenderTexture.active = currentRT;
+
+        return texture;
+    }
+
 }

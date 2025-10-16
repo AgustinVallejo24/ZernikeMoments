@@ -5,9 +5,12 @@ using TMPro;
 using System.Linq;
 using System.Collections;
 using UnityEngine.EventSystems;
+using System;
 public class DrawingTest : MonoBehaviour
 {
-    public LineRenderer[] lineRenderer;
+    public List<LineRenderer> lineRenderers;
+    [SerializeField] LineRenderer currentLR;
+    [SerializeField] LineRenderer lRPrefab;
     public int linerendererIndex;
     public LineRenderer recognitionLineRenderer;
     public TMP_Text resultText;
@@ -24,13 +27,13 @@ public class DrawingTest : MonoBehaviour
     public ZernikeManager zRecognizer;
     public List<int> strokesPointsCount = new List<int>();
     public TMP_InputField symbolNameField;
+
+    [SerializeField] RenderTexture renderTexture;
+
+    
     void Start()
     {
-        recognizebutton.buttonAction += OnConfirmDrawing;
-        for (int i = 0; i < 4; i++)
-        {
-            listaDeListas.Add(new List<Vector2>());
-        }
+        recognizebutton.buttonAction += OnConfirmDrawing;        
     }
 
     //void Update()
@@ -119,11 +122,8 @@ public class DrawingTest : MonoBehaviour
             switch (touch.phase)
             {
                 case TouchPhase.Began:
-                    if (linerendererIndex < lineRenderer.Length)
-                    {
-                        isDrawing = true;
-                        currentStrokePoints.Clear();
-                    }
+                    isDrawing = true;
+                    currentStrokePoints.Clear();                    
                     break;
 
                 case TouchPhase.Moved:
@@ -140,12 +140,9 @@ public class DrawingTest : MonoBehaviour
 
                 case TouchPhase.Ended:
                 case TouchPhase.Canceled:
-                    isDrawing = false;
+                    isDrawing = false;                    
 
-                    if (linerendererIndex >= lineRenderer.Length) return;
-
-
-                    if (GetLineLength(lineRenderer[linerendererIndex]) < 1.5f)
+                    if (GetLineLength(currentLR) < 1.5f)
                     {
                         // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
                         foreach (var item in currentStrokePoints)
@@ -156,18 +153,19 @@ public class DrawingTest : MonoBehaviour
                             }
                         }
                         currentStrokePoints.Clear();
-                        lineRenderer[linerendererIndex].positionCount = 0;
+                        
+                        
+                        
+                        currentLR.positionCount = 0;
                         return;
                     }
-
+                    listaDeListas.Add(new List<Vector2>());
+                    linerendererIndex++;
+                    currentLR = Instantiate(lRPrefab, this.transform);
+                    lineRenderers.Add(currentLR);
                     // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
                     strokesPointsCount.Add(currentStrokePoints.Count);
-                    currentStrokePoints.Clear();
-
-                    if (linerendererIndex < lineRenderer.Length)
-                    {
-                        linerendererIndex++;
-                    }
+                    currentStrokePoints.Clear();                    
                     break;
             }
         }
@@ -185,16 +183,16 @@ public class DrawingTest : MonoBehaviour
         {
             // primer punto del trazo inicializamos el LineRenderer
 
-            lineRenderer[linerendererIndex].positionCount = 1;
-            lineRenderer[linerendererIndex].SetPosition(0, newPoint);
+            lineRenderers[linerendererIndex].positionCount = 1;
+            lineRenderers[linerendererIndex].SetPosition(0, newPoint);
             return;
         }
 
         if (count < 4)
         {
             // si todavía no hay suficientes puntos para interpolar, solo agrego directo
-            lineRenderer[linerendererIndex].positionCount++;
-            lineRenderer[linerendererIndex].SetPosition(lineRenderer[linerendererIndex].positionCount - 1, newPoint);
+            lineRenderers[linerendererIndex].positionCount++;
+            lineRenderers[linerendererIndex].SetPosition(lineRenderers[linerendererIndex].positionCount - 1, newPoint);
             return;
         }
 
@@ -215,8 +213,8 @@ public class DrawingTest : MonoBehaviour
                 (-p0 + 3f * p1 - 3f * p2 + p3) * t * t * t
             );
 
-            lineRenderer[linerendererIndex].positionCount++;
-            lineRenderer[linerendererIndex].SetPosition(lineRenderer[linerendererIndex].positionCount - 1, point);
+            lineRenderers[linerendererIndex].positionCount++;
+            lineRenderers[linerendererIndex].SetPosition(lineRenderers[linerendererIndex].positionCount - 1, point);
 
         }
 
@@ -240,7 +238,10 @@ public class DrawingTest : MonoBehaviour
             }
 
 
-            zRecognizer.SaveSymbol(listaDeListas, linerendererIndex,symbolNameField.text);
+
+            string symbolID = Guid.NewGuid().ToString();
+            ImageUtils.SaveRenderTextureToPNG(renderTexture, symbolID);
+            zRecognizer.SaveSymbol(listaDeListas, lineRenderers.Count -1 ,symbolNameField.text, symbolID);
             symbolNameField.text = "";
             currentPoints.Clear();
             strokesPointsCount.Clear();
@@ -249,9 +250,11 @@ public class DrawingTest : MonoBehaviour
                 item.Clear();
             }
             linerendererIndex = 0;
-            foreach (var item in lineRenderer)
+            lineRenderers[0].positionCount = 0;
+            foreach (var item in lineRenderers.Skip(1))
             {
-                item.positionCount = 0;
+                lineRenderers.Remove(item);
+                Destroy(item.gameObject);
             }
         }
         else
@@ -264,9 +267,11 @@ public class DrawingTest : MonoBehaviour
                 item.Clear();
             }
             linerendererIndex = 0;
-            foreach (var item in lineRenderer)
+            lineRenderers[0].positionCount = 0;
+            foreach (var item in lineRenderers.Skip(1))
             {
-                item.positionCount = 0;
+                lineRenderers.Remove(item);
+                Destroy(item.gameObject);
             }
         }
     }
@@ -298,7 +303,7 @@ public class DrawingTest : MonoBehaviour
             }
           
          
-            zRecognizer.OnDrawingFinished(listaDeListas, linerendererIndex);
+            zRecognizer.OnDrawingFinished(listaDeListas, lineRenderers.Count -1);
             currentPoints.Clear();
             strokesPointsCount.Clear();
             foreach (var item in listaDeListas)
@@ -306,9 +311,11 @@ public class DrawingTest : MonoBehaviour
                 item.Clear();
             }
             linerendererIndex = 0;
-            foreach (var item in lineRenderer)
+            lineRenderers[0].positionCount = 0;
+            foreach (var item in lineRenderers.Skip(1))
             {
-                item.positionCount = 0;
+                lineRenderers.Remove(item);
+                Destroy(item.gameObject);
             }
         }
         else
@@ -321,9 +328,11 @@ public class DrawingTest : MonoBehaviour
                 item.Clear();
             }
             linerendererIndex = 0;
-            foreach (var item in lineRenderer)
+            lineRenderers[0].positionCount = 0;
+            foreach (var item in lineRenderers.Skip(1))
             {
-                item.positionCount = 0;
+                lineRenderers.Remove(item);
+                Destroy(item.gameObject);
             }
         }
     }

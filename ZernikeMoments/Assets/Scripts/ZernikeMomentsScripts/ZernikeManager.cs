@@ -128,7 +128,7 @@ public class ZernikeManager : MonoBehaviour
     }
 
 
-    public void SaveSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName)
+    public void SaveSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName, string symbolID)
     {
        
         _processor.DrawStrokes(finishedPoints);
@@ -141,11 +141,13 @@ public class ZernikeManager : MonoBehaviour
             double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
             playerMagnitudes.Add(normalizedMagnitude);
         }
-        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity, Guid.NewGuid().ToString());
+        
+        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity, symbolID);
         string savePath = Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json");
         ReferenceSymbolStorage.AppendSymbol(newSymbol, savePath);
         referenceSymbols.Add(newSymbol);
         ReferenceSymbolStorage.SaveSymbols(referenceSymbols, jsonPath);
+        
         
     }
 
