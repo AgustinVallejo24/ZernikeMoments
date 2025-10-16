@@ -493,7 +493,7 @@ MonoBehaviour:
     symbolID: 
     distribution: []
     momentMagnitudes: []
-  shouldLoad: 1
+  shouldLoad: 0
 --- !u!4 &585205193
 Transform:
   m_ObjectHideFlags: 0
@@ -1671,7 +1671,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1660172951
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2263,7 +2263,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1958597369
 RectTransform:
   m_ObjectHideFlags: 0

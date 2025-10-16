@@ -5,12 +5,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -87874
+                "instanceID": -12182
             },
             "Threshold": 0.36000001430511477,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "2c581e91-aefe-46d5-9530-4516f74e9d2c",
+            "symbolID": "e5705d4b-9917-459a-9e7a-ba7d32f4c75a",
             "distribution": [
                 0.021978022530674936,
                 0.04395604506134987,
@@ -135,12 +135,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88436
+                "instanceID": -12762
             },
             "Threshold": 0.30000001192092898,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "a968a3d5-e60e-454f-ad28-8066445d3487",
+            "symbolID": "b5075556-cf08-49fe-82f3-ede67053272e",
             "distribution": [
                 0.04095563292503357,
                 0.0477815717458725,
@@ -265,12 +265,12 @@
             "useRotation": false,
             "isSymmetric": true,
             "templateTexture": {
-                "instanceID": -88442
+                "instanceID": -12768
             },
             "Threshold": 0.30000001192092898,
             "strokes": 1,
             "orientationThreshold": 360.0,
-            "symbolID": "36f97bab-0636-4791-8f67-7c38900625c2",
+            "symbolID": "171d774b-af20-4a2c-bc65-4e54c33d4311",
             "distribution": [
                 0.0,
                 0.0,
@@ -395,12 +395,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88446
+                "instanceID": -12772
             },
             "Threshold": 0.15000000596046449,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "318a5cd5-1d8f-47e9-81c7-d0e19655e14e",
+            "symbolID": "a4b33551-051e-47d5-845d-3779e43e4085",
             "distribution": [
                 0.0,
                 0.0,
@@ -525,12 +525,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88450
+                "instanceID": -12776
             },
             "Threshold": 0.15000000596046449,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "2c2dfd75-f4d8-47eb-9a23-02de7f7828a8",
+            "symbolID": "5b4eedc5-c436-4203-a912-fad76eb95dd2",
             "distribution": [
                 0.0,
                 0.0,
@@ -655,12 +655,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88454
+                "instanceID": -12780
             },
             "Threshold": 0.15000000596046449,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "a3f897f5-41a0-4ef5-9d4d-a240210f6da5",
+            "symbolID": "0fe55b0d-46d4-4919-b87b-84f52fcdc4f2",
             "distribution": [
                 0.0,
                 0.038596492260694507,
@@ -785,12 +785,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88458
+                "instanceID": -12784
             },
             "Threshold": 0.44999998807907107,
             "strokes": 3,
             "orientationThreshold": 0.20999999344348908,
-            "symbolID": "9be4d819-9897-4016-a4d9-438783b83858",
+            "symbolID": "2f30441b-3667-4a2c-b588-3cd241a6b30f",
             "distribution": [
                 0.0,
                 0.0034722222480922939,
@@ -915,12 +915,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88462
+                "instanceID": -12788
             },
             "Threshold": 0.2199999988079071,
             "strokes": 1,
             "orientationThreshold": 0.15000000596046449,
-            "symbolID": "e585aea0-9993-4290-a835-623a32003cc1",
+            "symbolID": "0bf4fb29-ca3b-4220-ac2b-16c6da4d006a",
             "distribution": [
                 0.009036144241690636,
                 0.08132530003786087,
@@ -1045,12 +1045,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88466
+                "instanceID": -12792
             },
             "Threshold": 0.20000000298023225,
             "strokes": 1,
             "orientationThreshold": 0.20000000298023225,
-            "symbolID": "54d914fe-7b7f-4c6a-bbf5-0645cca0bafa",
+            "symbolID": "b22ccfa0-c480-4d17-ad67-3bd01f66be39",
             "distribution": [
                 0.0,
                 0.0,
@@ -1175,12 +1175,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88470
+                "instanceID": -12796
             },
             "Threshold": 0.11999999731779099,
             "strokes": 1,
             "orientationThreshold": 0.15000000596046449,
-            "symbolID": "26e29b9f-31b9-431d-a2bd-97cc4943e763",
+            "symbolID": "380f891d-8e33-4395-b002-da7c0604fa27",
             "distribution": [
                 0.02120141312479973,
                 0.010600706562399865,
@@ -1305,12 +1305,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88474
+                "instanceID": -12800
             },
             "Threshold": 0.25,
             "strokes": 4,
             "orientationThreshold": 0.14499999582767487,
-            "symbolID": "d547612a-89a5-4802-8ad6-cc86a36b11fc",
+            "symbolID": "06695ff2-eaf7-41ad-9faa-7c9e41ef74dd",
             "distribution": [
                 0.0,
                 0.0,
@@ -1435,12 +1435,12 @@
             "useRotation": false,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88478
+                "instanceID": -12804
             },
             "Threshold": 0.3499999940395355,
             "strokes": 1,
             "orientationThreshold": 0.6000000238418579,
-            "symbolID": "1bd74946-a29f-4adf-9bf2-db570ae81f86",
+            "symbolID": "d801e406-acdf-4f37-b6a1-17fa6147f0af",
             "distribution": [
                 0.16470588743686677,
                 0.0058823530562222,
@@ -1565,12 +1565,12 @@
             "useRotation": true,
             "isSymmetric": false,
             "templateTexture": {
-                "instanceID": -88482
+                "instanceID": -12808
             },
             "Threshold": 0.3499999940395355,
             "strokes": 1,
             "orientationThreshold": 0.14499999582767487,
-            "symbolID": "40290cc1-40bd-441a-a3e4-d5099754e4be",
+            "symbolID": "dbd53ffb-ca36-4b84-87c2-c614f40f789e",
             "distribution": [
                 0.03412969410419464,
                 0.03242320939898491,
@@ -1688,136 +1688,6 @@
                 0.0001739330666057079,
                 0.00010730361775733505,
                 0.0002892908382741258
-            ]
-        },
-        {
-            "symbolName": "M",
-            "useRotation": true,
-            "isSymmetric": false,
-            "templateTexture": {
-                "instanceID": 0
-            },
-            "Threshold": 0.0,
-            "strokes": 1,
-            "orientationThreshold": 0.0,
-            "symbolID": "f235a568-83ce-4893-adcc-af14c26d5585",
-            "distribution": [
-                0.018450183793902398,
-                0.02029520273208618,
-                0.029520295560359956,
-                0.04428044334053993,
-                0.022140221670269967,
-                0.009225091896951199,
-                0.009225091896951199,
-                0.007380073890089989,
-                0.02029520273208618,
-                0.04059040546417236,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.016605166718363763,
-                0.029520295560359956,
-                0.05904059112071991,
-                0.018450183793902398,
-                0.0,
-                0.007380073890089989,
-                0.0,
-                0.0,
-                0.049815498292446139,
-                0.0479704812169075,
-                0.053505536168813708,
-                0.10332103073596955,
-                0.03874538838863373,
-                0.0,
-                0.0,
-                0.02029520273208618,
-                0.10516605526208878,
-                0.05166051536798477,
-                0.0,
-                0.07749077677726746,
-                0.012915128841996193,
-                0.0,
-                0.0,
-                0.012915128841996193,
-                0.04059040546417236,
-                0.0,
-                0.0,
-                0.012915128841996193,
-                0.02029520273208618,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
-            ],
-            "momentMagnitudes": [
-                0.0005872875891928303,
-                2.5258799394227188e-19,
-                2.5258799394227188e-19,
-                0.00022530229934027274,
-                0.0005868275227141997,
-                0.00022530229934027274,
-                0.00008920199371791854,
-                0.00015466412824898188,
-                0.00015466412824898188,
-                0.00008920199371791854,
-                0.0002981795760978192,
-                0.0004630384629942834,
-                0.00008254357342130584,
-                0.0004630384629942834,
-                0.0002981795760978192,
-                0.00003283514514070595,
-                0.00022309004050779165,
-                0.00016743287004228008,
-                0.00016743287004228008,
-                0.00022309004050779165,
-                0.00003283514514070595,
-                0.00014852370888104738,
-                0.000341739244346689,
-                0.0002897435943578882,
-                0.00008326440334759955,
-                0.0002897435943578882,
-                0.000341739244346689,
-                0.00014852370888104738,
-                0.00015095595229155904,
-                0.0002907594301603817,
-                0.0005003277666014499,
-                0.00040038875768105484,
-                0.00040038875768105484,
-                0.0005003277666014499,
-                0.0002907594301603817,
-                0.00015095595229155904,
-                0.00021826606450045682,
-                0.000303168303412265,
-                0.00010530644429785739,
-                0.00020727945484798333,
-                0.0003964257911122593,
-                0.00020727945484798333,
-                0.00010530644429785739,
-                0.000303168303412265,
-                0.00021826606450045682,
-                0.00008100172937796125,
-                0.00018635484290298942,
-                0.0003350413098546412,
-                0.00042270112961420716,
-                0.0003585778864107449,
-                0.0003585778864107449,
-                0.00042270112961420716,
-                0.0003350413098546412,
-                0.00018635484290298942,
-                0.00008100172937796125,
-                0.0001238524996266594,
-                0.00023549223298076333,
-                0.0002769320323458457,
-                0.0002400219110545197,
-                0.0005312040173259608,
-                0.0004679706373777777,
-                0.0005312040173259608,
-                0.0002400219110545197,
-                0.0002769320323458457,
-                0.00023549223298076333,
-                0.0001238524996266594
             ]
         }
     ]

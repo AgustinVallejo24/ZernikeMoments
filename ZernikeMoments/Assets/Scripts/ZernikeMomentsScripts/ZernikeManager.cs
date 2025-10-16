@@ -26,7 +26,7 @@ public class ZernikeManager : MonoBehaviour
     public GameObject DrawingTest;
     // Almacena los descriptores (magnitudes de momentos) de los símbolos de referencia.
    
-    public List<ReferenceSymbol> referenceSymbols;
+    public List<ReferenceSymbol> referenceSymbols;    
 
     private ZernikeProcessor _processor;
     private List<Vector2> _currentStrokePoints;
@@ -64,6 +64,8 @@ public class ZernikeManager : MonoBehaviour
     IEnumerator Compute()
     {
         float carga = 0;
+
+        Directory.Delete(Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates"), true);      
     
         foreach (var reference in referenceSymbols)
         {
