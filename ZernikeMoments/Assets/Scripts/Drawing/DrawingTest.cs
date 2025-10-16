@@ -269,6 +269,8 @@ public class DrawingTest : MonoBehaviour
                 lineRenderers.Remove(item);
                 Destroy(item.gameObject);
             }
+
+            currentLR = lineRenderers[0];
         }
         else
         {
@@ -286,6 +288,7 @@ public class DrawingTest : MonoBehaviour
                 lineRenderers.Remove(item);
                 Destroy(item.gameObject);
             }
+            currentLR = lineRenderers[0];
         }
     }
     private class PointData
@@ -430,6 +433,7 @@ public class DrawingTest : MonoBehaviour
                 lineRenderers.Remove(item);
                 Destroy(item.gameObject);
             }
+            currentLR = lineRenderers[0];
         }
         else
         {
@@ -447,6 +451,7 @@ public class DrawingTest : MonoBehaviour
                 lineRenderers.Remove(item);
                 Destroy(item.gameObject);
             }
+            currentLR = lineRenderers[0];
         }
     }
     //IEnumerator Drawpoints()
