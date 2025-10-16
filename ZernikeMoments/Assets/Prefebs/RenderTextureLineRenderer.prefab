@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1631191841118931965}
   - component: {fileID: 5936190321714190901}
-  m_Layer: 0
-  m_Name: Line Renderer Prefab
+  m_Layer: 6
+  m_Name: RenderTextureLineRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

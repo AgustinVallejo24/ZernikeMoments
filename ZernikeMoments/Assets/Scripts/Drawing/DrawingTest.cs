@@ -9,8 +9,10 @@ using System;
 public class DrawingTest : MonoBehaviour
 {
     public List<LineRenderer> lineRenderers;
+    public List<LineRenderer> renderTexturelineRenderers;
     [SerializeField] LineRenderer currentLR;
     [SerializeField] LineRenderer lRPrefab;
+    [SerializeField] LineRenderer lRPrefabRT;
     public int linerendererIndex;
     public LineRenderer recognitionLineRenderer;
     public TMP_Text resultText;
@@ -223,57 +225,7 @@ public class DrawingTest : MonoBehaviour
 
     public void SaveSymbol()
     {
-        if (currentPoints.Any())
-        {
-            var normalizedPositions = GestureProcessor.Normalize(currentPoints);
-            for (int i = 0; i < strokesPointsCount.Count; i++)
-            {
-                if (strokesPointsCount[i] == 0) continue;
-                for (int j = 0; j < strokesPointsCount[i]; j++)
-                {
-                    listaDeListas[i].Add(normalizedPositions[j]);
-
-                }
-                normalizedPositions = normalizedPositions.Skip(strokesPointsCount[i]).ToList();
-            }
-
-
-
-            string symbolID = Guid.NewGuid().ToString();
-            ImageUtils.SaveRenderTextureToPNG(renderTexture, symbolID);
-            zRecognizer.SaveSymbol(listaDeListas, lineRenderers.Count -1 ,symbolNameField.text, symbolID);
-            symbolNameField.text = "";
-            currentPoints.Clear();
-            strokesPointsCount.Clear();
-            foreach (var item in listaDeListas)
-            {
-                item.Clear();
-            }
-            linerendererIndex = 0;
-            lineRenderers[0].positionCount = 0;
-            foreach (var item in lineRenderers.Skip(1))
-            {
-                lineRenderers.Remove(item);
-                Destroy(item.gameObject);
-            }
-        }
-        else
-        {
-            resultText.text = "Trazo demasiado corto";
-            currentPoints.Clear();
-            strokesPointsCount.Clear();
-            foreach (var item in listaDeListas)
-            {
-                item.Clear();
-            }
-            linerendererIndex = 0;
-            lineRenderers[0].positionCount = 0;
-            foreach (var item in lineRenderers.Skip(1))
-            {
-                lineRenderers.Remove(item);
-                Destroy(item.gameObject);
-            }
-        }
+        StartCoroutine(SaveSymbolCoroutine());
     }
     float GetLineLength(LineRenderer line)
     {
@@ -436,6 +388,67 @@ public class DrawingTest : MonoBehaviour
         }
     }
 
+    IEnumerator SaveSymbolCoroutine()
+    {
+        if (currentPoints.Any())
+        {
+            var normalizedPositions = GestureProcessor.Normalize(currentPoints);
+            for (int i = 0; i < strokesPointsCount.Count; i++)
+            {
+                renderTexturelineRenderers.Add(Instantiate(lRPrefabRT, transform));
+                renderTexturelineRenderers[i].positionCount = strokesPointsCount[i];
+                if (strokesPointsCount[i] == 0) continue;
+                for (int j = 0; j < strokesPointsCount[i]; j++)
+                {
+                    listaDeListas[i].Add(normalizedPositions[j]);
+                    renderTexturelineRenderers[i].SetPosition(j, normalizedPositions[j]);
+                }
+                normalizedPositions = normalizedPositions.Skip(strokesPointsCount[i]).ToList();
+            }
+
+
+            yield return new WaitForSeconds(.1f);
+            string symbolID = Guid.NewGuid().ToString();
+            ImageUtils.SaveRenderTextureToPNG(renderTexture, symbolID);
+            zRecognizer.SaveSymbol(listaDeListas, lineRenderers.Count - 1, symbolNameField.text, symbolID);
+            symbolNameField.text = "";
+            foreach (var item in renderTexturelineRenderers)
+            {
+                Destroy(item.gameObject);
+            }
+            renderTexturelineRenderers.Clear();
+            currentPoints.Clear();
+            strokesPointsCount.Clear();
+            foreach (var item in listaDeListas)
+            {
+                item.Clear();
+            }
+            linerendererIndex = 0;
+            lineRenderers[0].positionCount = 0;
+            foreach (var item in lineRenderers.Skip(1))
+            {
+                lineRenderers.Remove(item);
+                Destroy(item.gameObject);
+            }
+        }
+        else
+        {
+            resultText.text = "Trazo demasiado corto";
+            currentPoints.Clear();
+            strokesPointsCount.Clear();
+            foreach (var item in listaDeListas)
+            {
+                item.Clear();
+            }
+            linerendererIndex = 0;
+            lineRenderers[0].positionCount = 0;
+            foreach (var item in lineRenderers.Skip(1))
+            {
+                lineRenderers.Remove(item);
+                Destroy(item.gameObject);
+            }
+        }
+    }
     //IEnumerator Drawpoints()
     //{
     //    var normalizedPositions = GestureProcessor.Normalize(currentPoints);
