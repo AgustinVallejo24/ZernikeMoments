@@ -199,6 +199,34 @@ public static class ImageUtils
         }        
     }
 
+
+    public static void SaveTextureToPNG(Texture2D texture, string fileName = "PlayerDrawing")
+    {
+        // 1. Convertir la textura a PNG
+        byte[] bytes = texture.EncodeToPNG();
+
+        // 2. Crear la carpeta si no existe
+        string path = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        // 3. Generar el nombre de archivo
+        string filePath = Path.Combine(path, fileName + ".png");
+
+        // 4. Guardar la textura en disco
+        try
+        {
+            File.WriteAllBytes(filePath, bytes);
+            Debug.Log("Imagen guardada en: " + filePath);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Error al guardar la imagen: " + ex.Message);
+        }
+    }
+
     public static Texture2D GetTexture2DCopy(RenderTexture renderTexture)
     {
         Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);

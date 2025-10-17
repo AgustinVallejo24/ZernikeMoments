@@ -493,7 +493,7 @@ MonoBehaviour:
     symbolID: 
     distribution: []
     momentMagnitudes: []
-  shouldLoad: 1
+  shouldLoad: 0
 --- !u!4 &585205193
 Transform:
   m_ObjectHideFlags: 0

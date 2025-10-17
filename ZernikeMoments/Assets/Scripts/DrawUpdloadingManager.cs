@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System;
 using TMPro;
 using System.IO;
+using System.Collections;
 public class DrawUpdloadingManager : MonoBehaviour
 {
 
@@ -53,7 +54,7 @@ public class DrawUpdloadingManager : MonoBehaviour
         else
         {
             _warningText.gameObject.SetActive(true);
-            _warningText.text = "A name is needed";
+            StartCoroutine(Warning("A name is needed"));
         }
         
 
@@ -66,14 +67,15 @@ public class DrawUpdloadingManager : MonoBehaviour
         var threshold = _zernikeManager.CalculateZernikeDistance(newSymbol.momentMagnitudes, _currentSymbol.momentMagnitudes) + .2f;
         if (_currentSymbol == null)
         {
-            _warningText.gameObject.SetActive(true);
-            _warningText.text = "The line is too short";
+            StartCoroutine(Warning("The line is too short"));
+
         }
         else
-        {
-            
+        {       
             _drawingTest.gameObject.SetActive(false);
             _configSymbolButton.gameObject.SetActive(false);
+            _instructionText.gameObject.SetActive(false);
+            _warningText.gameObject.SetActive(false);
             _currentSymbolConfigurer = Instantiate(_symbolConfigurerPrefab, _canvas);
             _currentSymbolConfigurer.GetComponentInChildren<Button>().onClick.AddListener(SaveSymbol);
             _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>().SetSymbolValues(ImageUtils.GetTexture2DCopy(renderTexture), _currentSymbol.symbolName, Convert.ToSingle(threshold), .1f, false, false);
@@ -81,20 +83,43 @@ public class DrawUpdloadingManager : MonoBehaviour
     }
     public void SaveSymbol()
     {
+        StartCoroutine(SaveSymbolCoroutine());
+    }
+
+
+    IEnumerator Warning(string text)
+    {
+        
+        _warningText.gameObject.SetActive(true);
+        _warningText.text = text;
+        yield return new WaitForSeconds(4f);
+        _warningText.gameObject.SetActive(false);
+    }
+
+    IEnumerator SaveSymbolCoroutine()
+    {
         var symbolConfig = _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>();
         _currentSymbol.Threshold = symbolConfig.GetThresholdFieldValue();
         _currentSymbol.orientationThreshold = symbolConfig.GetRotationThresholdFieldValue();
         _currentSymbol.useRotation = symbolConfig.GetUseRotation();
         _currentSymbol.isSymmetric = symbolConfig.GetIsSymmetric();
         string symbolID = Guid.NewGuid().ToString();
-        ImageUtils.SaveRenderTextureToPNG(renderTexture, symbolID);
+        ImageUtils.SaveTextureToPNG(symbolConfig.GetTexture(), symbolID);
         _currentSymbol.symbolID = symbolID;
         var symbolList = ReferenceSymbolStorage.LoadFromResources("symbols");
         symbolList.Add(_currentSymbol);
-        
+
         ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
         ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json"));
+        yield return new WaitForSeconds(.1f);
         Destroy(_currentSymbolConfigurer.gameObject);
         _drawingTest.ClearAllLineRenderers(true);
+
+        _instructionText.text = "Draw the new symbol";
+        _instructionText.gameObject.SetActive(true);
+        _confirmSymbolButton.gameObject.SetActive(true);
+        _symbolNameInputField.gameObject.SetActive(true);
+        _symbolNameInputField.text = "";
+        _drawingTest.gameObject.SetActive(true);
     }
 }

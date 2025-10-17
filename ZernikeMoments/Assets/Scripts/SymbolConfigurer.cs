@@ -36,6 +36,10 @@ public class SymbolConfigurer : MonoBehaviour
         _symbolImage.texture = texture;
     }
 
+    public Texture2D GetTexture()
+    {
+        return _symbolImage.texture as Texture2D;
+    }
     public void SetSimbolName(string name)
     {
         _symbolname.text = name;
