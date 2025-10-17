@@ -35,58 +35,73 @@ public class DrawingTest : MonoBehaviour
     
     void Start()
     {
-        recognizebutton.buttonAction += OnConfirmDrawing;        
+      //  recognizebutton.buttonAction += OnConfirmDrawing;        
     }
 
     //void Update()
     //{
-
-    //    if (Input.GetMouseButtonDown(0) && linerendererIndex < lineRenderer.Length)
+    //    // Si se está presionando el botón izquierdo del mouse
+    //    if (Input.GetMouseButtonDown(0))
     //    {
-    //        isDrawing = true;
-    //        //lineRenderer[linerendererIndex].SetPosition(0, cam.ScreenToWorldPoint(Input.mousePosition));
+    //        // Ignorar si está sobre UI
+    //        if (IsPointerOverUI())
+    //            return;
 
+    //        isDrawing = true;
+    //        currentStrokePoints.Clear();
     //    }
-    //    else if (Input.GetMouseButtonUp(0))
+
+    //    // Mientras el botón izquierdo esté presionado
+    //    if (Input.GetMouseButton(0))
+    //    {
+    //        if (IsPointerOverUI())
+    //            return;
+
+    //        if (isDrawing)
+    //        {
+    //            Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
+
+    //            if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
+    //            {
+    //                AddSmoothedPoint(pos);
+    //            }
+    //        }
+    //    }
+
+    //    // Cuando se suelta el botón izquierdo
+    //    if (Input.GetMouseButtonUp(0))
     //    {
     //        isDrawing = false;
 
+    //        if (GetLineLength(currentLR) < 1.5f)
+    //        {
+    //            foreach (var item in currentStrokePoints)
+    //            {
+    //                if (currentPoints.Contains(item))
+    //                    currentPoints.Remove(item);
+    //            }
 
-    //       // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
+    //            currentStrokePoints.Clear();
+    //            currentLR.positionCount = 0;
+    //            return;
+    //        }
+
+    //        listaDeListas.Add(new List<Vector2>());
+    //        linerendererIndex++;
+    //        currentLR = Instantiate(lRPrefab, this.transform);
+    //        lineRenderers.Add(currentLR);
     //        strokesPointsCount.Add(currentStrokePoints.Count);
     //        currentStrokePoints.Clear();
-
-    //        if (linerendererIndex < lineRenderer.Length)
-    //        {
-    //            linerendererIndex++;
-    //        }
-
-
-
-
-
-    //        //   var result = recognizer.RecognizeCurrentDrawing();
-    //        //Debug.Log("Resultado reconocimiento: " + result);
     //    }
-
-    //    if (isDrawing)
-    //    {
-    //        Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
-    //        if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.1f)
-    //        {
-    //            //currentPoints.Add(pos);
-    //            //currentStrokePoints.Add(pos);
-    //            AddSmoothedPoint(pos);
-    //        }
-    //    }
-
-    //    if (Input.GetKeyDown(KeyCode.Space) && currentPoints.Any())
-    //    {
-    //        OnConfirmDrawing();
-
-    //    }
-
     //}
+
+    // --- NUEVO ---
+    // Equivalente a IsTouchOverUI pero para mouse
+    bool IsPointerOverUI()
+    {
+        return UnityEngine.EventSystems.EventSystem.current != null &&
+               UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+    }
 
     bool IsTouchOverUI(Touch touch)
     {
@@ -100,11 +115,6 @@ public class DrawingTest : MonoBehaviour
     }
     void Update()
     {
-
-        //if (recognizebutton.isPressed)
-        //{
-        //    OnConfirmDrawing();
-        //}
 
 
         if (Input.touchCount > 0)
@@ -125,7 +135,7 @@ public class DrawingTest : MonoBehaviour
             {
                 case TouchPhase.Began:
                     isDrawing = true;
-                    currentStrokePoints.Clear();                    
+                    currentStrokePoints.Clear();
                     break;
 
                 case TouchPhase.Moved:
@@ -142,7 +152,7 @@ public class DrawingTest : MonoBehaviour
 
                 case TouchPhase.Ended:
                 case TouchPhase.Canceled:
-                    isDrawing = false;                    
+                    isDrawing = false;
 
                     if (GetLineLength(currentLR) < 1.5f)
                     {
@@ -155,9 +165,9 @@ public class DrawingTest : MonoBehaviour
                             }
                         }
                         currentStrokePoints.Clear();
-                        
-                        
-                        
+
+
+
                         currentLR.positionCount = 0;
                         return;
                     }
@@ -167,7 +177,7 @@ public class DrawingTest : MonoBehaviour
                     lineRenderers.Add(currentLR);
                     // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
                     strokesPointsCount.Add(currentStrokePoints.Count);
-                    currentStrokePoints.Clear();                    
+                    currentStrokePoints.Clear();
                     break;
             }
         }
@@ -227,6 +237,42 @@ public class DrawingTest : MonoBehaviour
     {
         StartCoroutine(SaveSymbolCoroutine());
     }
+
+    public ReferenceSymbol ReturnNewSymbol(string symbolName,bool shouldRender)
+    {
+        if (currentPoints.Any())
+        {
+            var normalizedPositions = GestureProcessor.Normalize(currentPoints);
+            for (int i = 0; i < strokesPointsCount.Count; i++)
+            {
+                if (shouldRender)
+                {
+                    renderTexturelineRenderers.Add(Instantiate(lRPrefabRT, transform));
+                    renderTexturelineRenderers[i].positionCount = strokesPointsCount[i];
+                }
+
+                if (strokesPointsCount[i] == 0) continue;
+                for (int j = 0; j < strokesPointsCount[i]; j++)
+                {
+                    listaDeListas[i].Add(normalizedPositions[j]);
+                    if (shouldRender)
+                    {
+                        renderTexturelineRenderers[i].SetPosition(j, normalizedPositions[j]);
+                    }
+                  
+                }
+                normalizedPositions = normalizedPositions.Skip(strokesPointsCount[i]).ToList();
+            }
+
+
+
+            return zRecognizer.ReturnNewSymbol(listaDeListas, lineRenderers.Count - 1, symbolName, "symbolID");
+        }
+        else
+        {
+            return null;
+        }
+    }
     float GetLineLength(LineRenderer line)
     {
         float length = 0f;
@@ -264,10 +310,11 @@ public class DrawingTest : MonoBehaviour
             }
             linerendererIndex = 0;
             lineRenderers[0].positionCount = 0;
-            foreach (var item in lineRenderers.Skip(1))
+            var count = lineRenderers.Count;
+            for (int i = 1; i < count; i++)
             {
-                lineRenderers.Remove(item);
-                Destroy(item.gameObject);
+                Destroy(lineRenderers[1].gameObject);
+                lineRenderers.RemoveAt(1);
             }
 
             currentLR = lineRenderers[0];
@@ -453,6 +500,36 @@ public class DrawingTest : MonoBehaviour
             }
             currentLR = lineRenderers[0];
         }
+    }
+
+    public void ClearAllLineRenderers(bool clearRenderDraw)
+    {
+        currentPoints.Clear();
+        strokesPointsCount.Clear();
+        foreach (var item in listaDeListas)
+        {
+            item.Clear();
+        }
+        linerendererIndex = 0;
+        lineRenderers[0].positionCount = 0;
+        var count = lineRenderers.Count;
+        for (int i = 1; i < count; i++)
+        {
+            Destroy(lineRenderers[1].gameObject);
+            lineRenderers.RemoveAt(1);
+        }
+
+        currentLR = lineRenderers[0];
+        if (clearRenderDraw)
+        {
+            foreach (var item in renderTexturelineRenderers)
+            {
+                Destroy(item.gameObject);
+            }
+            renderTexturelineRenderers.Clear();
+        }
+
+
     }
     //IEnumerator Drawpoints()
     //{

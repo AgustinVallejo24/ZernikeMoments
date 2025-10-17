@@ -154,6 +154,23 @@ public class ZernikeManager : MonoBehaviour
         
     }
 
+    public ReferenceSymbol ReturnNewSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName, string symbolID)
+    {
+        _processor.DrawStrokes(finishedPoints);
+        float totalPixels = _processor.GetActivePixelCount();
+        ZernikeMoment[] playerMoments = _processor.ComputeZernikeMoments(maxMomentOrder);
+        float[] playerDistribution = _processor.GetSymbolDistribution();
+        List<double> playerMagnitudes = new List<double>();
+        foreach (var moment in playerMoments)
+        {
+            double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
+            playerMagnitudes.Add(normalizedMagnitude);
+        }
+
+        return new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity, symbolID);
+
+    }
+
     private void RecognizeSymbol(List<double> playerMagnitudes, int strokeQuantity, float[] playerDrawDistribution)
     {
         // 1. Filtrar los símbolos de referencia que coinciden con la cantidad de trazos.
@@ -223,7 +240,7 @@ public class ZernikeManager : MonoBehaviour
         }
     }
 
-    private double CalculateZernikeDistance(List<double> playerMagnitudes, List<double> referenceMagnitudes)
+    public double CalculateZernikeDistance(List<double> playerMagnitudes, List<double> referenceMagnitudes)
     {
         double distanceSquared = 0;
         int count = Mathf.Min(playerMagnitudes.Count, referenceMagnitudes.Count);

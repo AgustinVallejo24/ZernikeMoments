@@ -24,7 +24,7 @@ public static class ReferenceSymbolStorage
     public static List<ReferenceSymbol> LoadFromResources(string resourceName)
     {
         // Carga el archivo como TextAsset desde Resources
-        AssetDatabase.Refresh();
+  //      AssetDatabase.Refresh();
         TextAsset jsonFile = Resources.Load<TextAsset>(resourceName);
         if (jsonFile == null)
         {
