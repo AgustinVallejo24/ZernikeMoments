@@ -3,6 +3,7 @@ using B83.Win32;
 
 public class DragAndDropReceiver : MonoBehaviour
 {
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -35,4 +36,5 @@ public class DragAndDropReceiver : MonoBehaviour
     {
         UnityDragAndDropHook.UninstallHook();
     }
+#endif
 }

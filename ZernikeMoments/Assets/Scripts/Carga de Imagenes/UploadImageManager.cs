@@ -16,5 +16,12 @@ public class UploadImageManager : MonoBehaviour
         
     }
 
-    
+    public void OnBrowseButtonClick()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+#else
+        FileBrowserLoader.OnBrowseButtonClick(uploadedImage);
+#endif
+
+    }
 }

@@ -388,6 +388,7 @@ namespace B83.Win32
 
     public static class WinAPI
     {
+
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
         [DllImport("kernel32.dll")]
@@ -418,8 +419,8 @@ namespace B83.Win32
         public delegate void DroppedFilesEvent(List<string> aPathNames, POINT aDropPoint);
         public static event DroppedFilesEvent OnDroppedFiles;
 
-//#if UNITY_STANDALONE_WIN && !UNITY_EDITOR_WIN
-
+        //#if UNITY_STANDALONE_WIN && !UNITY_EDITOR_WIN
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         private static uint threadId;
         private static IntPtr mainWindow = IntPtr.Zero;
         private static IntPtr m_Hook;
@@ -480,13 +481,13 @@ namespace B83.Win32
             }
             return WinAPI.CallNextHookEx(m_Hook, code, wParam, ref lParam);
         }
-/*#else
+#else
         public static void InstallHook()
         {
         }
         public static void UninstallHook()
         {
         }
-#endif*/
+#endif
     }
 }

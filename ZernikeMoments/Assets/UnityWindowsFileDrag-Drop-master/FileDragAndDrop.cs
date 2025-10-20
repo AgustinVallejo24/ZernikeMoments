@@ -6,6 +6,7 @@ using B83.Win32;
 
 public class FileDragAndDrop : MonoBehaviour
 {
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
     List<string> log = new List<string>();
     void OnEnable ()
     {
@@ -35,4 +36,5 @@ public class FileDragAndDrop : MonoBehaviour
         foreach (var s in log)
             GUILayout.Label(s);
     }
+#endif
 }

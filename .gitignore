@@ -74,4 +74,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# IGNORAR ARCHIVOS DE PROYECTOS NATIVOS DENTRO DE PLUGINS
+**/*.xcodeproj/
+**/*.xcworkspace/
+**/*.xcscheme
+
 # End of https://www.toptal.com/developers/gitignore/api/unity
