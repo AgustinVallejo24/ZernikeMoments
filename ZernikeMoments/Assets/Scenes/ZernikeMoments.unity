@@ -364,136 +364,123 @@ MonoBehaviour:
   DrawingTest: {fileID: 6926165994961712945}
   referenceSymbols:
   - symbolName: C
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: b6bee689972544a4ebd7f109c6a4443c, type: 3}
-    Threshold: 0.36
-    strokes: 1
-    orientationThreshold: 0.2
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: V
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: 2748993ccbbc8d9469867ab62cbd661e, type: 3}
-    Threshold: 0.3
-    strokes: 1
-    orientationThreshold: 0.2
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Circulo
-    useRotation: 0
-    isSymmetric: 1
     templateTexture: {fileID: 2800000, guid: 7e89d3459617602479251a10e2ccdb1b, type: 3}
-    Threshold: 0.3
-    strokes: 1
-    orientationThreshold: 360
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Cuadrado
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: 671bd6ee381e12e45820f8e9a312f6d2, type: 3}
-    Threshold: 0.15
-    strokes: 1
-    orientationThreshold: 0.2
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Cuadrado
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: d5fc5933d7ff7c9459a0fc7d76cfa913, type: 3}
-    Threshold: 0.15
-    strokes: 1
-    orientationThreshold: 0.2
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Cuadrado
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: acd80a22e8c88c44eae4da33ef26509f, type: 3}
-    Threshold: 0.15
-    strokes: 1
-    orientationThreshold: 0.2
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Copa
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: abc109f8ea4bb414ba1de72515d0b19e, type: 3}
-    Threshold: 0.45
-    strokes: 3
-    orientationThreshold: 0.21
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: inf
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: e67d3c7248954c844950d818949726de, type: 3}
-    Threshold: 0.22
-    strokes: 1
-    orientationThreshold: 0.15
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Triangulo
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: 159623a8ee604da498bb4f89f1c955c3, type: 3}
-    Threshold: 0.2
-    strokes: 1
-    orientationThreshold: 0.2
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: espiral
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: ab2a3f738daa74c4ea5e8e2f0ce408eb, type: 3}
-    Threshold: 0.12
-    strokes: 1
-    orientationThreshold: 0.15
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Casita
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: d1073cade5a8b0e4ea613a1ab95d1b99, type: 3}
-    Threshold: 0.25
-    strokes: 4
-    orientationThreshold: 0.145
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Linea
-    useRotation: 0
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: b6c3e90a26502d846b5adedebb300076, type: 3}
-    Threshold: 0.35
-    strokes: 1
-    orientationThreshold: 0.6
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
   - symbolName: Estrella
-    useRotation: 1
-    isSymmetric: 0
     templateTexture: {fileID: 2800000, guid: 3ec2ab7c9f1f6064a834e7a012dfbb0d, type: 3}
-    Threshold: 0.35
-    strokes: 1
-    orientationThreshold: 0.145
     symbolID: 
+    strokes: 0
     distribution: []
     momentMagnitudes: []
-  shouldLoad: 0
+  newReferenceSymbolsList:
+  - symbolName: C
+    symbols:
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: b6bee689972544a4ebd7f109c6a4443c, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.24
+    orientationThreshold: 0
+    useRotation: 0
+    isSymmetric: 0
+    strokes: 1
+  - symbolName: Cuadrado
+    symbols:
+    - symbolName: Cuadrado
+      templateTexture: {fileID: 2800000, guid: 671bd6ee381e12e45820f8e9a312f6d2, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Cuadrado
+      templateTexture: {fileID: 2800000, guid: d5fc5933d7ff7c9459a0fc7d76cfa913, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Cuadrado
+      templateTexture: {fileID: 2800000, guid: acd80a22e8c88c44eae4da33ef26509f, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.15
+    orientationThreshold: 0
+    useRotation: 0
+    isSymmetric: 0
+    strokes: 1
+  shouldLoad: 1
 --- !u!4 &585205193
 Transform:
   m_ObjectHideFlags: 0

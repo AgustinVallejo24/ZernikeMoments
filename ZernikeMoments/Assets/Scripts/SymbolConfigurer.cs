@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 public class SymbolConfigurer : MonoBehaviour
 {
     [SerializeField] TMP_Text _symbolname;
@@ -11,16 +12,23 @@ public class SymbolConfigurer : MonoBehaviour
     [SerializeField] Slider _rotationThresholdSlider;
     [SerializeField] Toggle _isSymmetric;
     [SerializeField] Toggle _UseRotation;
-
+    [SerializeField] TemplatesListConfigurer _listConfigurer;
+    [SerializeField] List<ReferenceSymbol> _symbols;
     private void Start()
     {
         _thresholdInputField.onValueChanged.AddListener(SetThresholdSliderValue);
         _thresholdSlider.onValueChanged.AddListener(SetThresholdFieldValue);
         _rotationThresholdInputField.onValueChanged.AddListener(SetRotationThresholdSliderValue);
         _rotationThresholdSlider.onValueChanged.AddListener(SetRotationThresholdFieldValue);
+  
     }
 
-    public void SetSymbolValues(Texture2D texture, string name, float threshold, float rotationThreshold, bool symmetric, bool rotation)
+    public void SetSymbolList()
+    {
+        var list = Instantiate(_listConfigurer,transform.parent.parent.parent.parent);
+        list.AddContent(_symbols);
+    }
+    public void SetSymbolValues(Texture2D texture, string name, float threshold, float rotationThreshold, bool symmetric, bool rotation, List<ReferenceSymbol> symbols)
     {
         SetImage(texture);
         SetSimbolName(name);
@@ -30,6 +38,8 @@ public class SymbolConfigurer : MonoBehaviour
         SetRotationThresholdSliderValue(rotationThreshold.ToString());
         SetsSymmetric(symmetric);
         SetUseRotation(rotation);
+        _symbols = symbols;
+      //  SetSymbolList(symbols);
     }
     public void SetImage(Texture2D texture)
     {

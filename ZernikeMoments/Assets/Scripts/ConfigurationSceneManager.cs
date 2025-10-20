@@ -10,17 +10,20 @@ public class ConfigurationSceneManager : MonoBehaviour
     [SerializeField] SymbolConfigurer _symbolConfigurerPrefab;
     [SerializeField] VerticalLayoutGroup _layoutGroup;
     [SerializeField] TMP_InputField _nameInputField;
-    [SerializeField] List<ReferenceSymbol> _symbolList;
+    [SerializeField] List<ReferenceSymbolGroup> _symbolList;
     [SerializeField] List<SymbolConfigurer> _symbolConfigList;
+  
     void Start()
     {
-       var referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
+        var referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
         _symbolList = referenceSymbols;
         foreach (var item in referenceSymbols)
         {
             SymbolConfigurer newSymbol = Instantiate(_symbolConfigurerPrefab, _content);
-            Texture2D texture = ImageUtils.LoadTexture(item.symbolID);
-            newSymbol.SetSymbolValues(texture, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation);
+
+            //Texture2D texture = ImageUtils.LoadTexture(item.symbolID);
+            Texture2D texture = default;
+            newSymbol.SetSymbolValues(texture, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation,item.symbols);
             _symbolConfigList.Add(newSymbol);
         }
     }
@@ -28,12 +31,16 @@ public class ConfigurationSceneManager : MonoBehaviour
     public void SaveSymbols()
     {
 
+      
+
         for (int i = 0; i < _symbolList.Count; i++)
         {
-            _symbolList[i].isSymmetric = _symbolConfigList[i].GetIsSymmetric();
-            _symbolList[i].useRotation = _symbolConfigList[i].GetUseRotation();
-            _symbolList[i].Threshold = _symbolConfigList[i].GetThresholdSliderValue();
-            _symbolList[i].orientationThreshold = _symbolConfigList[i].GetRotationThresholdSliderValue();
+            var currentGroup = _symbolList[i];
+            currentGroup.isSymmetric = _symbolConfigList[i].GetIsSymmetric();
+            currentGroup.useRotation = _symbolConfigList[i].GetUseRotation();
+            currentGroup.Threshold = _symbolConfigList[i].GetThresholdSliderValue();
+            currentGroup.orientationThreshold = _symbolConfigList[i].GetRotationThresholdSliderValue();
+            _symbolList[i] = currentGroup;
         }
         ReferenceSymbolStorage.SaveSymbols(_symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
 
@@ -41,7 +48,7 @@ public class ConfigurationSceneManager : MonoBehaviour
 
     public void SearchSymbols()
     {
-        if(_nameInputField.text == "")
+        if (_nameInputField.text == "")
         {
             ClearFilters();
             return;
@@ -54,7 +61,7 @@ public class ConfigurationSceneManager : MonoBehaviour
         foreach (var item in _symbolList.Where(x => x.symbolName == _nameInputField.text))
         {
             SymbolConfigurer newSymbol = Instantiate(_symbolConfigurerPrefab, _content);
-            newSymbol.SetSymbolValues(null, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation);
+            newSymbol.SetSymbolValues(null, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation, item.symbols);
         }
     }
 
@@ -67,7 +74,7 @@ public class ConfigurationSceneManager : MonoBehaviour
         foreach (var item in _symbolList)
         {
             SymbolConfigurer newSymbol = Instantiate(_symbolConfigurerPrefab, _content);
-            newSymbol.SetSymbolValues(null, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation);
+            newSymbol.SetSymbolValues(null, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation, item.symbols);
         }
     }
 }

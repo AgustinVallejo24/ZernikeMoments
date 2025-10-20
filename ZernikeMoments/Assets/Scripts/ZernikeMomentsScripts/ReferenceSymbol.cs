@@ -5,13 +5,18 @@ using System.Collections.Generic;
 public class ReferenceSymbol
 {
     public string symbolName;
-    public bool useRotation = true;
-    public bool isSymmetric = false;
+
     public Texture2D templateTexture;
-    public float Threshold;
-    public int strokes = 1;
-    public float orientationThreshold;
+  
+
     public string symbolID;
+
+
+    //public float Threshold;
+    //public float orientationThreshold;
+    //public bool useRotation = true;
+    //public bool isSymmetric = false;
+    public int strokes = 1;
 
     // [HideInInspector]
     public float[] distribution;

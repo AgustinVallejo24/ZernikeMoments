@@ -26,8 +26,8 @@ public class ZernikeManager : MonoBehaviour
     public GameObject DrawingTest;
     // Almacena los descriptores (magnitudes de momentos) de los símbolos de referencia.
    
-    public List<ReferenceSymbol> referenceSymbols;    
-
+    public List<ReferenceSymbol> referenceSymbols;
+    public List<ReferenceSymbolGroup> newReferenceSymbolsList;
     private ZernikeProcessor _processor;
     private List<Vector2> _currentStrokePoints;
    
@@ -48,8 +48,8 @@ public class ZernikeManager : MonoBehaviour
         }
         else
         {
-            referenceSymbols.Clear();
-            referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();            
+            newReferenceSymbolsList.Clear();
+            newReferenceSymbolsList = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();            
             UICarga.SetActive(false);
             UIDibujo.SetActive(true);
             DrawingTest.SetActive(true);
@@ -59,59 +59,64 @@ public class ZernikeManager : MonoBehaviour
    
     public void SaveSymbolList()
     {
-        ReferenceSymbolStorage.SaveSymbols(referenceSymbols, jsonPath);
+        ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
     }
     IEnumerator Compute()
     {
         float carga = 0;
 
-        Directory.Delete(Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates"), true);      
-    
-        foreach (var reference in referenceSymbols)
+        Directory.Delete(Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates"), true);
+
+
+        foreach (var group in newReferenceSymbolsList)
         {
-       
-            if (reference.templateTexture != null)
+            foreach (var reference in group.symbols)
             {
-                // Procesar la textura para obtener la matriz binaria
-                reference.templateTexture = _processor.ResizeImage(reference.templateTexture, 64);
-                reference.templateTexture.name = reference.symbolName;
-                Debug.Log(reference.templateTexture.height);
-                _processor.DrawTexture(reference.templateTexture);
-                
-                // Calcular la suma de todos los píxeles activos para la normalización
-                float totalPixels = _processor.GetActivePixelCount();
-                Debug.Log("Divido por " + totalPixels);
-               
-                ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
 
-                reference.momentMagnitudes = new List<double>();
-                // Normalizar y guardar las magnitudes
-                foreach (var moment in moments)
+                if (reference.templateTexture != null)
                 {
-                    // Evitar división por cero
-                    double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
-                    reference.momentMagnitudes.Add(normalizedMagnitude);
+                    // Procesar la textura para obtener la matriz binaria
+                    reference.templateTexture = _processor.ResizeImage(reference.templateTexture, 64);
+                    reference.templateTexture.name = reference.symbolName;
+                    Debug.Log(reference.templateTexture.height);
+                    _processor.DrawTexture(reference.templateTexture);
+
+                    // Calcular la suma de todos los píxeles activos para la normalización
+                    float totalPixels = _processor.GetActivePixelCount();
+                    Debug.Log("Divido por " + totalPixels);
+
+                    ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
+
+                    reference.momentMagnitudes = new List<double>();
+                    // Normalizar y guardar las magnitudes
+                    foreach (var moment in moments)
+                    {
+                        // Evitar división por cero
+                        double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
+                        reference.momentMagnitudes.Add(normalizedMagnitude);
+                    }
+
+                    reference.distribution = _processor.GetSymbolDistribution();
+
+                    reference.symbolID = Guid.NewGuid().ToString();
+
+                    ImageUtils.SaveTexture(reference.templateTexture, reference.symbolID);
                 }
+                carga += 1f / referenceSymbols.Count;
 
-                reference.distribution = _processor.GetSymbolDistribution();
 
-                reference.symbolID = Guid.NewGuid().ToString();
+                barrita.fillAmount = carga;
 
-                ImageUtils.SaveTexture(reference.templateTexture, reference.symbolID);
+                yield return null;
             }
-            carga += 1f/referenceSymbols.Count;
-
-       
-            barrita.fillAmount = carga;
-           
-            yield return null;
         }
+        
         UICarga.SetActive(false);
         UIDibujo.SetActive(true);
         yield return new WaitForSeconds(.2f);
         DrawingTest.SetActive(true);
-        ReferenceSymbolStorage.SaveSymbols(referenceSymbols, jsonPath);
-        referenceSymbols = referenceSymbols.Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
+        ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
+        newReferenceSymbolsList = newReferenceSymbolsList.Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
     }
     public void OnDrawingFinished(List<List<Vector2>> finishedPoints, int strokeQuantity)
     {
@@ -149,7 +154,7 @@ public class ZernikeManager : MonoBehaviour
         string savePath = Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json");
         ReferenceSymbolStorage.AppendSymbol(newSymbol, savePath);
         referenceSymbols.Add(newSymbol);
-        ReferenceSymbolStorage.SaveSymbols(referenceSymbols, jsonPath);
+        ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
         
         
     }
@@ -174,7 +179,7 @@ public class ZernikeManager : MonoBehaviour
     private void RecognizeSymbol(List<double> playerMagnitudes, int strokeQuantity, float[] playerDrawDistribution)
     {
         // 1. Filtrar los símbolos de referencia que coinciden con la cantidad de trazos.
-        var relevantSymbols = referenceSymbols.Where(x => x.strokes == strokeQuantity).ToList();
+        var relevantSymbols = newReferenceSymbolsList.Where(x => x.strokes == strokeQuantity).ToList();
 
         if (relevantSymbols.Count == 0)
         {
@@ -183,8 +188,8 @@ public class ZernikeManager : MonoBehaviour
         }
 
         // 2. Encontrar el mejor candidato. Las variables se pasan por 'out' para ser asignadas dentro de la función.
-        FindBestCandidate(playerMagnitudes, playerDrawDistribution, relevantSymbols, out ReferenceSymbol bestMatch,
-            out double minDistance, out float bestDistributionDiff, out ReferenceSymbol closestMismatch, out double closestMismatchDist);
+        FindBestCandidate(playerMagnitudes, playerDrawDistribution, relevantSymbols, out ReferenceSymbolGroup bestMatch,
+            out double minDistance, out float bestDistributionDiff, out ReferenceSymbolGroup closestMismatch, out double closestMismatchDist);
 
         // 3. Mostrar el resultado final en la interfaz.
         DisplayResult(bestMatch, minDistance, bestDistributionDiff, closestMismatch, closestMismatchDist);
@@ -193,51 +198,55 @@ public class ZernikeManager : MonoBehaviour
     private void FindBestCandidate(
     List<double> playerMagnitudes,
     float[] playerDrawDistribution,
-    List<ReferenceSymbol> candidates,
-    out ReferenceSymbol bestMatch,
+    List<ReferenceSymbolGroup> candidates,
+    out ReferenceSymbolGroup bestMatch,
     out double minDistance,
     out float bestDistributionDiff,
-    out ReferenceSymbol closestMismatch,
+    out ReferenceSymbolGroup closestMismatch,
     out double closestMismatchDist)
     {
         // Inicializar los valores de salida
-        bestMatch = null;
+        bestMatch = new ReferenceSymbolGroup();
         minDistance = double.MaxValue;
         bestDistributionDiff = 0;
-        closestMismatch = null;
+        closestMismatch = new ReferenceSymbolGroup();
         closestMismatchDist = double.MaxValue;
 
-        foreach (var reference in candidates)
+        foreach (var group in candidates)
         {
-            // A. Calcula las métricas de similitud.
-            double zernikeDistance = CalculateZernikeDistance(playerMagnitudes, reference.momentMagnitudes);
-            float distributionDifference = _processor.CompareAngularHistograms(reference.distribution, playerDrawDistribution);
-
-            // B. Calcula la "puntuación" final, aplicando penalización si es simétrico.
-            double finalDistance = zernikeDistance;
-            if (reference.isSymmetric)
+            foreach (var reference in group.symbols)
             {
-                finalDistance += distributionDifference;
-            }
+                // A. Calcula las métricas de similitud.
+                double zernikeDistance = CalculateZernikeDistance(playerMagnitudes, reference.momentMagnitudes);
+                float distributionDifference = _processor.CompareAngularHistograms(reference.distribution, playerDrawDistribution);
 
-            // C. Verifica si el símbolo cumple con los umbrales requeridos.
-            bool meetsThresholds = CheckThresholds(finalDistance, distributionDifference, reference);
+                // B. Calcula la "puntuación" final, aplicando penalización si es simétrico.
+                double finalDistance = zernikeDistance;
+                if (group.isSymmetric)
+                {
+                    finalDistance += distributionDifference;
+                }
 
-            // D. Actualiza el mejor candidato o el "casi" candidato.
-            if (meetsThresholds && finalDistance < minDistance)
-            {
-                minDistance = finalDistance;
-                bestMatch = reference;
-                bestDistributionDiff = distributionDifference;
-            }
-            else if (!meetsThresholds && finalDistance < closestMismatchDist)
-            {
-                closestMismatchDist = finalDistance;
-                closestMismatch = reference;
-            }
+                // C. Verifica si el símbolo cumple con los umbrales requeridos.
+                bool meetsThresholds = CheckThresholds(finalDistance, distributionDifference, group);
 
-            Debug.Log($"Distancia con '{reference.symbolName}': {finalDistance:F3}");
+                // D. Actualiza el mejor candidato o el "casi" candidato.
+                if (meetsThresholds && finalDistance < minDistance)
+                {
+                    minDistance = finalDistance;
+                    bestMatch = group;
+                    bestDistributionDiff = distributionDifference;
+                }
+                else if (!meetsThresholds && finalDistance < closestMismatchDist)
+                {
+                    closestMismatchDist = finalDistance;
+                    closestMismatch = group;
+                }
+
+                Debug.Log($"Distancia con '{reference.symbolName}': {finalDistance:F3}");
+            }
         }
+       
     }
 
     public double CalculateZernikeDistance(List<double> playerMagnitudes, List<double> referenceMagnitudes)
@@ -254,7 +263,7 @@ public class ZernikeManager : MonoBehaviour
         return Math.Sqrt(distanceSquared) * 100;
     }
 
-    private bool CheckThresholds(double distance, float distributionDifference, ReferenceSymbol reference)
+    private bool CheckThresholds(double distance, float distributionDifference, ReferenceSymbolGroup reference)
     {
         if (distance > reference.Threshold)
         {
@@ -273,13 +282,13 @@ public class ZernikeManager : MonoBehaviour
     }
 
     private void DisplayResult(
-    ReferenceSymbol bestMatch,
+    ReferenceSymbolGroup bestMatch,
     double minDistance,
     float distributionDiff,
-    ReferenceSymbol closestMismatch,
+    ReferenceSymbolGroup closestMismatch,
     double closestMismatchDist)
     {
-        if (bestMatch != null)
+        if (bestMatch.symbols.Count>0)
         {
             // Se encontró una coincidencia válida.
             string resultText = $"Símbolo reconocido: {bestMatch.symbolName}\nDistancia: {minDistance:F3}";
@@ -290,7 +299,7 @@ public class ZernikeManager : MonoBehaviour
             }
             text.text = resultText;
         }
-        else if (closestMismatch != null)
+        else if (closestMismatch.symbols.Count >0)
         {
             // No hubo coincidencias válidas, pero se muestra la más cercana que falló.
             text.text = $"Símbolo no reconocido. Match más cercano: '{closestMismatch.symbolName}' con distancia {closestMismatchDist:F3}";
@@ -303,3 +312,17 @@ public class ZernikeManager : MonoBehaviour
     }
 }
 
+
+[System.Serializable]
+public struct ReferenceSymbolGroup
+{
+
+    public string symbolName;
+    public List<ReferenceSymbol> symbols;
+
+    public float Threshold;
+    public float orientationThreshold;
+    public bool useRotation;
+    public bool isSymmetric;
+    public int strokes;
+}

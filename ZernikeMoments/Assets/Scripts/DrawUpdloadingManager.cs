@@ -4,6 +4,8 @@ using System;
 using TMPro;
 using System.IO;
 using System.Collections;
+using System.Linq;
+using System.Collections.Generic;
 public class DrawUpdloadingManager : MonoBehaviour
 {
 
@@ -17,6 +19,7 @@ public class DrawUpdloadingManager : MonoBehaviour
     [SerializeField] ZernikeManager _zernikeManager;
     [SerializeField] RenderTexture renderTexture;
     [SerializeField] RectTransform _canvas;
+  
     ReferenceSymbol _currentSymbol;
     GameObject _currentSymbolConfigurer;
     void Start()
@@ -78,7 +81,7 @@ public class DrawUpdloadingManager : MonoBehaviour
             _warningText.gameObject.SetActive(false);
             _currentSymbolConfigurer = Instantiate(_symbolConfigurerPrefab, _canvas);
             _currentSymbolConfigurer.GetComponentInChildren<Button>().onClick.AddListener(SaveSymbol);
-            _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>().SetSymbolValues(ImageUtils.GetTexture2DCopy(renderTexture), _currentSymbol.symbolName, Convert.ToSingle(threshold), .1f, false, false);
+            _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>().SetSymbolValues(ImageUtils.GetTexture2DCopy(renderTexture), _currentSymbol.symbolName, Convert.ToSingle(threshold), .1f, false, false,new List<ReferenceSymbol>());
         }
     }
     public void SaveSymbol()
@@ -86,7 +89,10 @@ public class DrawUpdloadingManager : MonoBehaviour
         StartCoroutine(SaveSymbolCoroutine());
     }
 
+    public void SaveExistent()
+    {
 
+    }
     IEnumerator Warning(string text)
     {
         
@@ -99,20 +105,45 @@ public class DrawUpdloadingManager : MonoBehaviour
     IEnumerator SaveSymbolCoroutine()
     {
         var symbolConfig = _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>();
-        _currentSymbol.Threshold = symbolConfig.GetThresholdFieldValue();
-        _currentSymbol.orientationThreshold = symbolConfig.GetRotationThresholdFieldValue();
-        _currentSymbol.useRotation = symbolConfig.GetUseRotation();
-        _currentSymbol.isSymmetric = symbolConfig.GetIsSymmetric();
+        ReferenceSymbolGroup newGroup = new ReferenceSymbolGroup();
+        newGroup.Threshold = symbolConfig.GetThresholdFieldValue();
+        newGroup.orientationThreshold = symbolConfig.GetRotationThresholdFieldValue();
+        newGroup.isSymmetric = symbolConfig.GetIsSymmetric();
+        newGroup.useRotation = symbolConfig.GetUseRotation();
+        newGroup.strokes = _currentSymbol.strokes;
+
         string symbolID = Guid.NewGuid().ToString();
         ImageUtils.SaveTextureToPNG(symbolConfig.GetTexture(), symbolID);
         _currentSymbol.symbolID = symbolID;
         var symbolList = ReferenceSymbolStorage.LoadFromResources("symbols");
-        symbolList.Add(_currentSymbol);
+        symbolList.Add(newGroup);
 
         ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
         ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json"));
         yield return new WaitForSeconds(.1f);
         Destroy(_currentSymbolConfigurer.gameObject);
+        _drawingTest.ClearAllLineRenderers(true);
+
+        _instructionText.text = "Draw the new symbol";
+        _instructionText.gameObject.SetActive(true);
+        _confirmSymbolButton.gameObject.SetActive(true);
+        _symbolNameInputField.gameObject.SetActive(true);
+        _symbolNameInputField.text = "";
+        _drawingTest.gameObject.SetActive(true);
+    }
+    IEnumerator SaveExistentSymbolCoroutine()
+    {
+        var symbolConfig = _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>();
+
+        string symbolID = Guid.NewGuid().ToString();
+        ImageUtils.SaveTextureToPNG(symbolConfig.GetTexture(), symbolID);
+        _currentSymbol.symbolID = symbolID;
+        var symbolList = ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => x.symbolName == _currentSymbol.symbolName).ToList();
+        symbolList[0].symbols.Add(_currentSymbol);
+
+        ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
+        ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json"));
+        yield return new WaitForSeconds(.1f);
         _drawingTest.ClearAllLineRenderers(true);
 
         _instructionText.text = "Draw the new symbol";
