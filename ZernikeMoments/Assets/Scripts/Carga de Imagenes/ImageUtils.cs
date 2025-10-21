@@ -37,7 +37,7 @@ public static class ImageUtils
             Debug.LogError("Error al guardar la imagen: " + ex.Message);
         }
     }
-    public static void SaveTexture(Texture2D texture, string templateId)
+    public static void SaveTexture(Texture2D texture, string templateId, bool external = false)
     {
         // 1. Obtener los bytes de la textura (formato PNG, por ejemplo)        
         byte[] bytes = texture.EncodeToPNG();
@@ -45,7 +45,12 @@ public static class ImageUtils
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");       
+        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
+
+        if (external)
+        {
+            folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
+        }
 
         // Asegurarse de que el directorio exista
         if (!Directory.Exists(folderPath2))

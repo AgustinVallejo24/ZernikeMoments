@@ -28,7 +28,7 @@ public class ZernikeManager : MonoBehaviour
    
     public List<ReferenceSymbol> referenceSymbols;
     public List<ReferenceSymbolGroup> newReferenceSymbolsList;
-    private ZernikeProcessor _processor;
+    public ZernikeProcessor _processor;
     private List<Vector2> _currentStrokePoints;
    
     public bool shouldLoad;
