@@ -1,132 +1,6 @@
 {
     "symbols": [
         {
-            "symbolName": "C",
-            "symbols": [],
-            "Threshold": 0.36000001430511477,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "V",
-            "symbols": [],
-            "Threshold": 0.30000001192092898,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Circulo",
-            "symbols": [],
-            "Threshold": 0.30000001192092898,
-            "orientationThreshold": 1.0,
-            "useRotation": false,
-            "isSymmetric": true,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Cuadrado",
-            "symbols": [],
-            "Threshold": 0.15000000596046449,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Cuadrado",
-            "symbols": [],
-            "Threshold": 0.15000000596046449,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Cuadrado",
-            "symbols": [],
-            "Threshold": 0.15000000596046449,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Copa",
-            "symbols": [],
-            "Threshold": 0.44999998807907107,
-            "orientationThreshold": 0.20999999344348908,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 3
-        },
-        {
-            "symbolName": "inf",
-            "symbols": [],
-            "Threshold": 0.2199999988079071,
-            "orientationThreshold": 0.15000000596046449,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Triangulo",
-            "symbols": [],
-            "Threshold": 0.20000000298023225,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "espiral",
-            "symbols": [],
-            "Threshold": 0.11999999731779099,
-            "orientationThreshold": 0.15000000596046449,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Casita",
-            "symbols": [],
-            "Threshold": 0.25,
-            "orientationThreshold": 0.14499999582767487,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 4
-        },
-        {
-            "symbolName": "Linea",
-            "symbols": [],
-            "Threshold": 0.3499999940395355,
-            "orientationThreshold": 0.6000000238418579,
-            "useRotation": false,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "Estrella",
-            "symbols": [],
-            "Threshold": 0.3499999940395355,
-            "orientationThreshold": 0.14499999582767487,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
-            "symbolName": "M",
-            "symbols": [],
-            "Threshold": 0.20000000298023225,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
-            "isSymmetric": false,
-            "strokes": 1
-        },
-        {
             "symbolName": "Cuadrado",
             "symbols": [
                 {
@@ -256,11 +130,11 @@
                     ]
                 }
             ],
-            "Threshold": 0.15000000596046449,
-            "orientationThreshold": 0.20000000298023225,
-            "useRotation": true,
+            "Threshold": 0.0,
+            "orientationThreshold": 0.0,
+            "useRotation": false,
             "isSymmetric": false,
-            "strokes": 1
+            "strokes": 0
         },
         {
             "symbolName": "Pibe",
@@ -392,11 +266,11 @@
                     ]
                 }
             ],
-            "Threshold": 0.20000000298023225,
-            "orientationThreshold": 0.30000001192092898,
-            "useRotation": true,
+            "Threshold": 0.0,
+            "orientationThreshold": 0.0,
+            "useRotation": false,
             "isSymmetric": false,
-            "strokes": 6
+            "strokes": 0
         }
     ]
 }

@@ -1,11 +1,12 @@
 using Mono.Cecil.Cil;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
-using System.Linq;
 
 public class UploadImageManager : MonoBehaviour
 {
@@ -19,13 +20,16 @@ public class UploadImageManager : MonoBehaviour
     [SerializeField] SymbolConfigurer _symbolConfigurer;
     [SerializeField] TMP_InputField _symbolStrokeQ;
     [SerializeField] TMP_Text _warningText;
-    public int maxMomentOrder = 10;
-    [SerializeField] ZernikeManager _zernikeManager;
+    public int maxMomentOrder = 10;    
+    [SerializeField] TMP_Text _existentTemplateText;
+    ZernikeProcessor _processor;
+    public int imageSize = 64;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         instance = this;
+        _processor = new ZernikeProcessor(imageSize);
         
     }
 
@@ -51,10 +55,19 @@ public class UploadImageManager : MonoBehaviour
     public void GoToConfiguration()
     {
         if(_symbolNameF.text != "" && uploadedImage.texture != null)
-        {
+        {            
             _warningText.gameObject.SetActive(false);
             GetImageTexture();
             GetName();
+
+            if(ReferenceSymbolStorage.LoadFromResources("symbols").Where( x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).Any())
+            {
+                SaveExistentSymbol();
+                StartCoroutine(ExistentTemplate());
+                return;
+            }
+
+
             _symbolConfigurer.SetImage(tex);
             _symbolConfigurer.SetSimbolName(_symbolName);
 
@@ -78,7 +91,9 @@ public class UploadImageManager : MonoBehaviour
         _symbolConfigurer.SetsSymmetric(false);
         _symbolConfigurer.SetUseRotation(false);
         _symbolConfigurer.SetThresholdFieldValue(0);
+        _symbolConfigurer.SetThresholdSliderValue("0");
         _symbolConfigurer.SetRotationThresholdFieldValue(0);
+        _symbolConfigurer.SetRotationThresholdSliderValue("0");        
         _symbolStrokeQ.text = "";
     }
 
@@ -86,40 +101,38 @@ public class UploadImageManager : MonoBehaviour
     {
         if(_symbolStrokeQ.text != "" && int.Parse(_symbolStrokeQ.text) > 0)
         {
-            ReferenceSymbolGroup symbolGroup = default;
-            if(_zernikeManager.newReferenceSymbolsList.Where(x => x.symbolName == _symbolName).Any())
-            {
-                symbolGroup = _zernikeManager.newReferenceSymbolsList.Where(x => x.symbolName == _symbolName).First();
-                
-            }
-            else
-            {
-                symbolGroup = new ReferenceSymbolGroup();
-                symbolGroup.symbolName = _symbolName;
-                symbolGroup.strokes = int.Parse(_symbolStrokeQ.text);
-                symbolGroup.isSymmetric = _symbolConfigurer.GetIsSymmetric();
-                symbolGroup.useRotation = _symbolConfigurer.GetUseRotation();
-                symbolGroup.Threshold = _symbolConfigurer.GetThresholdFieldValue();
-                symbolGroup.orientationThreshold = _symbolConfigurer.GetRotationThresholdFieldValue();
+            ReferenceSymbolGroup symbolGroup = new ReferenceSymbolGroup();
 
-                _zernikeManager.newReferenceSymbolsList.Add(symbolGroup);
-            }
+            symbolGroup.symbolName = _symbolName;
+            symbolGroup.strokes = int.Parse(_symbolStrokeQ.text);
+            symbolGroup.isSymmetric = _symbolConfigurer.GetIsSymmetric();
+            symbolGroup.useRotation = _symbolConfigurer.GetUseRotation();
+            symbolGroup.Threshold = _symbolConfigurer.GetThresholdFieldValue();
+            symbolGroup.orientationThreshold = _symbolConfigurer.GetRotationThresholdFieldValue();
+            symbolGroup.symbols = new List<ReferenceSymbol>();
+
+            //_zernikeManager.newReferenceSymbolsList.Add(symbolGroup);            
                 
-            ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, default, default, int.Parse(_symbolStrokeQ.text), Guid.NewGuid().ToString());
-        // Procesar la textura para obtener la matriz binaria        
+            
+            // Procesar la textura para obtener la matriz binaria        
             //reference.templateTexture.name = reference.symbolName;
             //Debug.Log(reference.templateTexture.height);
             
-            tex = _zernikeManager._processor.ResizeImage(tex, 64);
-            _zernikeManager._processor.DrawTexture(tex);
+            tex = _processor.ResizeImage(tex, 64);
+            _processor.DrawTexture(tex);
+
+            var distribution = _processor.GetSymbolDistribution();
+
+            ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, distribution, new List<double>(), int.Parse(_symbolStrokeQ.text), Guid.NewGuid().ToString());
+
             newSymbol.templateTexture = tex;
             // Calcular la suma de todos los píxeles activos para la normalización
-            float totalPixels = _zernikeManager._processor.GetActivePixelCount();
+            float totalPixels = _processor.GetActivePixelCount();
             Debug.Log("Divido por " + totalPixels);
 
-            ZernikeMoment[] moments = _zernikeManager._processor.ComputeZernikeMoments(maxMomentOrder);
+            ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
 
-            newSymbol.momentMagnitudes = new List<double>();
+            //newSymbol.momentMagnitudes = new List<double>();
             // Normalizar y guardar las magnitudes
             foreach (var moment in moments)
             {
@@ -128,11 +141,21 @@ public class UploadImageManager : MonoBehaviour
                 newSymbol.momentMagnitudes.Add(normalizedMagnitude);
             }
 
-            newSymbol.distribution = _zernikeManager._processor.GetSymbolDistribution();           
+            //newSymbol.distribution = _processor.GetSymbolDistribution();           
 
             ImageUtils.SaveTexture(newSymbol.templateTexture, newSymbol.symbolID, true);
 
             symbolGroup.symbols.Add(newSymbol);
+
+            var refrenceSymGroupList = ReferenceSymbolStorage.LoadFromResources("symbols");
+            refrenceSymGroupList.Add(symbolGroup);
+            ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
+            ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.dataPath, "Resources", "ExternalSymbols.json"));
+
+            uploadedImage.texture = null;
+            _symbolNameF.text = "";
+            ReturnToUplodingImage();
+
         }
         else
         {
@@ -140,6 +163,54 @@ public class UploadImageManager : MonoBehaviour
             StartCoroutine(Warning("The Stroke Quantity must be greater than 0"));
         }
         
+    }
+
+    public void SaveExistentSymbol()
+    {
+        ReferenceSymbolGroup symbolGroup = ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).First();
+
+        
+        // Procesar la textura para obtener la matriz binaria        
+        //reference.templateTexture.name = reference.symbolName;
+        //Debug.Log(reference.templateTexture.height);
+
+        tex = _processor.ResizeImage(tex, 64);
+        _processor.DrawTexture(tex);
+
+        var distribution = _processor.GetSymbolDistribution();        
+
+        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, distribution, new List<double>(), symbolGroup.strokes, Guid.NewGuid().ToString());
+
+        newSymbol.templateTexture = tex;
+        // Calcular la suma de todos los píxeles activos para la normalización
+        float totalPixels = _processor.GetActivePixelCount();
+        Debug.Log("Divido por " + totalPixels);
+
+        ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
+
+        //newSymbol.momentMagnitudes = new List<double>();
+        // Normalizar y guardar las magnitudes
+        foreach (var moment in moments)
+        {
+            // Evitar división por cero
+            double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
+            newSymbol.momentMagnitudes.Add(normalizedMagnitude);
+        }
+
+        //newSymbol.distribution = _processor.GetSymbolDistribution();
+
+        ImageUtils.SaveTexture(newSymbol.templateTexture, newSymbol.symbolID, true);
+
+        symbolGroup.symbols.Add(newSymbol);
+
+        var refrenceSymGroupList = ReferenceSymbolStorage.LoadFromResources("symbols");
+        refrenceSymGroupList.Add(symbolGroup);
+        ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
+        ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.dataPath, "Resources", "ExternalSymbols.json"));
+
+
+        uploadedImage.texture = null;
+        _symbolNameF.text = "";
     }
 
     public void GoToMenu()
@@ -154,5 +225,13 @@ public class UploadImageManager : MonoBehaviour
         _warningText.text = text;
         yield return new WaitForSeconds(4f);
         _warningText.gameObject.SetActive(false);
+    }
+
+    IEnumerator ExistentTemplate()
+    {
+
+        _existentTemplateText.gameObject.SetActive(true);        
+        yield return new WaitForSeconds(4f);
+        _existentTemplateText.gameObject.SetActive(false);
     }
 }
