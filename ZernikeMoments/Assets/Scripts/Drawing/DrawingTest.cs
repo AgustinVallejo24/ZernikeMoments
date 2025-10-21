@@ -38,62 +38,62 @@ public class DrawingTest : MonoBehaviour
       //  recognizebutton.buttonAction += OnConfirmDrawing;        
     }
 
-    //void Update()
-    //{
-    //    // Si se está presionando el botón izquierdo del mouse
-    //    if (Input.GetMouseButtonDown(0))
-    //    {
-    //        // Ignorar si está sobre UI
-    //        if (IsPointerOverUI())
-    //            return;
+    void Update()
+    {
+        // Si se está presionando el botón izquierdo del mouse
+        if (Input.GetMouseButtonDown(0))
+        {
+            // Ignorar si está sobre UI
+            if (IsPointerOverUI())
+                return;
 
-    //        isDrawing = true;
-    //        currentStrokePoints.Clear();
-    //    }
+            isDrawing = true;
+            currentStrokePoints.Clear();
+        }
 
-    //    // Mientras el botón izquierdo esté presionado
-    //    if (Input.GetMouseButton(0))
-    //    {
-    //        if (IsPointerOverUI())
-    //            return;
+        // Mientras el botón izquierdo esté presionado
+        if (Input.GetMouseButton(0))
+        {
+            if (IsPointerOverUI())
+                return;
 
-    //        if (isDrawing)
-    //        {
-    //            Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
+            if (isDrawing)
+            {
+                Vector2 pos = cam.ScreenToWorldPoint(Input.mousePosition);
 
-    //            if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
-    //            {
-    //                AddSmoothedPoint(pos);
-    //            }
-    //        }
-    //    }
+                if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
+                {
+                    AddSmoothedPoint(pos);
+                }
+            }
+        }
 
-    //    // Cuando se suelta el botón izquierdo
-    //    if (Input.GetMouseButtonUp(0))
-    //    {
-    //        isDrawing = false;
+        // Cuando se suelta el botón izquierdo
+        if (Input.GetMouseButtonUp(0))
+        {
+            isDrawing = false;
 
-    //        if (GetLineLength(currentLR) < 1.5f)
-    //        {
-    //            foreach (var item in currentStrokePoints)
-    //            {
-    //                if (currentPoints.Contains(item))
-    //                    currentPoints.Remove(item);
-    //            }
+            if (GetLineLength(currentLR) < 1.5f)
+            {
+                foreach (var item in currentStrokePoints)
+                {
+                    if (currentPoints.Contains(item))
+                        currentPoints.Remove(item);
+                }
 
-    //            currentStrokePoints.Clear();
-    //            currentLR.positionCount = 0;
-    //            return;
-    //        }
+                currentStrokePoints.Clear();
+                currentLR.positionCount = 0;
+                return;
+            }
 
-    //        listaDeListas.Add(new List<Vector2>());
-    //        linerendererIndex++;
-    //        currentLR = Instantiate(lRPrefab, this.transform);
-    //        lineRenderers.Add(currentLR);
-    //        strokesPointsCount.Add(currentStrokePoints.Count);
-    //        currentStrokePoints.Clear();
-    //    }
-    //}
+            listaDeListas.Add(new List<Vector2>());
+            linerendererIndex++;
+            currentLR = Instantiate(lRPrefab, this.transform);
+            lineRenderers.Add(currentLR);
+            strokesPointsCount.Add(currentStrokePoints.Count);
+            currentStrokePoints.Clear();
+        }
+    }
 
     // --- NUEVO ---
     // Equivalente a IsTouchOverUI pero para mouse
@@ -113,75 +113,75 @@ public class DrawingTest : MonoBehaviour
 
         return results.Count > 0;
     }
-    void Update()
-    {
+    //void Update()
+    //{
 
 
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
+    //    if (Input.touchCount > 0)
+    //    {
+    //        Touch touch = Input.GetTouch(0);
 
-            //  ignorar si el toque está sobre UI
-            if (IsTouchOverUI(touch))
-            {
-                //Debug.Log("TOCOBOTON");
-                return;
-            }
-
-
-            Vector2 pos = cam.ScreenToWorldPoint(touch.position);
-
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    isDrawing = true;
-                    currentStrokePoints.Clear();
-                    break;
-
-                case TouchPhase.Moved:
-                case TouchPhase.Stationary:
-                    if (isDrawing)
-                    {
-                        if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
-                        {
-                            AddSmoothedPoint(pos);
-
-                        }
-                    }
-                    break;
-
-                case TouchPhase.Ended:
-                case TouchPhase.Canceled:
-                    isDrawing = false;
-
-                    if (GetLineLength(currentLR) < 1.5f)
-                    {
-                        // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
-                        foreach (var item in currentStrokePoints)
-                        {
-                            if (currentPoints.Contains(item))
-                            {
-                                currentPoints.Remove(item);
-                            }
-                        }
-                        currentStrokePoints.Clear();
+    //        //  ignorar si el toque está sobre UI
+    //        if (IsTouchOverUI(touch))
+    //        {
+    //            //Debug.Log("TOCOBOTON");
+    //            return;
+    //        }
 
 
+    //        Vector2 pos = cam.ScreenToWorldPoint(touch.position);
 
-                        currentLR.positionCount = 0;
-                        return;
-                    }
-                    listaDeListas.Add(new List<Vector2>());
-                    linerendererIndex++;
-                    currentLR = Instantiate(lRPrefab, this.transform);
-                    lineRenderers.Add(currentLR);
-                    // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
-                    strokesPointsCount.Add(currentStrokePoints.Count);
-                    currentStrokePoints.Clear();
-                    break;
-            }
-        }
-    }
+    //        switch (touch.phase)
+    //        {
+    //            case TouchPhase.Began:
+    //                isDrawing = true;
+    //                currentStrokePoints.Clear();
+    //                break;
+
+    //            case TouchPhase.Moved:
+    //            case TouchPhase.Stationary:
+    //                if (isDrawing)
+    //                {
+    //                    if (currentPoints.Count == 0 || Vector2.Distance(currentPoints[^1], pos) > 0.001f)
+    //                    {
+    //                        AddSmoothedPoint(pos);
+
+    //                    }
+    //                }
+    //                break;
+
+    //            case TouchPhase.Ended:
+    //            case TouchPhase.Canceled:
+    //                isDrawing = false;
+
+    //                if (GetLineLength(currentLR) < 1.5f)
+    //                {
+    //                    // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
+    //                    foreach (var item in currentStrokePoints)
+    //                    {
+    //                        if (currentPoints.Contains(item))
+    //                        {
+    //                            currentPoints.Remove(item);
+    //                        }
+    //                    }
+    //                    currentStrokePoints.Clear();
+
+
+
+    //                    currentLR.positionCount = 0;
+    //                    return;
+    //                }
+    //                listaDeListas.Add(new List<Vector2>());
+    //                linerendererIndex++;
+    //                currentLR = Instantiate(lRPrefab, this.transform);
+    //                lineRenderers.Add(currentLR);
+    //                // listaDeListas[linerendererIndex] = GestureProcessor.Normalize(listaDeListas[linerendererIndex]);
+    //                strokesPointsCount.Add(currentStrokePoints.Count);
+    //                currentStrokePoints.Clear();
+    //                break;
+    //        }
+    //    }
+    //}
 
 
     void AddSmoothedPoint(Vector3 newPoint)

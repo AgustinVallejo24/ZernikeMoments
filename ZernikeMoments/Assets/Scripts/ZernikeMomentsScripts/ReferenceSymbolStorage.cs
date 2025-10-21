@@ -65,9 +65,20 @@ public static class ReferenceSymbolStorage
     {
         List<ReferenceSymbolGroup> current = LoadSymbols(path);
         ReferenceSymbolGroup newGroup = new ReferenceSymbolGroup();
-        newGroup.symbolName = newSymbol.symbolName;
-        newGroup.symbols.Add(newSymbol);
-        current.Add(newGroup);
+        var filteredList = current.Where(x => string.Equals(x.symbolName, newSymbol.symbolName, System.StringComparison.OrdinalIgnoreCase)).ToList();
+        if (filteredList.Count() > 0)
+        {
+            filteredList.First().symbols.Add(newSymbol);
+            
+        }
+        else
+        {
+            newGroup.symbolName = newSymbol.symbolName;
+            newGroup.symbols = new List<ReferenceSymbol>();
+            newGroup.symbols.Add(newSymbol);
+            current.Add(newGroup);
+        }
+
         SaveSymbols(current, path); // reusa la función de arriba
         Debug.Log("Appended symbol: " + newSymbol.symbolName + " to " + path);
     }

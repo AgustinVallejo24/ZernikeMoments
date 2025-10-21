@@ -47,11 +47,19 @@ public class DrawUpdloadingManager : MonoBehaviour
             }
             else
             {
-                _confirmSymbolButton.gameObject.SetActive(false);
-                _symbolNameInputField.gameObject.SetActive(false);
-                _instructionText.text = "Draw the symbol again";
-                _configSymbolButton.gameObject.SetActive(true);
-                _drawingTest.ClearAllLineRenderers(false);
+                if (DoesSymbolExist(_currentSymbol.symbolName))
+                {
+                    SaveExistent();
+                }
+                else
+                {
+                    _confirmSymbolButton.gameObject.SetActive(false);
+                    _symbolNameInputField.gameObject.SetActive(false);
+                    _instructionText.text = "Draw the symbol again";
+                    _configSymbolButton.gameObject.SetActive(true);
+                    _drawingTest.ClearAllLineRenderers(false);
+                }
+
             }
         }
         else
@@ -63,6 +71,10 @@ public class DrawUpdloadingManager : MonoBehaviour
 
     }
 
+    public bool DoesSymbolExist(string name)
+    {
+        return ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => string.Equals(x.symbolName, name, System.StringComparison.OrdinalIgnoreCase)).Count() > 0;
+    }
     
     public void OpenSymbolConfiguration()
     {
@@ -91,7 +103,7 @@ public class DrawUpdloadingManager : MonoBehaviour
 
     public void SaveExistent()
     {
-
+        StartCoroutine(SaveExistentSymbolCoroutine());
     }
     IEnumerator Warning(string text)
     {
@@ -111,7 +123,8 @@ public class DrawUpdloadingManager : MonoBehaviour
         newGroup.isSymmetric = symbolConfig.GetIsSymmetric();
         newGroup.useRotation = symbolConfig.GetUseRotation();
         newGroup.strokes = _currentSymbol.strokes;
-
+        newGroup.symbols = new List<ReferenceSymbol>();
+        newGroup.symbols.Add(_currentSymbol);
         string symbolID = Guid.NewGuid().ToString();
         ImageUtils.SaveTextureToPNG(symbolConfig.GetTexture(), symbolID);
         _currentSymbol.symbolID = symbolID;
@@ -133,12 +146,12 @@ public class DrawUpdloadingManager : MonoBehaviour
     }
     IEnumerator SaveExistentSymbolCoroutine()
     {
-        var symbolConfig = _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>();
+      
 
         string symbolID = Guid.NewGuid().ToString();
-        ImageUtils.SaveTextureToPNG(symbolConfig.GetTexture(), symbolID);
+        ImageUtils.SaveTextureToPNG(ImageUtils.GetTexture2DCopy(renderTexture), symbolID);
         _currentSymbol.symbolID = symbolID;
-        var symbolList = ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => x.symbolName == _currentSymbol.symbolName).ToList();
+        var symbolList = ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => string.Equals(x.symbolName, _currentSymbol.symbolName, System.StringComparison.OrdinalIgnoreCase)).ToList();
         symbolList[0].symbols.Add(_currentSymbol);
 
         ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
@@ -152,5 +165,6 @@ public class DrawUpdloadingManager : MonoBehaviour
         _symbolNameInputField.gameObject.SetActive(true);
         _symbolNameInputField.text = "";
         _drawingTest.gameObject.SetActive(true);
+        StartCoroutine(Warning("Template has been added to "+ _currentSymbol.symbolName));
     }
 }
