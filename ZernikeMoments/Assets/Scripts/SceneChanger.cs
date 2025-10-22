@@ -18,5 +18,30 @@ public class SceneChanger : MonoBehaviour
 
         }
     }
+
+    public void GoToMenu()
+    {
+
+    }
+
+    public void GoToUploadDrawing()
+    {
+        SceneManager.LoadScene("UploadDrawing");
+    }
+
+    public void GoToUploadImage()
+    {
+        SceneManager.LoadScene("UploadImage");
+    }
+
+    public void GoToConfigSymbols()
+    {
+        SceneManager.LoadScene("SymbolConfiguration");
+    }
+
+    public void GoToRecognizer()
+    {
+        SceneManager.LoadScene("ZernikeMoments");
+    }
     
 }

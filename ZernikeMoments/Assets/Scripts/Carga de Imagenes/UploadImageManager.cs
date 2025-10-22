@@ -45,6 +45,7 @@ public class UploadImageManager : MonoBehaviour
     public void GetImageTexture()
     {
         tex = (Texture2D)uploadedImage.texture;
+       
     }
 
     public void GetName()
@@ -112,18 +113,20 @@ public class UploadImageManager : MonoBehaviour
             symbolGroup.symbols = new List<ReferenceSymbol>();
 
             //_zernikeManager.newReferenceSymbolsList.Add(symbolGroup);            
-                
-            
+
+            ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, default, default, int.Parse(_symbolStrokeQ.text), Guid.NewGuid().ToString());
+
             // Procesar la textura para obtener la matriz binaria        
             //reference.templateTexture.name = reference.symbolName;
             //Debug.Log(reference.templateTexture.height);
-            
+
             tex = _processor.ResizeImage(tex, 64);
+            tex = ImageProcessor.ProcessTextureConditional(tex);
             _processor.DrawTexture(tex);
 
-            var distribution = _processor.GetSymbolDistribution();
+            //var distribution = _processor.GetSymbolDistribution();
 
-            ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, distribution, new List<double>(), int.Parse(_symbolStrokeQ.text), Guid.NewGuid().ToString());
+            
 
             newSymbol.templateTexture = tex;
             // Calcular la suma de todos los píxeles activos para la normalización
@@ -132,7 +135,7 @@ public class UploadImageManager : MonoBehaviour
 
             ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
 
-            //newSymbol.momentMagnitudes = new List<double>();
+            newSymbol.momentMagnitudes = new List<double>();
             // Normalizar y guardar las magnitudes
             foreach (var moment in moments)
             {
@@ -141,7 +144,7 @@ public class UploadImageManager : MonoBehaviour
                 newSymbol.momentMagnitudes.Add(normalizedMagnitude);
             }
 
-            //newSymbol.distribution = _processor.GetSymbolDistribution();           
+            newSymbol.distribution = _processor.GetSymbolDistribution();           
 
             ImageUtils.SaveTexture(newSymbol.templateTexture, newSymbol.symbolID, true);
 
@@ -169,17 +172,20 @@ public class UploadImageManager : MonoBehaviour
     {
         ReferenceSymbolGroup symbolGroup = ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).First();
 
-        
+
         // Procesar la textura para obtener la matriz binaria        
         //reference.templateTexture.name = reference.symbolName;
         //Debug.Log(reference.templateTexture.height);
 
+        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, default, default, symbolGroup.strokes, Guid.NewGuid().ToString());
+
         tex = _processor.ResizeImage(tex, 64);
+        tex = ImageProcessor.ProcessTextureConditional(tex);
         _processor.DrawTexture(tex);
 
-        var distribution = _processor.GetSymbolDistribution();        
+        //var distribution = _processor.GetSymbolDistribution();        
 
-        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, distribution, new List<double>(), symbolGroup.strokes, Guid.NewGuid().ToString());
+        
 
         newSymbol.templateTexture = tex;
         // Calcular la suma de todos los píxeles activos para la normalización
@@ -188,7 +194,7 @@ public class UploadImageManager : MonoBehaviour
 
         ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
 
-        //newSymbol.momentMagnitudes = new List<double>();
+        newSymbol.momentMagnitudes = new List<double>();
         // Normalizar y guardar las magnitudes
         foreach (var moment in moments)
         {
@@ -197,7 +203,7 @@ public class UploadImageManager : MonoBehaviour
             newSymbol.momentMagnitudes.Add(normalizedMagnitude);
         }
 
-        //newSymbol.distribution = _processor.GetSymbolDistribution();
+        newSymbol.distribution = _processor.GetSymbolDistribution();
 
         ImageUtils.SaveTexture(newSymbol.templateTexture, newSymbol.symbolID, true);
 
@@ -211,12 +217,7 @@ public class UploadImageManager : MonoBehaviour
 
         uploadedImage.texture = null;
         _symbolNameF.text = "";
-    }
-
-    public void GoToMenu()
-    {
-
-    }
+    }   
 
     IEnumerator Warning(string text)
     {

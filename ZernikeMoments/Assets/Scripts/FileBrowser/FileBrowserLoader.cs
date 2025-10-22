@@ -61,7 +61,7 @@ public static class FileBrowserLoader
 
                 // Aquí debes integrar la 'texture' a tu sistema
                 // Por ejemplo: templateManager.SetNewTemplateTexture(texture);
-
+                
                 sceneImage.texture = texture;
             }
             else
