@@ -480,7 +480,7 @@ MonoBehaviour:
     useRotation: 0
     isSymmetric: 0
     strokes: 1
-  shouldLoad: 1
+  shouldLoad: 0
 --- !u!4 &585205193
 Transform:
   m_ObjectHideFlags: 0

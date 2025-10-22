@@ -25,8 +25,8 @@ public class ConfigurationSceneManager : MonoBehaviour
         {
             SymbolConfigurer newSymbol = Instantiate(_symbolConfigurerPrefab, _content);
             newSymbol.canvas = canvas;
-            //Texture2D texture = ImageUtils.LoadTexture(item.symbolID);
-            Texture2D texture = default;
+            Texture2D texture = ImageUtils.LoadTexture(item.symbols[0].symbolID);
+         //   Texture2D texture = item.symbols[0].templateTexture;
             newSymbol.SetSymbolValues(texture, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation,item.symbols,item);
             _symbolConfigList.Add(newSymbol);
             newSymbol.deleteGroup = DeleteGroup;
