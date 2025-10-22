@@ -2,8 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using System;
+using Delegates;
 public class SymbolConfigurer : MonoBehaviour
 {
+    [SerializeField] ReferenceSymbolGroup myGroup;
     [SerializeField] TMP_Text _symbolname;
     [SerializeField] RawImage _symbolImage;
     [SerializeField] TMP_InputField _thresholdInputField;
@@ -14,6 +17,10 @@ public class SymbolConfigurer : MonoBehaviour
     [SerializeField] Toggle _UseRotation;
     [SerializeField] TemplatesListConfigurer _listConfigurer;
     [SerializeField] List<ReferenceSymbol> _symbols;
+    public RectTransform canvas;
+
+    public DeleteDelegate<ReferenceSymbol> deleteSymbol;
+    public DeleteDelegate<ReferenceSymbolGroup> deleteGroup;
     private void Start()
     {
         _thresholdInputField.onValueChanged.AddListener(SetThresholdSliderValue);
@@ -25,10 +32,17 @@ public class SymbolConfigurer : MonoBehaviour
 
     public void SetSymbolList()
     {
-        var list = Instantiate(_listConfigurer,transform.parent.parent.parent.parent);
-        list.AddContent(_symbols);
+        var list = Instantiate(_listConfigurer, canvas);
+        list.AddContent(_symbols,deleteSymbol);
     }
-    public void SetSymbolValues(Texture2D texture, string name, float threshold, float rotationThreshold, bool symmetric, bool rotation, List<ReferenceSymbol> symbols)
+
+
+    public void DeleteGroup()
+    {
+        deleteGroup.Invoke(myGroup);
+        Destroy(gameObject);
+    }
+    public void SetSymbolValues(Texture2D texture, string name, float threshold, float rotationThreshold, bool symmetric, bool rotation, List<ReferenceSymbol> symbols,ReferenceSymbolGroup group)
     {
         SetImage(texture);
         SetSimbolName(name);
@@ -39,7 +53,13 @@ public class SymbolConfigurer : MonoBehaviour
         SetsSymmetric(symmetric);
         SetUseRotation(rotation);
         _symbols = symbols;
+        SetGroup(group);
       //  SetSymbolList(symbols);
+    }
+
+    public void SetGroup(ReferenceSymbolGroup group)
+    {
+        myGroup = group;
     }
     public void SetImage(Texture2D texture)
     {

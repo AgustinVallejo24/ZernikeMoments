@@ -93,7 +93,7 @@ public class DrawUpdloadingManager : MonoBehaviour
             _warningText.gameObject.SetActive(false);
             _currentSymbolConfigurer = Instantiate(_symbolConfigurerPrefab, _canvas);
             _currentSymbolConfigurer.GetComponentInChildren<Button>().onClick.AddListener(SaveSymbol);
-            _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>().SetSymbolValues(ImageUtils.GetTexture2DCopy(renderTexture), _currentSymbol.symbolName, Convert.ToSingle(threshold), .1f, false, false,new List<ReferenceSymbol>());
+            _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>().SetSymbolValues(ImageUtils.GetTexture2DCopy(renderTexture), _currentSymbol.symbolName, Convert.ToSingle(threshold), .1f, false, false,new List<ReferenceSymbol>(), new ReferenceSymbolGroup());
         }
     }
     public void SaveSymbol()

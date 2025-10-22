@@ -1,20 +1,31 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Delegates;
 public class TemplatesListConfigurer : MonoBehaviour
 {
     [SerializeField] RectTransform _content;
-    [SerializeField] GameObject _symbolImagePrefab;
+    [SerializeField] SymbolImagePrefab _symbolImagePrefab;
+ 
     public bool isOpen;
 
-    public void AddContent(List<ReferenceSymbol> symbols)
+    public void AddContent(List<ReferenceSymbol> symbols, DeleteDelegate<ReferenceSymbol> newDeleteDelegate)
     {
         Debug.LogError("A");
         foreach (var item in symbols)
         {
-          
-            Instantiate(_symbolImagePrefab, _content);
+            var imagePrefab = Instantiate(_symbolImagePrefab, _content);
+            imagePrefab.deleteDelegate = newDeleteDelegate;
+            imagePrefab.mySymbol = item;
+            imagePrefab.image.texture = ImageUtils.LoadTexture(item.symbolID);
         }
     }
+
+    
+    public void DestroySelf()
+    {
+        Destroy(gameObject);
+    }
+
 
     public void Dropdown()
     {
