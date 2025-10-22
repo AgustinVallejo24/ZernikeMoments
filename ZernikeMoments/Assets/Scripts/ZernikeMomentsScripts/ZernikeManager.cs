@@ -65,7 +65,8 @@ public class ZernikeManager : MonoBehaviour
     {
         float carga = 0;
 
-        Directory.Delete(Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates"), true);
+        //Directory.Delete(Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates"), true);
+        Directory.Delete(Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates"), true);
 
 
         foreach (var group in newReferenceSymbolsList)

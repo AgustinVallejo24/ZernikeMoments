@@ -14,7 +14,8 @@ public static class ImageUtils
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
+        //string folderPath2 = Path.Combine(Application.dataPath, "Resources/TemplateImages/ExternalTemplates");
+        string folderPath2 = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/ExternalTemplates");
 
         // Asegurarse de que el directorio exista
         if (!Directory.Exists(folderPath2))
@@ -45,11 +46,13 @@ public static class ImageUtils
         // 2. Definir la ruta de guardado. 
         // Se recomienda crear una subcarpeta para mantener organizado.
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
+        //string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
+        string folderPath2 = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates");
 
         if (external)
         {
-            folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
+            //folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
+            folderPath2 = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/ExternalTemplates");
         }
 
         // Asegurarse de que el directorio exista
@@ -76,9 +79,12 @@ public static class ImageUtils
     public static Texture2D LoadTexture(string templateId)
     {
         //string folderPath = Path.Combine(Application.persistentDataPath, "Images/TemplateImages");
-        string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
-        string folderPath3 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
-        string folderPath4 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
+        //string folderPath2 = Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates");
+        string folderPath2 = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates");
+        //string folderPath3 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        string folderPath3 = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/DrawnTemplates");
+        //string folderPath4 = Path.Combine(Application.dataPath, "Resources/Template Images/ExternalTemplates");
+        string folderPath4 = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/ExternalTemplates");
         string fileName = templateId + ".png"; // Usar la misma extensión
         string filePath = "";
 
@@ -183,7 +189,8 @@ public static class ImageUtils
         // 5. Guardar la textura como PNG (opcional)
         byte[] bytes = texture.EncodeToPNG();
         //string path = Path.Combine(Application.persistentDataPath, "Images/TemplateImages", fileName + ".png");
-        string path2 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        //string path2 = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        string path2 = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/DrawnTemplates");
 
         if (!Directory.Exists(path2))
         {
@@ -211,7 +218,8 @@ public static class ImageUtils
         byte[] bytes = texture.EncodeToPNG();
 
         // 2. Crear la carpeta si no existe
-        string path = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        //string path = Path.Combine(Application.dataPath, "Resources/Template Images/DrawnTemplates");
+        string path = Path.Combine(Application.persistentDataPath, "Images/TemplateImages/DrawnTemplates");
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
