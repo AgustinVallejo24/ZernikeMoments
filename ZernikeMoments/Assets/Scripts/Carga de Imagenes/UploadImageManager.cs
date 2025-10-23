@@ -61,7 +61,7 @@ public class UploadImageManager : MonoBehaviour
             GetImageTexture();
             GetName();
 
-            if(ReferenceSymbolStorage.LoadFromResources("symbols").Where( x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).Any())
+            if(ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).Where( x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).Any())
             {
                 SaveExistentSymbol();
                 StartCoroutine(ExistentTemplate());
@@ -150,10 +150,10 @@ public class UploadImageManager : MonoBehaviour
 
             symbolGroup.symbols.Add(newSymbol);
 
-            var refrenceSymGroupList = ReferenceSymbolStorage.LoadFromResources("symbols");
+            var refrenceSymGroupList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
             refrenceSymGroupList.Add(symbolGroup);
-            ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
-            ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.dataPath, "Resources", "ExternalSymbols.json"));
+            ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
+        //    ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.persistentDataPath, "Saves", "externalSymbols.json"));
 
             uploadedImage.texture = null;
             _symbolNameF.text = "";
@@ -170,7 +170,7 @@ public class UploadImageManager : MonoBehaviour
 
     public void SaveExistentSymbol()
     {
-        ReferenceSymbolGroup symbolGroup = ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).First();
+        ReferenceSymbolGroup symbolGroup = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).Where(x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).First();
 
 
         // Procesar la textura para obtener la matriz binaria        
@@ -209,10 +209,10 @@ public class UploadImageManager : MonoBehaviour
 
         symbolGroup.symbols.Add(newSymbol);
 
-        var refrenceSymGroupList = ReferenceSymbolStorage.LoadFromResources("symbols");
+        var refrenceSymGroupList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
         refrenceSymGroupList.Add(symbolGroup);
-        ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
-        ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.dataPath, "Resources", "ExternalSymbols.json"));
+        ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
+       // ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.persistentDataPath, "Saves", "externalSymbols.json"));
 
 
         uploadedImage.texture = null;

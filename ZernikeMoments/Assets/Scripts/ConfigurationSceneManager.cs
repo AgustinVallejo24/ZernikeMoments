@@ -19,7 +19,7 @@ public class ConfigurationSceneManager : MonoBehaviour
     void Start()
     {
         instance = this;
-        var referenceSymbols = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
+        var referenceSymbols = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).ToList();
         _symbolList = referenceSymbols;
         foreach (var item in referenceSymbols)
         {
@@ -40,7 +40,20 @@ public class ConfigurationSceneManager : MonoBehaviour
         var symbols = _symbolList.Where(x => x.symbols.Contains(currentSymbol));
         if(symbols.Count() > 0)
         {
-            symbols.First().symbols.Remove(currentSymbol);
+            var symbolGroup = symbols.First();
+            symbolGroup.symbols.Remove(currentSymbol);
+            if(symbolGroup.symbols.Count() == 0)
+            {
+                foreach (var item in _symbolConfigList)
+                {
+                    if (item.GetSymbolName() == symbolGroup.symbolName)
+                    {
+                        Destroy(item.gameObject);
+                    }
+                }
+                DeleteGroup(symbolGroup);
+
+            }
         }
     }
 
@@ -70,7 +83,7 @@ public class ConfigurationSceneManager : MonoBehaviour
             currentGroup.orientationThreshold = _symbolConfigList[i].GetRotationThresholdSliderValue();
             _symbolList[i] = currentGroup;
         }
-        ReferenceSymbolStorage.SaveSymbols(_symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
+        ReferenceSymbolStorage.SaveSymbols(_symbolList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
 
     }
 

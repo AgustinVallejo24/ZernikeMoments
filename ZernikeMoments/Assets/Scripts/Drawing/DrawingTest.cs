@@ -299,7 +299,7 @@ public class DrawingTest : MonoBehaviour
                 }
                 normalizedPositions = normalizedPositions.Skip(strokesPointsCount[i]).ToList();
             }
-          
+    
          
             zRecognizer.OnDrawingFinished(listaDeListas, lineRenderers.Count -1);
             currentPoints.Clear();

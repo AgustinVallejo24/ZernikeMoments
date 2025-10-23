@@ -10,7 +10,7 @@ public class TemplatesListConfigurer : MonoBehaviour
 
     public void AddContent(List<ReferenceSymbol> symbols, DeleteDelegate<ReferenceSymbol> newDeleteDelegate)
     {
-        Debug.LogError("A");
+        
         foreach (var item in symbols)
         {
             var imagePrefab = Instantiate(_symbolImagePrefab, _content);

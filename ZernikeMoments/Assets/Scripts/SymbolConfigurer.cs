@@ -74,7 +74,10 @@ public class SymbolConfigurer : MonoBehaviour
     {
         _symbolname.text = name;
     }
-
+    public string GetSymbolName()
+    {
+       return _symbolname.text;
+    }
     public string GetInputFieldValue(InputField field)
     {
         return field.text;

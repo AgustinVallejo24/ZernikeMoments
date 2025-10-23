@@ -6,6 +6,9 @@ using System.Linq;
 using TMPro;
 using UnityEngine.UI;
 using System.IO;
+using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
+using System.Runtime.InteropServices;
 public class ZernikeManager : MonoBehaviour
 {
     // Tamaño de la imagen para el procesamiento
@@ -33,30 +36,116 @@ public class ZernikeManager : MonoBehaviour
    
     public bool shouldLoad;
     string jsonPath;
-
-
+       #if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern void SyncFilesystem();
+       #endif
     void Start()
     {
-        jsonPath = Path.Combine(Application.dataPath, "Resources", "symbols.json");
+       
+
+        jsonPath = Path.Combine(Application.persistentDataPath,"Saves", "symbols.json");
     
         _processor = new ZernikeProcessor(imageSize);
         _currentStrokePoints = new List<Vector2>();
-        if (shouldLoad)
+//#if UNITY_WEBGL && !UNITY_EDITOR
+//if(TryLoadFile(Path.Combine(Application.persistentDataPath,"Saves", "symbols.json")))
+//{
+//shouldLoad = false;
+
+//}
+
+//#else
+     //   Debug.LogError("no funca el if");
+        if (PlayerPrefs.HasKey("shouldLoad"))
         {
+            shouldLoad = false;
+        }
+//#endif
+
+        if (SceneManager.GetActiveScene().name == "Menu" && shouldLoad)
+        {
+            Debug.LogError("COMPUTEEEEEE");
             StartCoroutine(Compute());
+            PlayerPrefs.SetInt("shouldLoad", 1);
   
         }
-        else
+        else if(SceneManager.GetActiveScene().name != "Menu")
         {
             newReferenceSymbolsList.Clear();
-            newReferenceSymbolsList = ReferenceSymbolStorage.LoadFromResources("symbols").Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();            
+            newReferenceSymbolsList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).ToList();            
             UICarga.SetActive(false);
             UIDibujo.SetActive(true);
             DrawingTest.SetActive(true);
         }
+        else 
+        {
+            UICarga.SetActive(false);
+            UIDibujo.SetActive(true);
+        }
     }
 
-   
+    public bool TryLoadFile(string path)
+    {
+        //string directoryPath = Path.Combine(Application.persistentDataPath, FOLDER);
+        //string filePath = Path.Combine(directoryPath, FILENAME);
+
+        // 1. Asegurarse de que la carpeta existe (CreateDirectory es seguro y no falla si ya existe)
+//        Directory.CreateDirectory(path);
+
+
+
+        try
+        {
+            // 2. Intentar leer el archivo directamente.
+            // Si no existe, esto lanzará una excepción (FileNotFoundException).
+            //  jsonContent = File.ReadAllText(filePath);
+            Directory.CreateDirectory(path);
+#if UNITY_WEBGL && !UNITY_EDITOR
+    SyncFilesystem(); // Esta función llama a FS.syncfs(false, ...) en el plugin .jslib
+#endif
+            // Si la lectura fue exitosa:
+            return false; // El archivo existe y se cargó
+        }
+        catch (FileNotFoundException)
+        {
+            // La excepción indica que el archivo no existe.
+            Debug.Log($"Archivo  NO encontrado en WebGL. Creando uno nuevo.");
+            return false; // El archivo no existe
+        }
+        catch (Exception ex)
+        {
+            // Manejar otros posibles errores (permisos, etc.)
+            Debug.LogError($"Error inesperado al cargar el archivo en WebGL: {ex.Message}");
+            return true;
+        }
+    }
+    public void DeleteSaveFolder(string path)
+    {
+        string directoryPath = path;
+
+        if (TryLoadFile(path))
+        {
+            Directory.Delete(directoryPath, true);
+            Debug.Log("Carpeta borrada.");
+
+            // 2. Llamar a la función para guardar el cambio en IndexedDB
+        #if UNITY_WEBGL && !UNITY_EDITOR
+                SyncFilesystem();
+        #endif
+        }
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Debug.LogError("AAAAAAAAA");
+            PlayerPrefs.DeleteAll();
+
+
+        }
+    }
+
     public void SaveSymbolList()
     {
         ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
@@ -66,7 +155,8 @@ public class ZernikeManager : MonoBehaviour
         float carga = 0;
 
         //Directory.Delete(Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates"), true);
-        Directory.Delete(Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates"), true);
+     //   if(File.Exists(Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates")))
+      //  Directory.Delete(Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates"), true);
 
 
         foreach (var group in newReferenceSymbolsList)
@@ -115,9 +205,10 @@ public class ZernikeManager : MonoBehaviour
         UICarga.SetActive(false);
         UIDibujo.SetActive(true);
         yield return new WaitForSeconds(.2f);
-        DrawingTest.SetActive(true);
+    //    DrawingTest.SetActive(true);
         ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
-        newReferenceSymbolsList = newReferenceSymbolsList.Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
+
+        //  newReferenceSymbolsList = newReferenceSymbolsList.Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
     }
     public void OnDrawingFinished(List<List<Vector2>> finishedPoints, int strokeQuantity)
     {
@@ -152,14 +243,51 @@ public class ZernikeManager : MonoBehaviour
         }
         
         ReferenceSymbol newSymbol = new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity, symbolID);
-        string savePath = Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json");
-        ReferenceSymbolStorage.AppendSymbol(newSymbol, savePath);
+      //  string savePath = Path.Combine(Application.persistentDataPath, "Saves", "drawnSymbols.json");
+        //ReferenceSymbolStorage.AppendSymbol(newSymbol, savePath);
         referenceSymbols.Add(newSymbol);
         ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
         
         
     }
+    public IEnumerator CheckFileExists(System.Action<bool> onResult, string path)
+    {
+        // 1. Construir la URL completa para el archivo.
+        // WebGL solo puede acceder a estos archivos mediante el protocolo file:// o http://, por eso usamos UnityWebRequest.
+        string fullPath = path;
+        Debug.LogError("si funca el if");
+        // 2. Usar UnityWebRequest para intentar obtener el archivo.
+        // El método GET sirve para verificar la existencia e iniciar la carga al mismo tiempo.
+        using (UnityWebRequest request = UnityWebRequest.Get(fullPath))
+        {
+            // Esperar a que la solicitud termine
+            yield return request.SendWebRequest();
 
+            bool fileExists = false;
+
+            // 3. Evaluar el resultado
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                // La solicitud fue exitosa, lo que significa que el archivo existe en IndexedDB.
+                fileExists = true;
+                // Si solo quieres verificar la existencia, puedes ignorar 'request.downloadHandler.text'
+            }
+            else if (request.result == UnityWebRequest.Result.ProtocolError && request.responseCode == 404)
+            {
+                // El error 404 (Not Found) indica que no existe el archivo.
+                fileExists = false;
+            }
+            else
+            {
+                // Otros errores (red, etc.)
+                Debug.LogError($"Error al verificar el archivo: {request.error}");
+                fileExists = false;
+            }
+
+            // Llamar al callback con el resultado
+            onResult?.Invoke(fileExists);
+        }
+    }
     public ReferenceSymbol ReturnNewSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName, string symbolID)
     {
         _processor.DrawStrokes(finishedPoints);
@@ -289,7 +417,8 @@ public class ZernikeManager : MonoBehaviour
     ReferenceSymbolGroup closestMismatch,
     double closestMismatchDist)
     {
-        if (bestMatch.symbols.Count>0)
+        Debug.Log(bestMatch.symbolName);
+        if (bestMatch.symbols != null)
         {
             // Se encontró una coincidencia válida.
             string resultText = $"Símbolo reconocido: {bestMatch.symbolName}\nDistancia: {minDistance:F3}";

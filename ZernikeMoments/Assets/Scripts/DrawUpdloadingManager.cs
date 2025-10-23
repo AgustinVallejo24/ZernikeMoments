@@ -73,7 +73,7 @@ public class DrawUpdloadingManager : MonoBehaviour
 
     public bool DoesSymbolExist(string name)
     {
-        return ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => string.Equals(x.symbolName, name, System.StringComparison.OrdinalIgnoreCase)).Count() > 0;
+        return ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).Where(x => string.Equals(x.symbolName, name, System.StringComparison.OrdinalIgnoreCase)).Count() > 0;
     }
     
     public void OpenSymbolConfiguration()
@@ -118,6 +118,7 @@ public class DrawUpdloadingManager : MonoBehaviour
     {
         var symbolConfig = _currentSymbolConfigurer.GetComponentInChildren<SymbolConfigurer>();
         ReferenceSymbolGroup newGroup = new ReferenceSymbolGroup();
+        newGroup.symbolName = _symbolNameInputField.text;
         newGroup.Threshold = symbolConfig.GetThresholdFieldValue();
         newGroup.orientationThreshold = symbolConfig.GetRotationThresholdFieldValue();
         newGroup.isSymmetric = symbolConfig.GetIsSymmetric();
@@ -128,11 +129,11 @@ public class DrawUpdloadingManager : MonoBehaviour
         string symbolID = Guid.NewGuid().ToString();
         ImageUtils.SaveTextureToPNG(symbolConfig.GetTexture(), symbolID);
         _currentSymbol.symbolID = symbolID;
-        var symbolList = ReferenceSymbolStorage.LoadFromResources("symbols");
+        var symbolList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
         symbolList.Add(newGroup);
 
-        ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
-        ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json"));
+        ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
+       // ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.persistentDataPath, "Saves", "drawnSymbols.json"));
         yield return new WaitForSeconds(.1f);
         Destroy(_currentSymbolConfigurer.gameObject);
         _drawingTest.ClearAllLineRenderers(true);
@@ -151,11 +152,11 @@ public class DrawUpdloadingManager : MonoBehaviour
         string symbolID = Guid.NewGuid().ToString();
         ImageUtils.SaveTextureToPNG(ImageUtils.GetTexture2DCopy(renderTexture), symbolID);
         _currentSymbol.symbolID = symbolID;
-        var symbolList = ReferenceSymbolStorage.LoadFromResources("symbols").Where(x => string.Equals(x.symbolName, _currentSymbol.symbolName, System.StringComparison.OrdinalIgnoreCase)).ToList();
+        var symbolList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).Where(x => string.Equals(x.symbolName, _currentSymbol.symbolName, System.StringComparison.OrdinalIgnoreCase)).ToList();
         symbolList[0].symbols.Add(_currentSymbol);
 
-        ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.dataPath, "Resources", "symbols.json"));
-        ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.dataPath, "Resources", "drawnSymbols.json"));
+        ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
+       // ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.persistentDataPath,"Saves", "drawnSymbols.json"));
         yield return new WaitForSeconds(.1f);
         _drawingTest.ClearAllLineRenderers(true);
 

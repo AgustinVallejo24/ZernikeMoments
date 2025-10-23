@@ -10,7 +10,7 @@ public static class GestureProcessor
       //  var resampled = Resample(points, 64);
         //var reorganized = Reorganize(resampled);
         //var rotated = RotateToZero(reorganized);
-        var scaled = ScaleToSquare(points, 9f);
+        var scaled = ScaleToSquare(points, 6f);
         var translated = TranslateToOrigin(scaled);
         var smoothed = Simplify(translated,0.1f);
         // var reorganized = Reorganize(translated);

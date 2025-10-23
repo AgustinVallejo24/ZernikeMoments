@@ -840,7 +840,7 @@ MonoBehaviour:
   _warningText: {fileID: 94743730}
   _confirmSymbolButton: {fileID: 962910286}
   _configSymbolButton: {fileID: 1253682545}
-  _symbolConfigurerPrefab: {fileID: 1403798942456471051, guid: 808c67329cc3e2d40bc0ee59a6915918, type: 3}
+  _symbolConfigurerPrefab: {fileID: 4528572952815347165, guid: 808c67329cc3e2d40bc0ee59a6915918, type: 3}
   _drawingTest: {fileID: 2075857143}
   _zernikeManager: {fileID: 1722327457}
   renderTexture: {fileID: 8400000, guid: 69cf44f0231e534499837caca503578e, type: 2}
@@ -3123,7 +3123,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
