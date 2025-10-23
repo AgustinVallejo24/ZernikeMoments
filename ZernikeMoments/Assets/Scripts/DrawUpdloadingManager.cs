@@ -147,13 +147,14 @@ public class DrawUpdloadingManager : MonoBehaviour
     }
     IEnumerator SaveExistentSymbolCoroutine()
     {
-      
 
+        yield return new WaitForSeconds(.1f);
         string symbolID = Guid.NewGuid().ToString();
         ImageUtils.SaveTextureToPNG(ImageUtils.GetTexture2DCopy(renderTexture), symbolID);
         _currentSymbol.symbolID = symbolID;
-        var symbolList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).Where(x => string.Equals(x.symbolName, _currentSymbol.symbolName, System.StringComparison.OrdinalIgnoreCase)).ToList();
-        symbolList[0].symbols.Add(_currentSymbol);
+        var symbolList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
+        var filtered = symbolList.Where(x => string.Equals(x.symbolName, _currentSymbol.symbolName, System.StringComparison.OrdinalIgnoreCase)).ToList();
+        filtered[0].symbols.Add(_currentSymbol);
 
         ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
        // ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.persistentDataPath,"Saves", "drawnSymbols.json"));
