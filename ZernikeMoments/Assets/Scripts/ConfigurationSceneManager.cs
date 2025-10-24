@@ -99,10 +99,14 @@ public class ConfigurationSceneManager : MonoBehaviour
         {
             Destroy(item.gameObject);
         }
-        foreach (var item in _symbolList.Where(x => x.symbolName == _nameInputField.text))
+        foreach (var item in _symbolList.Where(x =>string.Equals(x.symbolName, _nameInputField.text, System.StringComparison.OrdinalIgnoreCase)))
         {
             SymbolConfigurer newSymbol = Instantiate(_symbolConfigurerPrefab, _content);
-            newSymbol.SetSymbolValues(null, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation, item.symbols,item);
+            Texture2D texture = ImageUtils.LoadTexture(item.symbols[0].symbolID);
+            newSymbol.deleteGroup = DeleteGroup;
+            newSymbol.deleteSymbol = DeleteSymbol;
+            newSymbol.canvas = canvas;
+            newSymbol.SetSymbolValues(texture, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation, item.symbols,item);
         }
     }
 
@@ -115,7 +119,13 @@ public class ConfigurationSceneManager : MonoBehaviour
         foreach (var item in _symbolList)
         {
             SymbolConfigurer newSymbol = Instantiate(_symbolConfigurerPrefab, _content);
-            newSymbol.SetSymbolValues(null, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation, item.symbols,item);
+            newSymbol.canvas = canvas;
+            Texture2D texture = ImageUtils.LoadTexture(item.symbols[0].symbolID);
+            //   Texture2D texture = item.symbols[0].templateTexture;
+            newSymbol.SetSymbolValues(texture, item.symbolName, item.Threshold, item.orientationThreshold, item.isSymmetric, item.useRotation, item.symbols, item);
+            _symbolConfigList.Add(newSymbol);
+            newSymbol.deleteGroup = DeleteGroup;
+            newSymbol.deleteSymbol = DeleteSymbol;
         }
     }
 }
