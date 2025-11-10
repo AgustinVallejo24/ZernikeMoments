@@ -15,18 +15,13 @@ public class DrawUpdloadingManager : MonoBehaviour
     [SerializeField] Button _confirmSymbolButton;
     [SerializeField] Button _configSymbolButton;
     [SerializeField] GameObject _symbolConfigurerPrefab;
-    [SerializeField] DrawingTest _drawingTest;
+    [SerializeField] Drawer _drawingTest;
     [SerializeField] ZernikeManager _zernikeManager;
     [SerializeField] RenderTexture renderTexture;
     [SerializeField] RectTransform _canvas;
   
     ReferenceSymbol _currentSymbol;
     GameObject _currentSymbolConfigurer;
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -79,11 +74,10 @@ public class DrawUpdloadingManager : MonoBehaviour
     public void OpenSymbolConfiguration()
     {
         var newSymbol = _drawingTest.ReturnNewSymbol(_symbolNameInputField.text,false);
-        var threshold = _zernikeManager.CalculateZernikeDistance(newSymbol.momentMagnitudes, _currentSymbol.momentMagnitudes) + .2f;
+        var threshold = _zernikeManager.recognizer.CalculateZernikeDistance(newSymbol.momentMagnitudes, _currentSymbol.momentMagnitudes) + .2f;
         if (_currentSymbol == null)
         {
             StartCoroutine(Warning("The line is too short"));
-
         }
         else
         {       
@@ -157,7 +151,6 @@ public class DrawUpdloadingManager : MonoBehaviour
         filtered[0].symbols.Add(_currentSymbol);
 
         ReferenceSymbolStorage.SaveSymbols(symbolList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
-       // ReferenceSymbolStorage.AppendSymbol(_currentSymbol, Path.Combine(Application.persistentDataPath,"Saves", "drawnSymbols.json"));
         yield return new WaitForSeconds(.1f);
         _drawingTest.ClearAllLineRenderers(true);
 

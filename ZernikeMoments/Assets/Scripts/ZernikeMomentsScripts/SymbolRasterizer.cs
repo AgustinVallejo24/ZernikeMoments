@@ -1,29 +1,25 @@
-// FileName: Algorithms/SymbolRasterizer.cs
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class SymbolRasterizer
 {
-    // Limpia la imagen a 0
+    // Clears the image by setting all pixels to zero
     public static void ClearImage(float[,] image, int imageSize)
     {
         for (int y = 0; y < imageSize; y++)
-        {
             for (int x = 0; x < imageSize; x++)
-            {
                 image[x, y] = 0;
-            }
-        }
     }
 
-    // Dibuja trazos (copiado 1:1 de ZernikeProcessor)
+    // Draws a list of strokes into the image
     public static void DrawStrokes(float[,] image, int imageSize, List<List<Vector2>> allStrokes)
     {
         if (allStrokes.Count == 0) return;
 
-        // 2. Encuentra los limites
         float minX = float.MaxValue, minY = float.MaxValue;
         float maxX = float.MinValue, maxY = float.MinValue;
+
+        // Find stroke boundaries
         foreach (var stroke in allStrokes)
         {
             foreach (var p in stroke)
@@ -40,12 +36,12 @@ public static class SymbolRasterizer
         minX -= .6f; minY -= .6f;
         maxX += .6f; maxY += .6f;
 
-        // 3. Calcula escala y offsets
+        // Compute scale and offsets
         float scale = Mathf.Min((imageSize - 1) / (maxX - minX), (imageSize - 1) / (maxY - minY));
         float offsetX = (imageSize - (maxX - minX) * scale) / 2f;
         float offsetY = (imageSize - (maxY - minY) * scale) / 2f;
 
-        // 4. Dibuja cada trazo
+        // Draw each stroke
         foreach (var stroke in allStrokes)
         {
             for (int i = 0; i < stroke.Count - 1; i++)
@@ -54,22 +50,21 @@ public static class SymbolRasterizer
                 int y0 = Mathf.RoundToInt((stroke[i].y - minY) * scale + offsetY);
                 int x1 = Mathf.RoundToInt((stroke[i + 1].x - minX) * scale + offsetX);
                 int y1 = Mathf.RoundToInt((stroke[i + 1].y - minY) * scale + offsetY);
-
                 DrawAALine(image, imageSize, x0, y0, x1, y1);
             }
         }
     }
 
-    // Dibuja textura (copiado 1:1 de ZernikeProcessor)
+    // Draws a texture into the image
     public static void DrawTexture(float[,] image, int imageSize, Texture2D texture)
     {
         if (!texture.isReadable)
         {
-            Debug.LogError("La textura no es legible.");
+            Debug.LogError("Texture is not readable.");
             return;
         }
 
-        // 1. Encontrar bounding box
+        // Find bounding box
         int minX = texture.width, maxX = 0, minY = texture.height, maxY = 0;
         for (int y = 0; y < texture.height; y++)
         {
@@ -90,18 +85,16 @@ public static class SymbolRasterizer
 
         if (width <= 0 || height <= 0)
         {
-            Debug.LogWarning("No se encontro simbolo en la textura");
+            Debug.LogWarning("No symbol found in texture.");
             return;
         }
 
-        // 2. Calcular escala
+        // Compute scale and offsets
         float scale = Mathf.Min((imageSize * 0.9f) / width, (imageSize * 0.9f) / height);
-
-        // 3. Calcular offsets
         float offsetX = (imageSize - width * scale) / 2f;
         float offsetY = (imageSize - height * scale) / 2f;
 
-        // 4. Mapear
+        // Map texture pixels to the target image
         for (int y = 0; y < imageSize; y++)
         {
             for (int x = 0; x < imageSize; x++)
@@ -115,16 +108,17 @@ public static class SymbolRasterizer
                 }
                 else
                 {
-                    Color c = texture.GetPixel(Mathf.Clamp(Mathf.FloorToInt(texX), 0, texture.width - 1),
-                                               Mathf.Clamp(Mathf.FloorToInt(texY), 0, texture.height - 1));
+                    Color c = texture.GetPixel(
+                        Mathf.Clamp(Mathf.FloorToInt(texX), 0, texture.width - 1),
+                        Mathf.Clamp(Mathf.FloorToInt(texY), 0, texture.height - 1)
+                    );
                     image[x, y] = (c.a > 0.1f) ? 1f : 0f;
                 }
             }
         }
     }
 
-    // --- Funciones privadas de dibujo ---
-
+    // Draws an anti-aliased line using Xiaolin Wu’s algorithm
     private static void DrawAALine(float[,] image, int imageSize, int x0, int y0, int x1, int y1)
     {
         x0 = Mathf.Clamp(x0, 0, imageSize - 1);
@@ -205,11 +199,10 @@ public static class SymbolRasterizer
         }
     }
 
+    // Safely sets a pixel value with intensity clamped between 0 and 1
     private static void SetPixelSafe(float[,] image, int imageSize, int x, int y, float intensity)
     {
         if (x >= 0 && x < imageSize && y >= 0 && y < imageSize)
-        {
             image[x, y] = Mathf.Min(image[x, y] + intensity, 1f);
-        }
     }
 }

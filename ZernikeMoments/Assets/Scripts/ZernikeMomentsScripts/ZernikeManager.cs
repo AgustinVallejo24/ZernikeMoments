@@ -11,12 +11,10 @@ using UnityEngine.Networking;
 using System.Runtime.InteropServices;
 public class ZernikeManager : MonoBehaviour
 {
-    // Tamaño de la imagen para el procesamiento
     [SerializeField] TMP_Text text;
     public int imageSize = 64;
-    // Orden máximo para los momentos de Zernike
     public int maxMomentOrder = 10;
-    // Umbral de distancia para un reconocimiento exitoso
+
     public float recognitionThreshold = 0.5f;
 
     public RenderTexture renderTexture;
@@ -27,12 +25,11 @@ public class ZernikeManager : MonoBehaviour
     public Image barrita;
     public GameObject UIDibujo;
     public GameObject DrawingTest;
-    // Almacena los descriptores (magnitudes de momentos) de los símbolos de referencia.
-   
+       
     public List<ReferenceSymbol> referenceSymbols;
     public List<ReferenceSymbolGroup> newReferenceSymbolsList;
-    public ZernikeProcessor _processor;
-    private List<Vector2> _currentStrokePoints;
+    public ZernikeProcessor processor;
+    public ZernikeRecognizer recognizer;
    
     public bool shouldLoad;
     string jsonPath;
@@ -43,25 +40,16 @@ public class ZernikeManager : MonoBehaviour
     void Start()
     {
        
-
         jsonPath = Path.Combine(Application.persistentDataPath,"Saves", "symbols.json");
     
-        _processor = new ZernikeProcessor(imageSize);
-        _currentStrokePoints = new List<Vector2>();
-//#if UNITY_WEBGL && !UNITY_EDITOR
-//if(TryLoadFile(Path.Combine(Application.persistentDataPath,"Saves", "symbols.json")))
-//{
-//shouldLoad = false;
+        processor = new ZernikeProcessor(imageSize);
+        recognizer = new ZernikeRecognizer(rotationSensitivity,text,processor);
 
-//}
-
-//#else
-     //   Debug.LogError("no funca el if");
         if (PlayerPrefs.HasKey("shouldLoad"))
         {
             shouldLoad = false;
         }
-//#endif
+
 
         if (SceneManager.GetActiveScene().name == "Menu" && shouldLoad)
         {
@@ -85,64 +73,12 @@ public class ZernikeManager : MonoBehaviour
         }
     }
 
-    public bool TryLoadFile(string path)
-    {
-        //string directoryPath = Path.Combine(Application.persistentDataPath, FOLDER);
-        //string filePath = Path.Combine(directoryPath, FILENAME);
 
-        // 1. Asegurarse de que la carpeta existe (CreateDirectory es seguro y no falla si ya existe)
-//        Directory.CreateDirectory(path);
-
-
-
-        try
-        {
-            // 2. Intentar leer el archivo directamente.
-            // Si no existe, esto lanzará una excepción (FileNotFoundException).
-            //  jsonContent = File.ReadAllText(filePath);
-            Directory.CreateDirectory(path);
-#if UNITY_WEBGL && !UNITY_EDITOR
-    SyncFilesystem(); // Esta función llama a FS.syncfs(false, ...) en el plugin .jslib
-#endif
-            // Si la lectura fue exitosa:
-            return false; // El archivo existe y se cargó
-        }
-        catch (FileNotFoundException)
-        {
-            // La excepción indica que el archivo no existe.
-            Debug.Log($"Archivo  NO encontrado en WebGL. Creando uno nuevo.");
-            return false; // El archivo no existe
-        }
-        catch (Exception ex)
-        {
-            // Manejar otros posibles errores (permisos, etc.)
-            Debug.LogError($"Error inesperado al cargar el archivo en WebGL: {ex.Message}");
-            return true;
-        }
-    }
-    public void DeleteSaveFolder(string path)
-    {
-        string directoryPath = path;
-
-        if (TryLoadFile(path))
-        {
-            Directory.Delete(directoryPath, true);
-            Debug.Log("Carpeta borrada.");
-
-            // 2. Llamar a la función para guardar el cambio en IndexedDB
-        #if UNITY_WEBGL && !UNITY_EDITOR
-                SyncFilesystem();
-        #endif
-        }
-    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            Debug.LogError("AAAAAAAAA");
             PlayerPrefs.DeleteAll();
-
-
         }
     }
 
@@ -154,11 +90,6 @@ public class ZernikeManager : MonoBehaviour
     {
         float carga = 0;
 
-        //Directory.Delete(Path.Combine(Application.dataPath, "Resources/Template Images/InProjectTemplates"), true);
-     //   if(File.Exists(Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates")))
-      //  Directory.Delete(Path.Combine(Application.persistentDataPath, "Images/TemplateImages/InProjectTemplates"), true);
-
-
         foreach (var group in newReferenceSymbolsList)
         {
             foreach (var reference in group.symbols)
@@ -166,28 +97,24 @@ public class ZernikeManager : MonoBehaviour
 
                 if (reference.templateTexture != null)
                 {
-                    // Procesar la textura para obtener la matriz binaria
-                    reference.templateTexture = _processor.ResizeImage(reference.templateTexture, 64);
+                    reference.templateTexture = processor.ResizeImage(reference.templateTexture, 64);
                     reference.templateTexture.name = reference.symbolName;
                     Debug.Log(reference.templateTexture.height);
-                    _processor.DrawTexture(reference.templateTexture);
+                    processor.DrawTexture(reference.templateTexture);
 
-                    // Calcular la suma de todos los píxeles activos para la normalización
-                    float totalPixels = _processor.GetActivePixelCount();
+                    float totalPixels = processor.GetActivePixelCount();
                     Debug.Log("Divido por " + totalPixels);
 
-                    ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
+                    ZernikeMoment[] moments = processor.ComputeZernikeMoments(maxMomentOrder);
 
                     reference.momentMagnitudes = new List<double>();
-                    // Normalizar y guardar las magnitudes
                     foreach (var moment in moments)
                     {
-                        // Evitar división por cero
                         double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
                         reference.momentMagnitudes.Add(normalizedMagnitude);
                     }
 
-                    reference.distribution = _processor.GetSymbolDistribution();
+                    reference.distribution = processor.GetSymbolDistribution();
 
                     reference.symbolID = Guid.NewGuid().ToString();
 
@@ -205,18 +132,16 @@ public class ZernikeManager : MonoBehaviour
         UICarga.SetActive(false);
         UIDibujo.SetActive(true);
         yield return new WaitForSeconds(.2f);
-    //    DrawingTest.SetActive(true);
         ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
 
-        //  newReferenceSymbolsList = newReferenceSymbolsList.Concat(ReferenceSymbolStorage.LoadFromResources("drawnSymbols")).ToList();
     }
     public void OnDrawingFinished(List<List<Vector2>> finishedPoints, int strokeQuantity)
     {
 
-        _processor.DrawStrokes(finishedPoints);
-        float totalPixels = _processor.GetActivePixelCount();
-        ZernikeMoment[] playerMoments = _processor.ComputeZernikeMoments(maxMomentOrder);
-        float[] playerDistribution = _processor.GetSymbolDistribution();
+        processor.DrawStrokes(finishedPoints);
+        float totalPixels = processor.GetActivePixelCount();
+        ZernikeMoment[] playerMoments = processor.ComputeZernikeMoments(maxMomentOrder);
+        float[] playerDistribution = processor.GetSymbolDistribution();
         List<double> playerMagnitudes = new List<double>();
         foreach (var moment in playerMoments)
         {
@@ -231,10 +156,10 @@ public class ZernikeManager : MonoBehaviour
     public void SaveSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName, string symbolID)
     {
        
-        _processor.DrawStrokes(finishedPoints);
-        float totalPixels = _processor.GetActivePixelCount();
-        ZernikeMoment[] playerMoments = _processor.ComputeZernikeMoments(maxMomentOrder);
-        float[] playerDistribution = _processor.GetSymbolDistribution();
+        processor.DrawStrokes(finishedPoints);
+        float totalPixels = processor.GetActivePixelCount();
+        ZernikeMoment[] playerMoments = processor.ComputeZernikeMoments(maxMomentOrder);
+        float[] playerDistribution = processor.GetSymbolDistribution();
         List<double> playerMagnitudes = new List<double>();
         foreach (var moment in playerMoments)
         {
@@ -243,57 +168,19 @@ public class ZernikeManager : MonoBehaviour
         }
         
         ReferenceSymbol newSymbol = new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity, symbolID);
-      //  string savePath = Path.Combine(Application.persistentDataPath, "Saves", "drawnSymbols.json");
-        //ReferenceSymbolStorage.AppendSymbol(newSymbol, savePath);
+
         referenceSymbols.Add(newSymbol);
         ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
         
         
     }
-    public IEnumerator CheckFileExists(System.Action<bool> onResult, string path)
-    {
-        // 1. Construir la URL completa para el archivo.
-        // WebGL solo puede acceder a estos archivos mediante el protocolo file:// o http://, por eso usamos UnityWebRequest.
-        string fullPath = path;
-        Debug.LogError("si funca el if");
-        // 2. Usar UnityWebRequest para intentar obtener el archivo.
-        // El método GET sirve para verificar la existencia e iniciar la carga al mismo tiempo.
-        using (UnityWebRequest request = UnityWebRequest.Get(fullPath))
-        {
-            // Esperar a que la solicitud termine
-            yield return request.SendWebRequest();
 
-            bool fileExists = false;
-
-            // 3. Evaluar el resultado
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                // La solicitud fue exitosa, lo que significa que el archivo existe en IndexedDB.
-                fileExists = true;
-                // Si solo quieres verificar la existencia, puedes ignorar 'request.downloadHandler.text'
-            }
-            else if (request.result == UnityWebRequest.Result.ProtocolError && request.responseCode == 404)
-            {
-                // El error 404 (Not Found) indica que no existe el archivo.
-                fileExists = false;
-            }
-            else
-            {
-                // Otros errores (red, etc.)
-                Debug.LogError($"Error al verificar el archivo: {request.error}");
-                fileExists = false;
-            }
-
-            // Llamar al callback con el resultado
-            onResult?.Invoke(fileExists);
-        }
-    }
     public ReferenceSymbol ReturnNewSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName, string symbolID)
     {
-        _processor.DrawStrokes(finishedPoints);
-        float totalPixels = _processor.GetActivePixelCount();
-        ZernikeMoment[] playerMoments = _processor.ComputeZernikeMoments(maxMomentOrder);
-        float[] playerDistribution = _processor.GetSymbolDistribution();
+        processor.DrawStrokes(finishedPoints);
+        float totalPixels = processor.GetActivePixelCount();
+        ZernikeMoment[] playerMoments = processor.ComputeZernikeMoments(maxMomentOrder);
+        float[] playerDistribution = processor.GetSymbolDistribution();
         List<double> playerMagnitudes = new List<double>();
         foreach (var moment in playerMoments)
         {
@@ -307,7 +194,6 @@ public class ZernikeManager : MonoBehaviour
 
     private void RecognizeSymbol(List<double> playerMagnitudes, int strokeQuantity, float[] playerDrawDistribution)
     {
-        // 1. Filtrar los símbolos de referencia que coinciden con la cantidad de trazos.
         var relevantSymbols = newReferenceSymbolsList.Where(x => x.strokes == strokeQuantity).ToList();
 
         if (relevantSymbols.Count == 0)
@@ -316,130 +202,13 @@ public class ZernikeManager : MonoBehaviour
             return;
         }
 
-        // 2. Encontrar el mejor candidato. Las variables se pasan por 'out' para ser asignadas dentro de la función.
-        FindBestCandidate(playerMagnitudes, playerDrawDistribution, relevantSymbols, out ReferenceSymbolGroup bestMatch,
-            out double minDistance, out float bestDistributionDiff, out ReferenceSymbolGroup closestMismatch, out double closestMismatchDist);
+        recognizer.FindBestCandidate(playerMagnitudes, playerDrawDistribution, relevantSymbols, out ReferenceSymbolGroup bestMatch,
+            out double minDistance, out float bestDistributionDiff, out ReferenceSymbolGroup closestMismatch, out double closestMismatchDist, out double closesetMismatchDistributionDist);
 
-        // 3. Mostrar el resultado final en la interfaz.
-        DisplayResult(bestMatch, minDistance, bestDistributionDiff, closestMismatch, closestMismatchDist);
+        recognizer.DisplayResult(bestMatch, minDistance, bestDistributionDiff, closestMismatch, closestMismatchDist, closesetMismatchDistributionDist);
     }
 
-    private void FindBestCandidate(
-    List<double> playerMagnitudes,
-    float[] playerDrawDistribution,
-    List<ReferenceSymbolGroup> candidates,
-    out ReferenceSymbolGroup bestMatch,
-    out double minDistance,
-    out float bestDistributionDiff,
-    out ReferenceSymbolGroup closestMismatch,
-    out double closestMismatchDist)
-    {
-        // Inicializar los valores de salida
-        bestMatch = new ReferenceSymbolGroup();
-        minDistance = double.MaxValue;
-        bestDistributionDiff = 0;
-        closestMismatch = new ReferenceSymbolGroup();
-        closestMismatchDist = double.MaxValue;
 
-        foreach (var group in candidates)
-        {
-            foreach (var reference in group.symbols)
-            {
-                // A. Calcula las métricas de similitud.
-                double zernikeDistance = CalculateZernikeDistance(playerMagnitudes, reference.momentMagnitudes);
-                float distributionDifference = _processor.CompareAngularHistograms(reference.distribution, playerDrawDistribution);
-
-                // B. Calcula la "puntuación" final, aplicando penalización si es simétrico.
-                double finalDistance = zernikeDistance;
-                if (group.isSymmetric)
-                {
-                    finalDistance += distributionDifference;
-                }
-
-                // C. Verifica si el símbolo cumple con los umbrales requeridos.
-                bool meetsThresholds = CheckThresholds(finalDistance, distributionDifference, group);
-
-                // D. Actualiza el mejor candidato o el "casi" candidato.
-                if (meetsThresholds && finalDistance < minDistance)
-                {
-                    minDistance = finalDistance;
-                    bestMatch = group;
-                    bestDistributionDiff = distributionDifference;
-                }
-                else if (!meetsThresholds && finalDistance < closestMismatchDist)
-                {
-                    closestMismatchDist = finalDistance;
-                    closestMismatch = group;
-                }
-
-                Debug.Log($"Distancia con '{reference.symbolName}': {finalDistance:F3}");
-            }
-        }
-       
-    }
-
-    public double CalculateZernikeDistance(List<double> playerMagnitudes, List<double> referenceMagnitudes)
-    {
-        double distanceSquared = 0;
-        int count = Mathf.Min(playerMagnitudes.Count, referenceMagnitudes.Count);
-
-        for (int i = 0; i < count; i++)
-        {
-            double diff = playerMagnitudes[i] - referenceMagnitudes[i];
-            distanceSquared += diff * diff;
-        }
-
-        return Math.Sqrt(distanceSquared) * 100;
-    }
-
-    private bool CheckThresholds(double distance, float distributionDifference, ReferenceSymbolGroup reference)
-    {
-        if (distance > reference.Threshold)
-        {
-            return false;
-        }
-
-        if (rotationSensitivity && reference.useRotation)
-        {
-            if (distributionDifference > reference.orientationThreshold)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private void DisplayResult(
-    ReferenceSymbolGroup bestMatch,
-    double minDistance,
-    float distributionDiff,
-    ReferenceSymbolGroup closestMismatch,
-    double closestMismatchDist)
-    {
-        Debug.Log(bestMatch.symbolName);
-        if (bestMatch.symbols != null)
-        {
-            // Se encontró una coincidencia válida.
-            string resultText = $"Símbolo reconocido: {bestMatch.symbolName}\nDistancia: {minDistance:F3}";
-
-            if (rotationSensitivity && bestMatch.useRotation)
-            {
-                resultText += $", Dif. Distribución: {distributionDiff:F3}";
-            }
-            text.text = resultText;
-        }
-        else if (closestMismatch.symbols.Count >0)
-        {
-            // No hubo coincidencias válidas, pero se muestra la más cercana que falló.
-            text.text = $"Símbolo no reconocido. Match más cercano: '{closestMismatch.symbolName}' con distancia {closestMismatchDist:F3}";
-        }
-        else
-        {
-            // No se encontró ningún símbolo cercano.
-            text.text = "Símbolo no reconocido.";
-        }
-    }
 }
 
 

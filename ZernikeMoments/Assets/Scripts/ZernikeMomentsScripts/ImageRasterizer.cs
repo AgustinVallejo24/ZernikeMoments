@@ -1,31 +1,27 @@
-// FileName: Algorithms/ImageProcessor.cs
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class ImageRasterizer
 {
-    // Esta es la función clave que hace el procesamiento.
-    // Devuelve la *nueva* imagen procesada y establece el histograma.
+    // Normalizes stroke thickness and computes the angular histogram
     public static float[,] NormalizeThicknessAndComputeAngularHistogram(
         float[,] binaryMatrix, int imageSize, int targetThickness,
         out float[] angularHistogram, int sectors = 16, int rings = 3)
     {
         angularHistogram = new float[sectors * rings];
-
         if (imageSize <= 0) return binaryMatrix;
 
         bool[,] bin = ToBoolMatrix(binaryMatrix, imageSize);
         bool[,] skeleton = ZhangSuenThinning(bin, imageSize);
 
         if (targetThickness <= 1)
-        {
             return BoolToFloat(skeleton, imageSize);
-        }
 
-        // --- 1) centroide ---
         float cx = 0f, cy = 0f;
         int skeletonCount = 0;
+
+        // Compute centroid
         for (int y = 0; y < imageSize; y++)
             for (int x = 0; x < imageSize; x++)
                 if (skeleton[x, y]) { cx += x; cy += y; skeletonCount++; }
@@ -35,9 +31,13 @@ public static class ImageRasterizer
             cx /= skeletonCount;
             cy /= skeletonCount;
         }
-        else { cx = imageSize / 2f; cy = imageSize / 2f; }
+        else
+        {
+            cx = imageSize / 2f;
+            cy = imageSize / 2f;
+        }
 
-        // --- 2) offsets de disco ---
+        // Compute disk offsets for thickening
         int radius = Mathf.Max(0, Mathf.RoundToInt((targetThickness - 1) / 2f));
         List<Vector2Int> offsets = new List<Vector2Int>();
         int r2 = radius * radius;
@@ -50,9 +50,9 @@ public static class ImageRasterizer
         bool[,] visited = new bool[imageSize, imageSize];
         int totalAdded = 0;
 
-        // --- 3) expandir skeleton y llenar histograma polar ---
         float maxDist = Mathf.Sqrt(imageSize * imageSize + imageSize * imageSize) / 2f;
 
+        // Expand skeleton and fill polar histogram
         for (int y = 0; y < imageSize; y++)
         {
             for (int x = 0; x < imageSize; x++)
@@ -71,15 +71,13 @@ public static class ImageRasterizer
                         thickened[px, py] = 1f;
                         totalAdded++;
 
-                        // ---- Histograma polar ----
                         float dx = px - cx;
                         float dy = py - cy;
-                        float angle = Mathf.Atan2(dy, dx); // -pi..pi
+                        float angle = Mathf.Atan2(dy, dx);
                         float dist = Mathf.Sqrt(dx * dx + dy * dy);
 
                         int sector = (int)((angle + Mathf.PI) / (2f * Mathf.PI) * sectors);
                         sector = (sector % sectors + sectors) % sectors;
-
                         int ring = Mathf.Min(rings - 1, (int)(dist / maxDist * rings));
 
                         int index = ring * sectors + sector;
@@ -89,7 +87,7 @@ public static class ImageRasterizer
             }
         }
 
-        // --- 4) normalizar histograma ---
+        // Normalize histogram
         if (totalAdded > 0)
         {
             for (int i = 0; i < angularHistogram.Length; i++)
@@ -99,7 +97,7 @@ public static class ImageRasterizer
         return thickened;
     }
 
-    // Comparador de histograma (movido de ZernikeProcessor)
+    // Compares two angular histograms (optionally rotation-invariant)
     public static float CompareAngularHistograms(float[] histA, float[] histB, bool rotationInvariant = false)
     {
         int sectors = 16;
@@ -139,8 +137,7 @@ public static class ImageRasterizer
         }
     }
 
-    // --- Helpers de Zhang-Suen y conversión de tipos ---
-
+    // Converts a float matrix to a boolean matrix
     private static bool[,] ToBoolMatrix(float[,] src, int size)
     {
         bool[,] b = new bool[size, size];
@@ -150,6 +147,7 @@ public static class ImageRasterizer
         return b;
     }
 
+    // Converts a boolean matrix to a float matrix
     private static float[,] BoolToFloat(bool[,] b, int size)
     {
         float[,] f = new float[size, size];
@@ -159,6 +157,7 @@ public static class ImageRasterizer
         return f;
     }
 
+    // Applies the Zhang-Suen thinning algorithm
     private static bool[,] ZhangSuenThinning(bool[,] input, int size)
     {
         int w = size, h = size;
@@ -175,7 +174,7 @@ public static class ImageRasterizer
             changed = false;
             toRemove.Clear();
 
-            // Sub-iteracion 1
+            // Sub-iteration 1
             for (int y = 1; y < h - 1; y++)
             {
                 for (int x = 1; x < w - 1; x++)
@@ -183,11 +182,10 @@ public static class ImageRasterizer
                     if (!img[x, y]) continue;
                     int neighbors = CountNeighbors(img, x, y);
                     int transitions = CountTransitions(img, x, y);
-                    bool p2 = img[x, y - 1]; bool p4 = img[x + 1, y]; bool p6 = img[x, y + 1]; bool p8 = img[x - 1, y];
+                    bool p2 = img[x, y - 1]; bool p4 = img[x + 1, y];
+                    bool p6 = img[x, y + 1]; bool p8 = img[x - 1, y];
                     if (neighbors >= 2 && neighbors <= 6 && transitions == 1 && (!p2 || !p4 || !p6) && (!p4 || !p6 || !p8))
-                    {
                         toRemove.Add(new Vector2Int(x, y));
-                    }
                 }
             }
             if (toRemove.Count > 0)
@@ -197,7 +195,7 @@ public static class ImageRasterizer
                 toRemove.Clear();
             }
 
-            // Sub-iteracion 2
+            // Sub-iteration 2
             for (int y = 1; y < h - 1; y++)
             {
                 for (int x = 1; x < w - 1; x++)
@@ -205,11 +203,10 @@ public static class ImageRasterizer
                     if (!img[x, y]) continue;
                     int neighbors = CountNeighbors(img, x, y);
                     int transitions = CountTransitions(img, x, y);
-                    bool p2 = img[x, y - 1]; bool p4 = img[x + 1, y]; bool p6 = img[x, y + 1]; bool p8 = img[x - 1, y];
+                    bool p2 = img[x, y - 1]; bool p4 = img[x + 1, y];
+                    bool p6 = img[x, y + 1]; bool p8 = img[x - 1, y];
                     if (neighbors >= 2 && neighbors <= 6 && transitions == 1 && (!p2 || !p4 || !p8) && (!p2 || !p6 || !p8))
-                    {
                         toRemove.Add(new Vector2Int(x, y));
-                    }
                 }
             }
             if (toRemove.Count > 0)
@@ -222,6 +219,7 @@ public static class ImageRasterizer
         return img;
     }
 
+    // Counts the number of active neighbors around a pixel
     private static int CountNeighbors(bool[,] img, int x, int y)
     {
         int c = 0;
@@ -231,6 +229,7 @@ public static class ImageRasterizer
         return c;
     }
 
+    // Counts the number of 0 -> 1 transitions in the neighborhood
     private static int CountTransitions(bool[,] img, int x, int y)
     {
         bool[] p = new bool[8];
@@ -240,9 +239,7 @@ public static class ImageRasterizer
         p[6] = img[x - 1, y]; p[7] = img[x - 1, y - 1];
         int transitions = 0;
         for (int k = 0; k < 8; k++)
-        {
             if (!p[k] && p[(k + 1) % 8]) transitions++;
-        }
         return transitions;
     }
 }
