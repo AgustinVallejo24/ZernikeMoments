@@ -2015,9 +2015,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 205799571}
     m_Modifications:
+    - target: {fileID: 1368762141506843416, guid: 054df1f7495491a4fa73125cfdf2a1a3, type: 3}
+      propertyPath: m_text
+      value: "0\n\u200B"
+      objectReference: {fileID: 0}
     - target: {fileID: 1474227406633781982, guid: 054df1f7495491a4fa73125cfdf2a1a3, type: 3}
       propertyPath: m_Name
       value: SymbolConfigurer
+      objectReference: {fileID: 0}
+    - target: {fileID: 1474227406633781982, guid: 054df1f7495491a4fa73125cfdf2a1a3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3125464364482802597, guid: 054df1f7495491a4fa73125cfdf2a1a3, type: 3}
       propertyPath: m_Pivot.x
@@ -2178,6 +2186,10 @@ PrefabInstance:
     - target: {fileID: 8487210681685586346, guid: 054df1f7495491a4fa73125cfdf2a1a3, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677283414202184221, guid: 054df1f7495491a4fa73125cfdf2a1a3, type: 3}
+      propertyPath: m_text
+      value: "0\n\u200B"
       objectReference: {fileID: 0}
     - target: {fileID: 8820027134305447963, guid: 054df1f7495491a4fa73125cfdf2a1a3, type: 3}
       propertyPath: m_IsActive
