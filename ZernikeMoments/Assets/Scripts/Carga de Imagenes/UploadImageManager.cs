@@ -24,8 +24,7 @@ public class UploadImageManager : MonoBehaviour
     [SerializeField] TMP_Text _existentTemplateText;
     ZernikeProcessor _processor;
     public int imageSize = 64;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
         instance = this;
@@ -110,36 +109,25 @@ public class UploadImageManager : MonoBehaviour
             symbolGroup.useRotation = _symbolConfigurer.GetUseRotation();
             symbolGroup.Threshold = _symbolConfigurer.GetThresholdFieldValue();
             symbolGroup.orientationThreshold = _symbolConfigurer.GetRotationThresholdFieldValue();
-            symbolGroup.symbols = new List<ReferenceSymbol>();
+            symbolGroup.symbols = new List<ReferenceSymbol>();                        
 
-            //_zernikeManager.newReferenceSymbolsList.Add(symbolGroup);            
-
-            ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, default, default, int.Parse(_symbolStrokeQ.text), Guid.NewGuid().ToString());
-
-            // Procesar la textura para obtener la matriz binaria        
-            //reference.templateTexture.name = reference.symbolName;
-            //Debug.Log(reference.templateTexture.height);
+            ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, default, default, int.Parse(_symbolStrokeQ.text), Guid.NewGuid().ToString());            
 
             tex = _processor.ResizeImage(tex, 64);
             tex = ImageProcessor.ProcessTextureConditional(tex);
-            _processor.DrawTexture(tex);
-
-            //var distribution = _processor.GetSymbolDistribution();
-
-            
+            _processor.DrawTexture(tex);            
 
             newSymbol.templateTexture = tex;
-            // Calcular la suma de todos los píxeles activos para la normalización
+            
             float totalPixels = _processor.GetActivePixelCount();
             Debug.Log("Divido por " + totalPixels);
 
             ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
 
             newSymbol.momentMagnitudes = new List<double>();
-            // Normalizar y guardar las magnitudes
+            
             foreach (var moment in moments)
-            {
-                // Evitar división por cero
+            {                
                 double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
                 newSymbol.momentMagnitudes.Add(normalizedMagnitude);
             }
@@ -153,7 +141,7 @@ public class UploadImageManager : MonoBehaviour
             var refrenceSymGroupList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
             refrenceSymGroupList.Add(symbolGroup);
             ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
-        //    ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.persistentDataPath, "Saves", "externalSymbols.json"));
+        
 
             uploadedImage.texture = null;
             _symbolNameF.text = "";
@@ -167,38 +155,29 @@ public class UploadImageManager : MonoBehaviour
         }
         
     }
-
+    
     public void SaveExistentSymbol()
     {
-        ReferenceSymbolGroup symbolGroup = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).Where(x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).First();
-
-
-        // Procesar la textura para obtener la matriz binaria        
-        //reference.templateTexture.name = reference.symbolName;
-        //Debug.Log(reference.templateTexture.height);
+        ReferenceSymbolGroup symbolGroup = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"))
+            .Where(x => string.Equals(x.symbolName, _symbolName, StringComparison.OrdinalIgnoreCase)).First();        
 
         ReferenceSymbol newSymbol = new ReferenceSymbol(symbolGroup.symbolName, default, default, symbolGroup.strokes, Guid.NewGuid().ToString());
 
         tex = _processor.ResizeImage(tex, 64);
         tex = ImageProcessor.ProcessTextureConditional(tex);
-        _processor.DrawTexture(tex);
-
-        //var distribution = _processor.GetSymbolDistribution();        
-
-        
+        _processor.DrawTexture(tex);        
 
         newSymbol.templateTexture = tex;
-        // Calcular la suma de todos los píxeles activos para la normalización
+        
         float totalPixels = _processor.GetActivePixelCount();
         Debug.Log("Divido por " + totalPixels);
 
         ZernikeMoment[] moments = _processor.ComputeZernikeMoments(maxMomentOrder);
 
         newSymbol.momentMagnitudes = new List<double>();
-        // Normalizar y guardar las magnitudes
+        
         foreach (var moment in moments)
-        {
-            // Evitar división por cero
+        {            
             double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
             newSymbol.momentMagnitudes.Add(normalizedMagnitude);
         }
@@ -212,8 +191,6 @@ public class UploadImageManager : MonoBehaviour
         var refrenceSymGroupList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
         refrenceSymGroupList.Add(symbolGroup);
         ReferenceSymbolStorage.SaveSymbols(refrenceSymGroupList, Path.Combine(Application.persistentDataPath, "Saves", "symbols.json"));
-       // ReferenceSymbolStorage.AppendSymbol(newSymbol, Path.Combine(Application.persistentDataPath, "Saves", "externalSymbols.json"));
-
 
         uploadedImage.texture = null;
         _symbolNameF.text = "";
@@ -221,7 +198,6 @@ public class UploadImageManager : MonoBehaviour
 
     IEnumerator Warning(string text)
     {
-
         _warningText.gameObject.SetActive(true);
         _warningText.text = text;
         yield return new WaitForSeconds(4f);
@@ -230,7 +206,6 @@ public class UploadImageManager : MonoBehaviour
 
     IEnumerator ExistentTemplate()
     {
-
         _existentTemplateText.gameObject.SetActive(true);        
         yield return new WaitForSeconds(4f);
         _existentTemplateText.gameObject.SetActive(false);

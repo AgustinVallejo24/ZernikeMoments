@@ -5,25 +5,11 @@ using System.Collections.Generic;
 public class ReferenceSymbol
 {
     public string symbolName;
-
     public Texture2D templateTexture;
-  
-
-    public string symbolID;
-
-
-    //public float Threshold;
-    //public float orientationThreshold;
-    //public bool useRotation = true;
-    //public bool isSymmetric = false;
-    public int strokes = 1;
-
-    // [HideInInspector]
-    public float[] distribution;
-
-    //   [HideInInspector]
+    public string symbolID;    
+    public int strokes = 1;    
+    public float[] distribution;    
     public List<double> momentMagnitudes;
-
 
     public ReferenceSymbol(string name, float[] rotDistribution, List<double> magnitudes, int strokesQ, string sID)
     {
