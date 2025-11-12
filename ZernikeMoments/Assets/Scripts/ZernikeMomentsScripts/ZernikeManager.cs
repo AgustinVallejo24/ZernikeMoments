@@ -11,32 +11,34 @@ using UnityEngine.Networking;
 using System.Runtime.InteropServices;
 public class ZernikeManager : MonoBehaviour
 {
-    [SerializeField] TMP_Text text;
-    public int imageSize = 64;
-    public int maxMomentOrder = 10;
 
-    public float recognitionThreshold = 0.5f;
 
-    public RenderTexture renderTexture;
-
+    [Header("Manager configuration")]
     public bool rotationSensitivity;
+    public bool shouldLoad;
 
+    public List<ReferenceSymbolGroup> referenceSymbolsList;
+
+    [Header("Editor References")]
+    [SerializeField] TMP_Text text;
     public GameObject UICarga;
     public Image barrita;
     public GameObject UIDibujo;
-    public GameObject DrawingTest;
+    public GameObject drawer;
        
-    public List<ReferenceSymbol> referenceSymbols;
-    public List<ReferenceSymbolGroup> newReferenceSymbolsList;
+    string jsonPath;
+
+    [HideInInspector]
     public ZernikeProcessor processor;
     public ZernikeRecognizer recognizer;
-   
-    public bool shouldLoad;
-    string jsonPath;
-       #if UNITY_WEBGL && !UNITY_EDITOR
+    public int imageSize = 64;
+    public int maxMomentOrder = 10;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
     private static extern void SyncFilesystem();
-       #endif
+#endif
+
     void Start()
     {
        
@@ -60,11 +62,11 @@ public class ZernikeManager : MonoBehaviour
         }
         else if(SceneManager.GetActiveScene().name != "Menu")
         {
-            newReferenceSymbolsList.Clear();
-            newReferenceSymbolsList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).ToList();            
+            referenceSymbolsList.Clear();
+            referenceSymbolsList = ReferenceSymbolStorage.LoadSymbols(Path.Combine(Application.persistentDataPath, "Saves", "symbols.json")).ToList();            
             UICarga.SetActive(false);
             UIDibujo.SetActive(true);
-            DrawingTest.SetActive(true);
+            drawer.SetActive(true);
         }
         else 
         {
@@ -84,13 +86,13 @@ public class ZernikeManager : MonoBehaviour
 
     public void SaveSymbolList()
     {
-        ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
+        ReferenceSymbolStorage.SaveSymbols(referenceSymbolsList, jsonPath);
     }
     IEnumerator Compute()
     {
         float carga = 0;
 
-        foreach (var group in newReferenceSymbolsList)
+        foreach (var group in referenceSymbolsList)
         {
             foreach (var reference in group.symbols)
             {
@@ -120,7 +122,7 @@ public class ZernikeManager : MonoBehaviour
 
                     ImageUtils.SaveTexture(reference.templateTexture, reference.symbolID);
                 }
-                carga += 1f / referenceSymbols.Count;
+                carga += 1f / referenceSymbolsList.Count;
 
 
                 barrita.fillAmount = carga;
@@ -132,7 +134,7 @@ public class ZernikeManager : MonoBehaviour
         UICarga.SetActive(false);
         UIDibujo.SetActive(true);
         yield return new WaitForSeconds(.2f);
-        ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
+        ReferenceSymbolStorage.SaveSymbols(referenceSymbolsList, jsonPath);
 
     }
     public void OnDrawingFinished(List<List<Vector2>> finishedPoints, int strokeQuantity)
@@ -153,28 +155,6 @@ public class ZernikeManager : MonoBehaviour
     }
 
 
-    public void SaveSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName, string symbolID)
-    {
-       
-        processor.DrawStrokes(finishedPoints);
-        float totalPixels = processor.GetActivePixelCount();
-        ZernikeMoment[] playerMoments = processor.ComputeZernikeMoments(maxMomentOrder);
-        float[] playerDistribution = processor.GetSymbolDistribution();
-        List<double> playerMagnitudes = new List<double>();
-        foreach (var moment in playerMoments)
-        {
-            double normalizedMagnitude = totalPixels > 0 ? moment.magnitude / totalPixels : 0;
-            playerMagnitudes.Add(normalizedMagnitude);
-        }
-        
-        ReferenceSymbol newSymbol = new ReferenceSymbol(symbolName, playerDistribution, playerMagnitudes, strokeQuantity, symbolID);
-
-        referenceSymbols.Add(newSymbol);
-        ReferenceSymbolStorage.SaveSymbols(newReferenceSymbolsList, jsonPath);
-        
-        
-    }
-
     public ReferenceSymbol ReturnNewSymbol(List<List<Vector2>> finishedPoints, int strokeQuantity, string symbolName, string symbolID)
     {
         processor.DrawStrokes(finishedPoints);
@@ -194,7 +174,7 @@ public class ZernikeManager : MonoBehaviour
 
     private void RecognizeSymbol(List<double> playerMagnitudes, int strokeQuantity, float[] playerDrawDistribution)
     {
-        var relevantSymbols = newReferenceSymbolsList.Where(x => x.strokes == strokeQuantity).ToList();
+        var relevantSymbols = referenceSymbolsList.Where(x => x.strokes == strokeQuantity).ToList();
 
         if (relevantSymbols.Count == 0)
         {

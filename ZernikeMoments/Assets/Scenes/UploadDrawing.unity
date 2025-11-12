@@ -1595,8 +1595,8 @@ GameObject:
   - component: {fileID: 1200112339}
   - component: {fileID: 1200112338}
   m_Layer: 0
-  m_Name: Main Camera (1)
-  m_TagString: MainCamera
+  m_Name: RenderTextureCamera
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1899,7 +1899,7 @@ GameObject:
   - component: {fileID: 1488026862}
   - component: {fileID: 1488026861}
   m_Layer: 0
-  m_Name: Main Camera (2)
+  m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2330,97 +2330,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54a9fc6b55943a746af60170fe7f1da5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 1924170148}
   imageSize: 64
   maxMomentOrder: 10
-  recognitionThreshold: 0.5
-  renderTexture: {fileID: 0}
   rotationSensitivity: 1
+  shouldLoad: 0
+  newReferenceSymbolsList: []
+  text: {fileID: 1924170148}
   UICarga: {fileID: 738991315}
   barrita: {fileID: 1062691862}
   UIDibujo: {fileID: 1883958349}
-  DrawingTest: {fileID: 2075857142}
-  referenceSymbols:
-  - symbolName: C
-    templateTexture: {fileID: 2800000, guid: b6bee689972544a4ebd7f109c6a4443c, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: V
-    templateTexture: {fileID: 2800000, guid: 2748993ccbbc8d9469867ab62cbd661e, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Circulo
-    templateTexture: {fileID: 2800000, guid: 7e89d3459617602479251a10e2ccdb1b, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Cuadrado
-    templateTexture: {fileID: 2800000, guid: 671bd6ee381e12e45820f8e9a312f6d2, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Cuadrado
-    templateTexture: {fileID: 2800000, guid: d5fc5933d7ff7c9459a0fc7d76cfa913, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Cuadrado
-    templateTexture: {fileID: 2800000, guid: acd80a22e8c88c44eae4da33ef26509f, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Copa
-    templateTexture: {fileID: 2800000, guid: abc109f8ea4bb414ba1de72515d0b19e, type: 3}
-    symbolID: 
-    strokes: 3
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: inf
-    templateTexture: {fileID: 2800000, guid: e67d3c7248954c844950d818949726de, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Triangulo
-    templateTexture: {fileID: 2800000, guid: 159623a8ee604da498bb4f89f1c955c3, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: espiral
-    templateTexture: {fileID: 2800000, guid: ab2a3f738daa74c4ea5e8e2f0ce408eb, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Casita
-    templateTexture: {fileID: 2800000, guid: d1073cade5a8b0e4ea613a1ab95d1b99, type: 3}
-    symbolID: 
-    strokes: 4
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Linea
-    templateTexture: {fileID: 2800000, guid: b6c3e90a26502d846b5adedebb300076, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  - symbolName: Estrella
-    templateTexture: {fileID: 2800000, guid: 3ec2ab7c9f1f6064a834e7a012dfbb0d, type: 3}
-    symbolID: 
-    strokes: 1
-    distribution: []
-    momentMagnitudes: []
-  newReferenceSymbolsList: []
-  shouldLoad: 0
+  drawer: {fileID: 2075857142}
 --- !u!4 &1722327458
 Transform:
   m_ObjectHideFlags: 0
@@ -2999,7 +2918,7 @@ GameObject:
   - component: {fileID: 2075857144}
   - component: {fileID: 2075857143}
   m_Layer: 0
-  m_Name: DrawingTest
+  m_Name: Drawer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3017,21 +2936,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5fa83ecf3344614eadfa15ce017d1a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lineRenderers:
-  - {fileID: 1544655715}
-  renderTexturelineRenderers: []
-  currentLR: {fileID: 1544655715}
   lRPrefab: {fileID: 5936190321714190901, guid: 95c08dfbb608cce419b6fb0fef126e33, type: 3}
   lRPrefabRT: {fileID: 5936190321714190901, guid: ec2fe9d7936e5b44f9e0fd343bf33b6a, type: 3}
-  linerendererIndex: 0
-  recognitionLineRenderer: {fileID: 0}
-  resultText: {fileID: 1924170148}
-  cam: {fileID: 1488026860}
-  recognizebutton: {fileID: 11685486}
-  zRecognizer: {fileID: 1722327457}
-  strokesPointsCount: 
-  symbolNameField: {fileID: 165334395}
   renderTexture: {fileID: 8400000, guid: 69cf44f0231e534499837caca503578e, type: 2}
+  resultText: {fileID: 1924170148}
+  zRecognizer: {fileID: 1722327457}
 --- !u!4 &2075857144
 Transform:
   m_ObjectHideFlags: 0
@@ -3156,8 +3065,8 @@ Canvas:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1488026863}
   - {fileID: 1200112341}
+  - {fileID: 1488026863}
   - {fileID: 2075857144}
   - {fileID: 2124434234}
   - {fileID: 141262367}

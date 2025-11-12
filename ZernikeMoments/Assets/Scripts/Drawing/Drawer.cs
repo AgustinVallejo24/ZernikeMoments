@@ -6,30 +6,35 @@ using System.Collections;
 using System;
 public class Drawer : MonoBehaviour
 {
-    public List<LineRenderer> lineRenderers;
-    public List<LineRenderer> renderTexturelineRenderers;
-    [SerializeField] LineRenderer currentLR;
+  
+
     [SerializeField] LineRenderer lRPrefab;
     [SerializeField] LineRenderer lRPrefabRT;
-    public int linerendererIndex;
-    public LineRenderer recognitionLineRenderer;
+    [SerializeField] RenderTexture renderTexture;
     public TMP_Text resultText;
-    public Camera cam;
-    public BaseButton_Recognize recognizebutton;
-
+    public ZernikeManager zRecognizer;
+   
+    private Camera cam;
     private List<Vector2> currentPoints = new();
     private List<Vector2> currentStrokePoints = new();
     private bool isDrawing = false;
-    List<Vector2> greenPoints = new List<Vector2>();
-    List<Vector2> redPoints = new List<Vector2>();
+
+    private List<LineRenderer> _lineRenderers = new List<LineRenderer>(0);
+    private List<LineRenderer> _renderTexturelineRenderers = new List<LineRenderer>(0);
+    private LineRenderer currentLR;
     List<List<Vector2>> listaDeListas = new List<List<Vector2>>();
-    public ZernikeManager zRecognizer;
-    public List<int> strokesPointsCount = new List<int>();
-    public TMP_InputField symbolNameField;
+    private int _linerendererIndex;
+    private List<int> _strokesPointsCount = new List<int>();
 
-    [SerializeField] RenderTexture renderTexture;
+    
 
-
+    private void Start()
+    {
+        cam = Camera.main;
+        var lineR = Instantiate(lRPrefab, transform);
+        _lineRenderers.Add(lineR);
+        currentLR = lineR;
+    }
     void Update()
     {
    
@@ -79,10 +84,10 @@ public class Drawer : MonoBehaviour
             }
 
             listaDeListas.Add(new List<Vector2>());
-            linerendererIndex++;
+            _linerendererIndex++;
             currentLR = Instantiate(lRPrefab, this.transform);
-            lineRenderers.Add(currentLR);
-            strokesPointsCount.Add(currentStrokePoints.Count);
+            _lineRenderers.Add(currentLR);
+            _strokesPointsCount.Add(currentStrokePoints.Count);
             currentStrokePoints.Clear();
         }
     }
@@ -105,16 +110,16 @@ public class Drawer : MonoBehaviour
         {
 
 
-            lineRenderers[linerendererIndex].positionCount = 1;
-            lineRenderers[linerendererIndex].SetPosition(0, newPoint);
+            _lineRenderers[_linerendererIndex].positionCount = 1;
+            _lineRenderers[_linerendererIndex].SetPosition(0, newPoint);
             return;
         }
 
         if (count < 4)
         {
             
-            lineRenderers[linerendererIndex].positionCount++;
-            lineRenderers[linerendererIndex].SetPosition(lineRenderers[linerendererIndex].positionCount - 1, newPoint);
+            _lineRenderers[_linerendererIndex].positionCount++;
+            _lineRenderers[_linerendererIndex].SetPosition(_lineRenderers[_linerendererIndex].positionCount - 1, newPoint);
             return;
         }
 
@@ -135,17 +140,12 @@ public class Drawer : MonoBehaviour
                 (-p0 + 3f * p1 - 3f * p2 + p3) * t * t * t
             );
 
-            lineRenderers[linerendererIndex].positionCount++;
-            lineRenderers[linerendererIndex].SetPosition(lineRenderers[linerendererIndex].positionCount - 1, point);
+            _lineRenderers[_linerendererIndex].positionCount++;
+            _lineRenderers[_linerendererIndex].SetPosition(_lineRenderers[_linerendererIndex].positionCount - 1, point);
 
         }
 
 
-    }
-
-    public void SaveSymbol()
-    {
-        StartCoroutine(SaveSymbolCoroutine());
     }
 
     public ReferenceSymbol ReturnNewSymbol(string symbolName,bool shouldRender)
@@ -153,30 +153,30 @@ public class Drawer : MonoBehaviour
         if (currentPoints.Any())
         {
             var normalizedPositions = DrawNormalizer.Normalize(currentPoints);
-            for (int i = 0; i < strokesPointsCount.Count; i++)
+            for (int i = 0; i < _strokesPointsCount.Count; i++)
             {
                 if (shouldRender)
                 {
-                    renderTexturelineRenderers.Add(Instantiate(lRPrefabRT, transform));
-                    renderTexturelineRenderers[i].positionCount = strokesPointsCount[i];
+                    _renderTexturelineRenderers.Add(Instantiate(lRPrefabRT, transform));
+                    _renderTexturelineRenderers[i].positionCount = _strokesPointsCount[i];
                 }
 
-                if (strokesPointsCount[i] == 0) continue;
-                for (int j = 0; j < strokesPointsCount[i]; j++)
+                if (_strokesPointsCount[i] == 0) continue;
+                for (int j = 0; j < _strokesPointsCount[i]; j++)
                 {
                     listaDeListas[i].Add(normalizedPositions[j]);
                     if (shouldRender)
                     {
-                        renderTexturelineRenderers[i].SetPosition(j, normalizedPositions[j]);
+                        _renderTexturelineRenderers[i].SetPosition(j, normalizedPositions[j]);
                     }
                   
                 }
-                normalizedPositions = normalizedPositions.Skip(strokesPointsCount[i]).ToList();
+                normalizedPositions = normalizedPositions.Skip(_strokesPointsCount[i]).ToList();
             }
 
 
 
-            return zRecognizer.ReturnNewSymbol(listaDeListas, lineRenderers.Count - 1, symbolName, "symbolID");
+            return zRecognizer.ReturnNewSymbol(listaDeListas, _lineRenderers.Count - 1, symbolName, "symbolID");
         }
         else
         {
@@ -198,146 +198,82 @@ public class Drawer : MonoBehaviour
         if (currentPoints.Any()) 
         {
             var normalizedPositions = DrawNormalizer.Normalize(currentPoints);
-            for (int i = 0; i < strokesPointsCount.Count; i++)
+            for (int i = 0; i < _strokesPointsCount.Count; i++)
             {
-                if (strokesPointsCount[i] == 0) continue;
-                for (int j = 0; j < strokesPointsCount[i]; j++)
+                if (_strokesPointsCount[i] == 0) continue;
+                for (int j = 0; j < _strokesPointsCount[i]; j++)
                 {
                     listaDeListas[i].Add(normalizedPositions[j]);
                     
                 }
-                normalizedPositions = normalizedPositions.Skip(strokesPointsCount[i]).ToList();
+                normalizedPositions = normalizedPositions.Skip(_strokesPointsCount[i]).ToList();
             }
     
          
-            zRecognizer.OnDrawingFinished(listaDeListas, lineRenderers.Count -1);
+            zRecognizer.OnDrawingFinished(listaDeListas, _lineRenderers.Count -1);
             currentPoints.Clear();
-            strokesPointsCount.Clear();
+            _strokesPointsCount.Clear();
             foreach (var item in listaDeListas)
             {
                 item.Clear();
             }
-            linerendererIndex = 0;
-            lineRenderers[0].positionCount = 0;
-            var count = lineRenderers.Count;
+            _linerendererIndex = 0;
+            _lineRenderers[0].positionCount = 0;
+            var count = _lineRenderers.Count;
             for (int i = 1; i < count; i++)
             {
-                Destroy(lineRenderers[1].gameObject);
-                lineRenderers.RemoveAt(1);
+                Destroy(_lineRenderers[1].gameObject);
+                _lineRenderers.RemoveAt(1);
             }
 
-            currentLR = lineRenderers[0];
+            currentLR = _lineRenderers[0];
         }
         else
         {
             resultText.text = "Trazo demasiado corto";
             currentPoints.Clear();
-            strokesPointsCount.Clear();
+            _strokesPointsCount.Clear();
             foreach (var item in listaDeListas)
             {
                 item.Clear();
             }
-            linerendererIndex = 0;
-            lineRenderers[0].positionCount = 0;
-            foreach (var item in lineRenderers.Skip(1))
+            _linerendererIndex = 0;
+            _lineRenderers[0].positionCount = 0;
+            foreach (var item in _lineRenderers.Skip(1))
             {
-                lineRenderers.Remove(item);
+                _lineRenderers.Remove(item);
                 Destroy(item.gameObject);
             }
-            currentLR = lineRenderers[0];
+            currentLR = _lineRenderers[0];
         }
     }
  
 
-    IEnumerator SaveSymbolCoroutine()
-    {
-        if (currentPoints.Any())
-        {
-            var normalizedPositions = DrawNormalizer.Normalize(currentPoints);
-            for (int i = 0; i < strokesPointsCount.Count; i++)
-            {
-                renderTexturelineRenderers.Add(Instantiate(lRPrefabRT, transform));
-                renderTexturelineRenderers[i].positionCount = strokesPointsCount[i];
-                if (strokesPointsCount[i] == 0) continue;
-                for (int j = 0; j < strokesPointsCount[i]; j++)
-                {
-                    listaDeListas[i].Add(normalizedPositions[j]);
-                    renderTexturelineRenderers[i].SetPosition(j, normalizedPositions[j]);
-                }
-                normalizedPositions = normalizedPositions.Skip(strokesPointsCount[i]).ToList();
-            }
-
-
-            yield return new WaitForSeconds(.1f);
-            string symbolID = Guid.NewGuid().ToString();
-            ImageUtils.SaveRenderTextureToPNG(renderTexture, symbolID);
-            zRecognizer.SaveSymbol(listaDeListas, lineRenderers.Count - 1, symbolNameField.text, symbolID);
-            symbolNameField.text = "";
-            foreach (var item in renderTexturelineRenderers)
-            {
-                Destroy(item.gameObject);
-            }
-            renderTexturelineRenderers.Clear();
-            currentPoints.Clear();
-            strokesPointsCount.Clear();
-            foreach (var item in listaDeListas)
-            {
-                item.Clear();
-            }
-            linerendererIndex = 0;
-            lineRenderers[0].positionCount = 0;
-            foreach (var item in lineRenderers.Skip(1))
-            {
-                lineRenderers.Remove(item);
-                Destroy(item.gameObject);
-            }
-            currentLR = lineRenderers[0];
-        }
-        else
-        {
-            resultText.text = "Trazo demasiado corto";
-            currentPoints.Clear();
-            strokesPointsCount.Clear();
-            foreach (var item in listaDeListas)
-            {
-                item.Clear();
-            }
-            linerendererIndex = 0;
-            lineRenderers[0].positionCount = 0;
-            foreach (var item in lineRenderers.Skip(1))
-            {
-                lineRenderers.Remove(item);
-                Destroy(item.gameObject);
-            }
-            currentLR = lineRenderers[0];
-        }
-    }
-
-    public void ClearAllLineRenderers(bool clearRenderDraw)
+      public void ClearAllLineRenderers(bool clearRenderDraw)
     {
         currentPoints.Clear();
-        strokesPointsCount.Clear();
+        _strokesPointsCount.Clear();
         foreach (var item in listaDeListas)
         {
             item.Clear();
         }
-        linerendererIndex = 0;
-        lineRenderers[0].positionCount = 0;
-        var count = lineRenderers.Count;
+        _linerendererIndex = 0;
+        _lineRenderers[0].positionCount = 0;
+        var count = _lineRenderers.Count;
         for (int i = 1; i < count; i++)
         {
-            Destroy(lineRenderers[1].gameObject);
-            lineRenderers.RemoveAt(1);
+            Destroy(_lineRenderers[1].gameObject);
+            _lineRenderers.RemoveAt(1);
         }
 
-        currentLR = lineRenderers[0];
+        currentLR = _lineRenderers[0];
         if (clearRenderDraw)
         {
-            foreach (var item in renderTexturelineRenderers)
+            foreach (var item in _renderTexturelineRenderers)
             {
                 Destroy(item.gameObject);
             }
-            renderTexturelineRenderers.Clear();
+            _renderTexturelineRenderers.Clear();
         }
 
 
