@@ -308,6 +308,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Zenike Objects
       objectReference: {fileID: 0}
+    - target: {fileID: 8827516367595548554, guid: 6fd8e521a338b124cbc75580f6af6888, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
