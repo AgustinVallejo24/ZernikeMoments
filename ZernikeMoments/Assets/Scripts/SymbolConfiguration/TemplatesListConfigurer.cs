@@ -23,6 +23,7 @@ public class TemplatesListConfigurer : MonoBehaviour
     
     public void DestroySelf()
     {
+        ConfigurationSceneManager.instance._content.gameObject.SetActive(true);
         Destroy(gameObject);
     }
 

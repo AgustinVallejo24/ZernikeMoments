@@ -30,8 +30,11 @@ public class ZernikeManager : MonoBehaviour
 
     [HideInInspector]
     public ZernikeProcessor processor;
+    [HideInInspector]
     public ZernikeRecognizer recognizer;
+    [HideInInspector]
     public int imageSize = 64;
+    [HideInInspector]
     public int maxMomentOrder = 10;
 
 #if UNITY_WEBGL && !UNITY_EDITOR

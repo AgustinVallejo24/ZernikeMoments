@@ -7,7 +7,7 @@ using System.IO;
 public class ConfigurationSceneManager : MonoBehaviour
 {
     
-    [SerializeField] RectTransform _content;
+    [SerializeField] public RectTransform _content;
     [SerializeField] SymbolConfigurer _symbolConfigurerPrefab;
     [SerializeField] VerticalLayoutGroup _layoutGroup;
     [SerializeField] TMP_InputField _nameInputField;

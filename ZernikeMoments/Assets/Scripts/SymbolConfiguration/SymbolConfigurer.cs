@@ -33,6 +33,7 @@ public class SymbolConfigurer : MonoBehaviour
     public void SetSymbolList()
     {
         var list = Instantiate(_listConfigurer, canvas);
+        ConfigurationSceneManager.instance._content.gameObject.SetActive(false);
         list.AddContent(_symbols,deleteSymbol);
     }
 
