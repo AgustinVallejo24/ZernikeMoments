@@ -12,11 +12,7 @@ public class SceneChanger : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.F2))
         {
             SceneManager.LoadScene("SymbolConfiguration");
-        }
-        else if (Input.GetKeyDown(KeyCode.F3))
-        {
-
-        }
+        }        
     }
 
     public void GoToMenu()
@@ -44,4 +40,8 @@ public class SceneChanger : MonoBehaviour
         SceneManager.LoadScene("ZernikeMoments");
     }
     
+    public void GoToTutorial()
+    {
+        SceneManager.LoadScene("Tutorial");
+    }
 }
