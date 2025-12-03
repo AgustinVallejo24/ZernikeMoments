@@ -39,11 +39,11 @@ public class CardSelectionHandler : MonoBehaviour, IPointerEnterHandler, IPointe
             }
 
             //Calculate the lerped amounts
-            Vector3 lerpedPos = Vector3.Lerp(transform.position, endPosition, (elapsedTime / _moveTime));
+            //Vector3 lerpedPos = Vector3.Lerp(transform.position, endPosition, (elapsedTime / _moveTime));
             Vector3 lerpedScale = Vector3.Lerp(transform.localScale, endScale, (elapsedTime / _moveTime));
 
             //Actually apply the changes to the position and scale
-            transform.position = lerpedPos;
+            //transform.position = lerpedPos;
             transform.localScale = lerpedScale;
 
             yield return null; 
