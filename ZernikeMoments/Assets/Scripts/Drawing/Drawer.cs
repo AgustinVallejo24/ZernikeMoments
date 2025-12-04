@@ -68,9 +68,10 @@ public class Drawer : MonoBehaviour
        
         if (Input.GetMouseButtonUp(0))
         {
-            isDrawing = false;
 
-            if (GetLineLength(currentLR) < 1.5f)
+            
+
+            if (GetLineLength(currentLR) < .8f)
             {
                 foreach (var item in currentStrokePoints)
                 {
@@ -80,15 +81,22 @@ public class Drawer : MonoBehaviour
 
                 currentStrokePoints.Clear();
                 currentLR.positionCount = 0;
+                isDrawing = false;
                 return;
             }
 
-            listaDeListas.Add(new List<Vector2>());
-            _linerendererIndex++;
-            currentLR = Instantiate(lRPrefab, this.transform);
-            _lineRenderers.Add(currentLR);
-            _strokesPointsCount.Add(currentStrokePoints.Count);
-            currentStrokePoints.Clear();
+            if (isDrawing)
+            {
+                isDrawing = false;
+                listaDeListas.Add(new List<Vector2>());
+                _linerendererIndex++;
+                currentLR = Instantiate(lRPrefab, this.transform);
+                _lineRenderers.Add(currentLR);
+                _strokesPointsCount.Add(currentStrokePoints.Count);
+                currentStrokePoints.Clear();
+               
+            }
+
         }
     }
 

@@ -109,11 +109,11 @@ out double closestMismatchDist, out double closesetMismatchDistributionDist)
         Debug.Log(bestMatch.symbolName);
         if (bestMatch.symbols != null)
         {
-            string resultText = $"Símbolo reconocido: {bestMatch.symbolName}\nDistancia: {minDistance:F3}";
+            string resultText = $"Recognized Symbol: {bestMatch.symbolName}\nDistance: {minDistance:F3}";
 
             if (rotationSensitivity && bestMatch.useRotation)
             {
-                resultText += $", Dif. Distribución: {distributionDiff:F3}";
+                resultText += $", Dif. Distribution: {distributionDiff:F3}";
             }
             text.text = resultText;
         }
@@ -121,17 +121,17 @@ out double closestMismatchDist, out double closesetMismatchDistributionDist)
         {
             if(rotationSensitivity && closestMismatch.useRotation)
             {
-                text.text = $"Símbolo no reconocido. Match más cercano: '{closestMismatch.symbolName}' con distancia {closestMismatchDist:F3} y Dif. Distribución: {closesetMismatchDistributionDist:F3}";
+                text.text = $"Símbolo no reconocido. Match más cercano: '{closestMismatch.symbolName}'\nDistance: {closestMismatchDist:F3}, Dif. Distribution: {closesetMismatchDistributionDist:F3}";
             }
             else
             {
-                text.text = $"Símbolo no reconocido. Match más cercano: '{closestMismatch.symbolName}' con distancia {closestMismatchDist:F3}";
+                text.text = $"No sybmol recognized. Closest match: {closestMismatch.symbolName}\nDistance: {minDistance:F3}";
             }
            
         }
         else
         {
-            text.text = "Símbolo no reconocido.";
+            text.text = "No sybmol recognized";
         }
     }
 }

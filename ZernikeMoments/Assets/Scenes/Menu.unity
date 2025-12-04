@@ -278,7 +278,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &30121458
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1661,7 +1661,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1133795558
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2965,7 +2965,349 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotationSensitivity: 1
   shouldLoad: 1
-  referenceSymbolsList: []
+  referenceSymbolsList:
+  - symbolName: Square
+    symbols:
+    - symbolName: Square
+      templateTexture: {fileID: 2800000, guid: 671bd6ee381e12e45820f8e9a312f6d2, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Square
+      templateTexture: {fileID: 2800000, guid: acd80a22e8c88c44eae4da33ef26509f, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Square
+      templateTexture: {fileID: 2800000, guid: d5fc5933d7ff7c9459a0fc7d76cfa913, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Square
+      templateTexture: {fileID: 2800000, guid: 6c16ac90cfbdb494d8788f8dad59a8aa, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Square
+      templateTexture: {fileID: 2800000, guid: 062ac7b6110dddc4e9ca61f023d5846d, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Square
+      templateTexture: {fileID: 2800000, guid: 062ac7b6110dddc4e9ca61f023d5846d, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Square
+      templateTexture: {fileID: 2800000, guid: 77cdefce07b72604a935da93d455dbed, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.15
+    orientationThreshold: 0.15
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 1
+  - symbolName: Circle
+    symbols:
+    - symbolName: Circle
+      templateTexture: {fileID: 2800000, guid: 7e89d3459617602479251a10e2ccdb1b, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Circle
+      templateTexture: {fileID: 2800000, guid: 6aa39384de01bb543a1cf337228de2e4, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Circle
+      templateTexture: {fileID: 2800000, guid: 9475861c285762e4ab150672049f93f8, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Circle
+      templateTexture: {fileID: 2800000, guid: 444338d0e8ee6004084c1eba70f8347f, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Circle
+      templateTexture: {fileID: 2800000, guid: b95f84f2277d20748a9b0ff56863e658, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.3
+    orientationThreshold: 0.15
+    useRotation: 0
+    isSymmetric: 1
+    strokes: 1
+  - symbolName: Cup
+    symbols:
+    - symbolName: Cup
+      templateTexture: {fileID: 2800000, guid: abc109f8ea4bb414ba1de72515d0b19e, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Cup
+      templateTexture: {fileID: 2800000, guid: d45acf4882ea37b4ba2b18a4f9a06d1c, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Cup
+      templateTexture: {fileID: 2800000, guid: 7bde8ab2ada52ab48b1e2e6d3d720ee0, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.3
+    orientationThreshold: 0.2
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 3
+  - symbolName: Infinite
+    symbols:
+    - symbolName: Infinite
+      templateTexture: {fileID: 2800000, guid: fbdc8e7b55b08184e80556298cf98b42, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Infinite
+      templateTexture: {fileID: 2800000, guid: a3ed37db4d9b48f43a9e6925bee73fd3, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Infinite
+      templateTexture: {fileID: 2800000, guid: 2de6640390b48384fb0bc69efa26576e, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.2
+    orientationThreshold: 0.15
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 1
+  - symbolName: V
+    symbols:
+    - symbolName: V
+      templateTexture: {fileID: 2800000, guid: 2748993ccbbc8d9469867ab62cbd661e, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: V
+      templateTexture: {fileID: 2800000, guid: 5e7bbf686c14baf48ad93374ee1a9294, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: V
+      templateTexture: {fileID: 2800000, guid: 20d2173f3432d834a82c8fc646d64446, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.2
+    orientationThreshold: 0.15
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 1
+  - symbolName: C
+    symbols:
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: b6bee689972544a4ebd7f109c6a4443c, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: b92c7af6e77236f49bb9e676cd7d6328, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: e18cfeb31c5b93849a1cbd86708177c4, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: fbf3298659066ce40876f226eae08581, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: 733105866b1c61f40bec86a54f649dbc, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: 733105866b1c61f40bec86a54f649dbc, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: 80d7312cfe5353d4db4deb24ff9a2a2d, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: 80d7312cfe5353d4db4deb24ff9a2a2d, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: 80d7312cfe5353d4db4deb24ff9a2a2d, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: C
+      templateTexture: {fileID: 2800000, guid: 80d7312cfe5353d4db4deb24ff9a2a2d, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.2
+    orientationThreshold: 0.15
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 1
+  - symbolName: Line
+    symbols:
+    - symbolName: Line
+      templateTexture: {fileID: 2800000, guid: b6c3e90a26502d846b5adedebb300076, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.2
+    orientationThreshold: 0.25
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 1
+  - symbolName: Spiral
+    symbols:
+    - symbolName: Spiral
+      templateTexture: {fileID: 2800000, guid: ab2a3f738daa74c4ea5e8e2f0ce408eb, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: Spiral
+      templateTexture: {fileID: 2800000, guid: 8ff884be3d45b5a4c8f1e9185b7c19f7, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.3
+    orientationThreshold: 0.15
+    useRotation: 1
+    isSymmetric: 1
+    strokes: 1
+  - symbolName: A
+    symbols:
+    - symbolName: A
+      templateTexture: {fileID: 2800000, guid: fe333676016386343a7ef073400fe73c, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: A
+      templateTexture: {fileID: 2800000, guid: 0aef1a4403858de419fdc0554611b0cd, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.2
+    orientationThreshold: 0.2
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 2
+  - symbolName: X
+    symbols:
+    - symbolName: X
+      templateTexture: {fileID: 2800000, guid: 47e4f6c689811884ab4f0b171591b550, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: X
+      templateTexture: {fileID: 2800000, guid: f25af3c3a3277fb4c9336c278e32a801, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: X
+      templateTexture: {fileID: 2800000, guid: bb66b22b74ad8aa41b1e127090f22d13, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: X
+      templateTexture: {fileID: 2800000, guid: 6bcc54a99bacffc47b1ac23a791383d7, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    - symbolName: X
+      templateTexture: {fileID: 2800000, guid: 964a9ae51dad3e54b8835707828fcaf4, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.2
+    orientationThreshold: 0.2
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 2
+  - symbolName: Null
+    symbols:
+    - symbolName: Null
+      templateTexture: {fileID: 2800000, guid: c8c4ddd644fd0274893df7d8212db5a1, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.3
+    orientationThreshold: 0.3
+    useRotation: 1
+    isSymmetric: 1
+    strokes: 2
+  - symbolName: Smile
+    symbols:
+    - symbolName: Smile
+      templateTexture: {fileID: 2800000, guid: 4056839d920a3d34c85d974c057c8110, type: 3}
+      symbolID: 
+      strokes: 0
+      distribution: []
+      momentMagnitudes: []
+    Threshold: 0.2
+    orientationThreshold: 0.2
+    useRotation: 1
+    isSymmetric: 0
+    strokes: 3
   text: {fileID: 0}
   UICarga: {fileID: 30121457}
   barrita: {fileID: 1902327092}
