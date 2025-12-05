@@ -238,7 +238,7 @@ public class Drawer : MonoBehaviour
         }
         else
         {
-            resultText.text = "Trazo demasiado corto";
+            resultText.text = "The stroke is too short";
             currentPoints.Clear();
             _strokesPointsCount.Clear();
             foreach (var item in listaDeListas)

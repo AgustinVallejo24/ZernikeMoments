@@ -181,7 +181,7 @@ public class ZernikeManager : MonoBehaviour
 
         if (relevantSymbols.Count == 0)
         {
-            text.text = "No hay ningún símbolo con esa cantidad de trazos.";
+            text.text = "There is no symbol with that many strokes.";
             return;
         }
 

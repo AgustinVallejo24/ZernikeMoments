@@ -121,17 +121,17 @@ out double closestMismatchDist, out double closesetMismatchDistributionDist)
         {
             if(rotationSensitivity && closestMismatch.useRotation)
             {
-                text.text = $"Símbolo no reconocido. Match más cercano: '{closestMismatch.symbolName}'\nDistance: {closestMismatchDist:F3}, Dif. Distribution: {closesetMismatchDistributionDist:F3}";
+                text.text = $"No symbol recognized. Closest match: '{closestMismatch.symbolName}'\nDistance: {closestMismatchDist:F3}, Dif. Distribution: {closesetMismatchDistributionDist:F3}";
             }
             else
             {
-                text.text = $"No sybmol recognized. Closest match: {closestMismatch.symbolName}\nDistance: {minDistance:F3}";
+                text.text = $"No symbol recognized. Closest match: {closestMismatch.symbolName}\nDistance: {minDistance:F3}";
             }
            
         }
         else
         {
-            text.text = "No sybmol recognized";
+            text.text = "No symbol recognized";
         }
     }
 }

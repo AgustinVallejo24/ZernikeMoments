@@ -3278,7 +3278,7 @@ MonoBehaviour:
       distribution: []
       momentMagnitudes: []
     Threshold: 0.2
-    orientationThreshold: 0.2
+    orientationThreshold: 0.3
     useRotation: 1
     isSymmetric: 0
     strokes: 2
